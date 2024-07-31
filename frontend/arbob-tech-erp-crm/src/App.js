@@ -3,7 +3,7 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import { AppProvider } from './contexts/AppContext';
 import Layout from './components/Layout/layOut';
 // import Dashboard from './components/Dashboard/Dashboard';
-// import Employees from './components/Employees/Employees';
+import Employees from './components/Employees/EmployeesList';
 // import Attendance from './components/Attendance/Attendance';
 // import Salary from './components/Salary/Salary';
 import Expense from './components/Expense/ExpenseList';
@@ -16,9 +16,9 @@ function App() {
       <Router>
         <Layout>
           <Routes>
-            {/* <Route path="/" element={<Dashboard />} />
+            {/* <Route path="/" element={<Dashboard />} /> */}
             <Route path="/employees" element={<Employees />} />
-            <Route path="/attendance" element={<Attendance />} /> */}
+            {/* <Route path="/attendance" element={<Attendance />} /> */}
             {/* <Route path="/salary" element={<Salary />} /> */}
             <Route path="/expense" element={<Expense />} />
             <Route path="/expenseCate" element={<ExpenseCate />} />
