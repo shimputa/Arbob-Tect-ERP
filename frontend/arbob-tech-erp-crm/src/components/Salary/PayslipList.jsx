@@ -1,0 +1,460 @@
+// import React, { useState } from 'react';
+
+// function PayslipList({ payslips}) {
+//   const [filteredPayslips, setFilteredPayslips] = useState(payslips);
+//   const [filterMonth, setFilterMonth] = useState('');
+//   const [filterYear, setFilterYear] = useState('');
+
+//   const handleFilter = () => {
+//     const filtered = payslips.filter(payslip => {
+//       return (
+//         (filterMonth === '' || payslip.month === filterMonth) &&
+//         (filterYear === '' || payslip.year === filterYear)
+//       );
+//     });
+//     setFilteredPayslips(filtered);
+//   };
+
+//   return (
+//     <div className="container mx-auto p-4">
+//       <h2 className="text-2xl font-bold mb-4">Payslip List</h2>
+//       <div className="flex space-x-4 mb-4">
+//         <select value={filterMonth} onChange={(e) => setFilterMonth(e.target.value)} className="border p-2">
+//           <option value="">Month: All</option>
+//           <option value="January">January</option>
+//           <option value="February">February</option>
+//           {/* Add more months */}
+//         </select>
+//         <select value={filterYear} onChange={(e) => setFilterYear(e.target.value)} className="border p-2">
+//           <option value="">Year: All</option>
+//           <option value="2023">2023</option>
+//           <option value="2024">2024</option>
+//         </select>
+//         <button onClick={handleFilter} className="bg-blue-500 text-white px-4 py-2 rounded">Filter</button>
+//       </div>
+//       <table className="min-w-full bg-white">
+//         <thead>
+//           <tr>
+//             <th className="text-left p-2">Employee Name</th>
+//             <th className="text-left p-2">Month</th>
+//             <th className="text-left p-2">Year</th>
+//             <th className="text-left p-2">Summary</th>
+//             <th className="text-left p-2">Status</th>
+//           </tr>
+//         </thead>
+//         <tbody>
+//           {filteredPayslips.map((payslip, index) => (
+//             <tr key={index}>
+//               <td className="p-2">{payslip.employee}</td>
+//               <td className="p-2">{payslip.month}</td>
+//               <td className="p-2">{payslip.year}</td>
+//               <td className="p-2">
+//                 Basic Salary: ${payslip.basicSalary} <br />
+//                 Total Bonus: ${payslip.totalBonus} <br />
+//                 Total Deduction: ${payslip.totalDeduction} <br />
+//                 Net Salary: ${payslip.netSalary}
+//               </td>
+//               <td className="p-2">{payslip.status}</td>
+//             </tr>
+//           ))}
+//         </tbody>
+//       </table>
+//     </div>
+//   );
+// }
+
+// export default PayslipList;
+
+
+// import React, { useState, useEffect } from 'react';
+
+// function PayslipList({ payslips }) {
+//   const [filteredPayslips, setFilteredPayslips] = useState(payslips);
+//   const [filterMonth, setFilterMonth] = useState('');
+//   const [filterYear, setFilterYear] = useState('');
+
+//   useEffect(() => {
+//     setFilteredPayslips(payslips);
+//   }, [payslips]);
+
+//   const handleFilter = () => {
+//     const filtered = payslips.filter(payslip => {
+//       return (
+//         (filterMonth === '' || payslip.month === filterMonth) &&
+//         (filterYear === '' || payslip.year === filterYear)
+//       );
+//     });
+//     setFilteredPayslips(filtered);
+//   };
+
+//   return (
+//     <div className="container mx-auto p-4">
+//       <h2 className="text-2xl font-bold mb-4">Payslip List</h2>
+//       <div className="flex space-x-4 mb-4">
+//         <select value={filterMonth} onChange={(e) => setFilterMonth(e.target.value)} className="border p-2">
+//           <option value="">Month: All</option>
+//           <option value="January">January</option>
+//           <option value="February">February</option>
+//           {/* Add more months */}
+//         </select>
+//         <select value={filterYear} onChange={(e) => setFilterYear(e.target.value)} className="border p-2">
+//           <option value="">Year: All</option>
+//           <option value="2023">2023</option>
+//           <option value="2024">2024</option>
+//         </select>
+//         <button onClick={handleFilter} className="bg-blue-500 text-white px-4 py-2 rounded">Filter</button>
+//       </div>
+//       <table className="min-w-full bg-white">
+//         <thead>
+//           <tr>
+//             <th className="text-left p-2">Employee Name</th>
+//             <th className="text-left p-2">Month</th>
+//             <th className="text-left p-2">Year</th>
+//             <th className="text-left p-2">Summary</th>
+//             <th className="text-left p-2">Status</th>
+//           </tr>
+//         </thead>
+//         <tbody>
+//           {filteredPayslips.length > 0 ? (
+//             filteredPayslips.map((payslip, index) => (
+//               <tr key={index}>
+//                 <td className="p-2">{payslip.employee}</td>
+//                 <td className="p-2">{payslip.month}</td>
+//                 <td className="p-2">{payslip.year}</td>
+//                 <td className="p-2">
+//                   Basic Salary: ${payslip.basicSalary} <br />
+//                   Total Bonus: ${payslip.totalBonus} <br />
+//                   Total Deduction: ${payslip.totalDeduction} <br />
+//                   Net Salary: ${payslip.netSalary}
+//                 </td>
+//                 <td className="p-2">{payslip.status}</td>
+//               </tr>
+//             ))
+//           ) : (
+//             <tr>
+//               <td colSpan="5" className="p-4 text-center text-gray-500">No payslips available</td>
+//             </tr>
+//           )}
+//         </tbody>
+//       </table>
+//     </div>
+//   );
+// }
+
+// export default PayslipList;
+
+
+// version 1
+
+
+// import React, { useState, useEffect } from 'react';
+
+// function PayslipList({ payslips }) {
+//   const [filteredPayslips, setFilteredPayslips] = useState(payslips);
+//   const [filterMonth, setFilterMonth] = useState('');
+//   const [filterYear, setFilterYear] = useState('');
+
+//   useEffect(() => {
+//     setFilteredPayslips(payslips);
+//   }, [payslips]);
+
+//   const handleFilter = () => {
+//     const filtered = payslips.filter(payslip => {
+//       return (
+//         (filterMonth === '' || payslip.month === filterMonth) &&
+//         (filterYear === '' || payslip.year === filterYear)
+//       );
+//     });
+//     setFilteredPayslips(filtered);
+//   };
+
+//   return (
+//     <div className="container mx-auto p-4">
+//       <h2 className="text-2xl font-bold mb-4">Payslip List</h2>
+//       <div className="flex space-x-4 mb-4">
+//         <select value={filterMonth} onChange={(e) => setFilterMonth(e.target.value)} className="border p-2">
+//           <option value="">Month: All</option>
+//           <option value="January">January</option>
+//           <option value="February">February</option>
+//           {/* Add more months */}
+//         </select>
+//         <select value={filterYear} onChange={(e) => setFilterYear(e.target.value)} className="border p-2">
+//           <option value="">Year: All</option>
+//           <option value="2023">2023</option>
+//           <option value="2024">2024</option>
+//           {/* Add more years */}
+//         </select>
+//         <button onClick={handleFilter} className="bg-blue-500 text-white px-4 py-2 rounded">Filter</button>
+//       </div>
+//       <table className="min-w-full bg-white">
+//         <thead>
+//           <tr>
+//             <th className="text-left p-2">Employee Name</th>
+//             <th className="text-left p-2">Month</th>
+//             <th className="text-left p-2">Year</th>
+//             <th className="text-left p-2">Summary</th>
+//             <th className="text-left p-2">Status</th>
+//           </tr>
+//         </thead>
+//         <tbody>
+//           {filteredPayslips.length > 0 ? (
+//             filteredPayslips.map((payslip, index) => (
+//               <tr key={index}>
+//                 <td className="p-2">{payslip.employee}</td>
+//                 <td className="p-2">{payslip.month}</td>
+//                 <td className="p-2">{payslip.year}</td>
+//                 <td className="p-2">
+//                   Basic Salary: ${payslip.basicSalary} <br />
+//                   Total Bonus: ${payslip.totalBonus} <br />
+//                   Total Deduction: ${payslip.totalDeduction} <br />
+//                   Net Salary: ${payslip.netSalary}
+//                 </td>
+//                 <td className="p-2">{payslip.status}</td>
+//               </tr>
+//             ))
+//           ) : (
+//             <tr>
+//               <td colSpan="5" className="p-4 text-center text-gray-500">No payslips available</td>
+//             </tr>
+//           )}
+//         </tbody>
+//       </table>
+//     </div>
+//   );
+// }
+
+// export default PayslipList;
+
+// import React, { useState, useEffect } from 'react';
+
+// const ITEMS_PER_PAGE = 7;
+
+// function PayslipList({ payslips }) {
+//   const [filteredPayslips, setFilteredPayslips] = useState(payslips);
+//   const [filterMonth, setFilterMonth] = useState('');
+//   const [filterYear, setFilterYear] = useState('');
+//   const [filterName, setFilterName] = useState(''); // Add filter by name
+//   const [currentPage, setCurrentPage] = useState(1); // Add pagination state
+
+//   useEffect(() => {
+//     setFilteredPayslips(payslips);
+//   }, [payslips]);
+
+//   const handleFilter = () => {
+//     const filtered = payslips.filter(payslip => {
+//       return (
+//         (filterMonth === '' || payslip.month === filterMonth) &&
+//         (filterYear === '' || payslip.year === filterYear) &&
+//         (filterName === '' || payslip.employee.toLowerCase().includes(filterName.toLowerCase()))
+//       );
+//     });
+//     setFilteredPayslips(filtered);
+//     setCurrentPage(1); // Reset to first page after filtering
+//   };
+
+//   // Pagination logic
+//   const totalPages = Math.ceil(filteredPayslips.length / ITEMS_PER_PAGE);
+//   const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+//   const displayedPayslips = filteredPayslips.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+
+//   return (
+//     <div className="container mx-auto p-4">
+//       <h2 className="text-2xl font-bold mb-4">Payslip List</h2>
+//       <div className="flex space-x-4 mb-4">
+//         <input
+//           type="text"
+//           placeholder="Search by Name"
+//           value={filterName}
+//           onChange={(e) => setFilterName(e.target.value)}
+//           className="border p-2"
+//         />
+//         <select value={filterMonth} onChange={(e) => setFilterMonth(e.target.value)} className="border p-2">
+//           <option value="">Month: All</option>
+//           <option value="January">January</option>
+//           <option value="February">February</option>
+//           {/* Add more months */}
+//         </select>
+//         <select value={filterYear} onChange={(e) => setFilterYear(e.target.value)} className="border p-2">
+//           <option value="">Year: All</option>
+//           <option value="2023">2023</option>
+//           <option value="2024">2024</option>
+//           {/* Add more years */}
+//         </select>
+//         <button onClick={handleFilter} className="bg-blue-500 text-white px-4 py-2 rounded">Filter</button>
+//       </div>
+//       <table className="min-w-full bg-white">
+//         <thead>
+//           <tr>
+//             <th className="text-left p-2">Employee Name</th>
+//             <th className="text-left p-2">Month</th>
+//             <th className="text-left p-2">Year</th>
+//             <th className="text-left p-2">Summary</th>
+//             <th className="text-left p-2">Status</th>
+//           </tr>
+//         </thead>
+//         <tbody>
+//           {displayedPayslips.length > 0 ? (
+//             displayedPayslips.map((payslip, index) => (
+//               <tr key={index}>
+//                 <td className="p-2">{payslip.employee}</td>
+//                 <td className="p-2">{payslip.month}</td>
+//                 <td className="p-2">{payslip.year}</td>
+//                 <td className="p-2">
+//                   Basic Salary: ${payslip.basicSalary} <br />
+//                   Total Bonus: ${payslip.totalBonus} <br />
+//                   Total Deduction: ${payslip.totalDeduction} <br />
+//                   Net Salary: ${payslip.netSalary}
+//                 </td>
+//                 <td className="p-2">{payslip.status}</td>
+//               </tr>
+//             ))
+//           ) : (
+//             <tr>
+//               <td colSpan="5" className="p-4 text-center text-gray-500">No payslips available</td>
+//             </tr>
+//           )}
+//         </tbody>
+//       </table>
+
+//       {/* Pagination Controls */}
+//       <div className="flex justify-center mt-4 space-x-2">
+//         <button
+//           onClick={() => setCurrentPage(page => Math.max(page - 1, 1))}
+//           className="px-3 py-1 bg-gray-300 text-gray-700 rounded"
+//           disabled={currentPage === 1}
+//         >
+//           Previous
+//         </button>
+//         {Array.from({ length: totalPages }, (_, index) => (
+//           <button
+//             key={index + 1}
+//             onClick={() => setCurrentPage(index + 1)}
+//             className={`px-3 py-1 rounded ${currentPage === index + 1 ? 'bg-blue-500 text-white' : 'bg-gray-300 text-gray-700'}`}
+//           >
+//             {index + 1}
+//           </button>
+//         ))}
+//         <button
+//           onClick={() => setCurrentPage(page => Math.min(page + 1, totalPages))}
+//           className="px-3 py-1 bg-gray-300 text-gray-700 rounded"
+//           disabled={currentPage === totalPages}
+//         >
+//           Next
+//         </button>
+//       </div>
+//     </div>
+//   );
+// }
+
+// export default PayslipList;
+
+
+// delete and print verisions
+
+
+import React, { useState, useEffect } from 'react';
+
+function PayslipList({ payslips, onDelete, onPrint }) {
+  const [filteredPayslips, setFilteredPayslips] = useState(payslips);
+  const [filterMonth, setFilterMonth] = useState('');
+  const [filterYear, setFilterYear] = useState('');
+  const [filterName, setFilterName] = useState('');
+
+  useEffect(() => {
+    setFilteredPayslips(payslips);
+  }, [payslips]);
+
+  const handleFilter = () => {
+    const filtered = payslips.filter(payslip => {
+      return (
+        (filterMonth === '' || payslip.month === filterMonth) &&
+        (filterYear === '' || payslip.year === filterYear) &&
+        (filterName === '' || payslip.employee.toLowerCase().includes(filterName.toLowerCase()))
+      );
+    });
+    setFilteredPayslips(filtered);
+  };
+
+  return (
+    <div className="container mx-auto p-4">
+      <h2 className="text-2xl font-bold mb-4">Payslip List</h2>
+      <div className="flex space-x-4 mb-4">
+        <input
+          type="text"
+          placeholder="Search by Name"
+          value={filterName}
+          onChange={(e) => setFilterName(e.target.value)}
+          className="border p-2 rounded"
+        />
+        <select value={filterMonth} onChange={(e) => setFilterMonth(e.target.value)} className="border p-2">
+          <option value="">Month: All</option>
+          <option value="January">January</option>
+          <option value="February">February</option>
+          {/* Add more months */}
+        </select>
+        <select value={filterYear} onChange={(e) => setFilterYear(e.target.value)} className="border p-2">
+          <option value="">Year: All</option>
+          <option value="2023">2023</option>
+          <option value="2024">2024</option>
+          {/* Add more years */}
+        </select>
+        <button onClick={handleFilter} className="bg-blue-500 text-white px-4 py-2 rounded">Filter</button>
+      </div>
+      <table className="min-w-full bg-white">
+        <thead>
+          <tr>
+            <th className="text-left p-2">Employee Name</th>
+            <th className="text-left p-2">Month</th>
+            <th className="text-left p-2">Year</th>
+            <th className="text-left p-2">Summary</th>
+            <th className="text-left p-2">Status</th>
+            <th className="text-left p-2">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          {filteredPayslips.length > 0 ? (
+            filteredPayslips.map((payslip, index) => (
+              <tr key={index}>
+                <td className="p-2">{payslip.employee}</td>
+                <td className="p-2">{payslip.month}</td>
+                <td className="p-2">{payslip.year}</td>
+                <td className="p-2">
+                  Basic Salary: ${payslip.basicSalary} <br />
+                  Total Bonus: ${payslip.totalBonus} <br />
+                  Total Deduction: ${payslip.totalDeduction} <br />
+                  Net Salary: ${payslip.netSalary}
+                </td>
+                <td className="p-2">{payslip.status}</td>
+                <td className="p-2">
+                  <button
+                    onClick={() => onDelete(payslip.id)}
+                    className="bg-red-500 text-white p-1 rounded mr-2"
+                  >
+                    Delete
+                  </button>
+                  <button
+                    onClick={() => onPrint(payslip)}
+                    className="bg-green-500 text-white p-1 rounded"
+                  >
+                    Print
+                  </button>
+                </td>
+              </tr>
+            ))
+          ) : (
+            <tr>
+              <td colSpan="6" className="p-4 text-center text-gray-500">No payslips available</td>
+            </tr>
+          )}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+export default PayslipList;
+
+
+
+
+
