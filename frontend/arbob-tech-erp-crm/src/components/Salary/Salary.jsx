@@ -48,6 +48,8 @@
 
 // export default Salary;
 
+// delete and print verisions
+
 import React, { useState } from 'react';
 import { Route, NavLink, Routes } from 'react-router-dom';
 import CreatePayslip from './CreatePayslip';
@@ -62,13 +64,13 @@ function Salary( {handleDelete ,handlePrint}) {
 
   // const handleDelete = (id) => {
   //   setPayslips((prevPayslips) => prevPayslips.filter((payslip) => payslip.id !== id));
-  // };
-
   // const handlePrint = (payslip) => {
   //   // Implement the logic to print the payslip
   //   console.log('Printing payslip:', payslip);
   //   // You can open a print dialog or send the payslip to a printing service here
-  // };
+  // };// };
+
+  
 
   return (
     <div className="container mx-auto p-4">
