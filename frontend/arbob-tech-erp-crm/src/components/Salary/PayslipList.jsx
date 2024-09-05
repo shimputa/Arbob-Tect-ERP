@@ -139,6 +139,7 @@
 // export default PayslipList;
 
 // modern tailwind css with and styles....
+
 import React, { useState, useEffect } from 'react';
 
 const ITEMS_PER_PAGE = 2;
@@ -300,6 +301,9 @@ function PayslipList({ payslips, onDelete, onPrint }) {
 }
 
 export default PayslipList;
+
+
+
 
 
 
