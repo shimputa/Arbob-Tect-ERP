@@ -1,120 +1,89 @@
-// import React from 'react';
-// import { Link, useLocation } from 'react-router-dom';
-
-// function Sidebar() {
-//   const location = useLocation();
-
-//   const menuItems = [
-//     { name: 'Dashboard', path: '/', icon: 'M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6' },
-//     { name: 'Employees', path: '/employees', icon: 'M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z' },
-//     { name: 'Attendance', path: '/attendance', icon: 'M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z' },
-//     { name: 'Salary', path: '/salary', icon: 'M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z' },
-//     { name: 'ExpenseList', path: '/expense', icon: 'M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z' },
-//     { name: 'ExpenseCateList', path: '/expenseCate', icon: 'M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z' },
-//     { name: 'Tasks', path: '/tasks', icon: 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01' },
-//   ];
-
-//   return (
-//     <div className="bg-gray-800 text-white w-64 space-y-6 py-7 px-2 absolute inset-y-0 left-0 transform -translate-x-full md:relative md:translate-x-0 transition duration-200 ease-in-out">
-//       <div className="flex items-center space-x-4 px-4">
-//         <img src="/logo.svg" alt="Arbob Tech Logo" className="h-8 w-8" />
-//         <span className="text-2xl font-extrabold"> Tech</span>
-//       </div>
-//       <nav>
-//         {menuItems.map((item) => (
-//           <Link
-//             key={item.name}
-//             to={item.path}
-//             className={`block py-2.5 px-4 rounded transition duration-200 ${
-//               location.pathname === item.path
-//                 ? 'bg-gray-700 text-white'
-//                 : 'text-gray-400 hover:bg-gray-700 hover:text-white'
-//             }`}
-//           >
-//             <div className="flex items-center">
-//               <svg className="h-6 w-6 mr-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-//                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={item.icon} />
-//               </svg>
-//               {item.name}
-//             </div>
-//           </Link>
-//         ))}
-//       </nav>
-//     </div>
-//   );
-// }
-
-// export default Sidebar;
 
 // import React, { useState } from 'react';
 // import { NavLink } from 'react-router-dom';
+// import {
+//   Bars3Icon,   // Hamburger icon for opening the sidebar
+//   XMarkIcon,   // Close icon for collapsing the sidebar
+//   ChevronDownIcon,
+//   ChevronUpIcon,
+//   UserGroupIcon,
+//   BanknotesIcon,
+//   Squares2X2Icon,
+//   HomeIcon,
+// } from '@heroicons/react/24/outline';
 
 // function Sidebar() {
+//   const [isOpen, setIsOpen] = useState(false);
 //   const [isSalaryDropdownOpen, setIsSalaryDropdownOpen] = useState(false);
 
-//   const toggleSalaryDropdown = () => {
-//     setIsSalaryDropdownOpen(!isSalaryDropdownOpen);
-//   };
+//   const toggleSidebar = () => setIsOpen(!isOpen);
+//   const toggleSalaryDropdown = () => setIsSalaryDropdownOpen(!isSalaryDropdownOpen);
 
 //   return (
-//     <div className="w-1/4 h-screen bg-gray-100 p-4">
-//       <h3 className="text-lg font-bold mb-4">Menu</h3>
-//       <ul className="space-y-2">
+//     <div className={`h-screen bg-gray-100 p-4 ${isOpen ? 'w-70' : 'w-20'} transition-width duration-300 relative`}>
+//       {/* Logo and Hamburger Menu */}
+//       <div className="flex items-center justify-between mb-6">
+//         {/* Company Logo and Name */}
+//         <div className="flex items-center">
+//           <img 
+//             src="/path-to-your-logo.png" // Replace with the actual path to your logo
+//             alt="Company Logo" 
+//             className={`h-10 mr-3 ${isOpen ? 'block' : 'hidden'} transition-all duration-300`} // Show logo only when expanded
+//           />
+//         </div>
+        
+//         {/* Hamburger Menu Icon */}
+//         <div className="ml-auto ">
+//           {isOpen ? (
+//             <XMarkIcon className="h-6 w-6 text-gray-700 hover:text-gray-900 cursor-pointer" onClick={toggleSidebar} />
+//           ) : (
+//             <Bars3Icon className="h-6 w-6 text-gray-700 hover:text-gray-900 cursor-pointer " onClick={toggleSidebar} />
+//           )}
+//         </div>
+//       </div>
+
+//       <ul className="space-y-8"> {/* Increased space between menu items */}
 //         <li>
-//           <NavLink
-//             to="/dashboard"
-//             className={({ isActive }) => (isActive ? 'text-blue-500 font-bold' : 'text-black')}
-//           >
-//             Dashboard
+//           <NavLink to="/dashboard" className={({ isActive }) => (isActive ? 'text-blue-500 font-bold flex items-center' : 'text-black flex items-center hover:text-blue-500')}>
+//             <HomeIcon className="h-6 w-6 mr-4 transition-transform transform hover:scale-110" /> {/* Added hover effect */}
+//             {isOpen && 'Dashboard'}
 //           </NavLink>
 //         </li>
 //         <li>
-//           <NavLink
-//             to="/employees"
-//             className={({ isActive }) => (isActive ? 'text-blue-500 font-bold' : 'text-black')}
-//           >
-//             Employees
+//           <NavLink to="/employees" className={({ isActive }) => (isActive ? 'text-blue-500 font-bold flex items-center' : 'text-black flex items-center hover:text-blue-500')}>
+//             <UserGroupIcon className="h-6 w-6 mr-4 transition-transform transform hover:scale-110" /> {/* Added hover effect */}
+//             {isOpen && 'Employees'}
 //           </NavLink>
 //         </li>
 //         <li>
-//           <NavLink
-//             to="/expense"
-//             className={({ isActive }) => (isActive ? 'text-blue-500 font-bold' : 'text-black')}
-//           >
-//             Expenses
+//           <NavLink to="/expense" className={({ isActive }) => (isActive ? 'text-blue-500 font-bold flex items-center' : 'text-black flex items-center hover:text-blue-500')}>
+//             <BanknotesIcon className="h-6 w-6 mr-4 transition-transform transform hover:scale-110" /> {/* Added hover effect */}
+//             {isOpen && 'Expenses'}
 //           </NavLink>
 //         </li>
 //         <li>
-//           <NavLink
-//             to="/expenseCate"
-//             className={({ isActive }) => (isActive ? 'text-blue-500 font-bold' : 'text-black')}
-//           >
-//             Expense Categories
+//           <NavLink to="/expenseCate" className={({ isActive }) => (isActive ? 'text-blue-500 font-bold flex items-center' : 'text-black flex items-center hover:text-blue-500')}>
+//             <Squares2X2Icon className="h-6 w-6 mr-4 transition-transform transform hover:scale-110" /> {/* Added hover effect */}
+//             {isOpen && 'Expense Categories'}
 //           </NavLink>
 //         </li>
 //         <li>
-//           <button
-//             onClick={toggleSalaryDropdown}
-//             className="w-full text-left text-black"
-//           >
-//             Salary
-//             <span className="float-right">{isSalaryDropdownOpen ? '▲' : '▼'}</span>
+//           <button onClick={toggleSalaryDropdown} className="w-full text-left flex items-center justify-between focus:outline-none text-black font-bold hover:text-blue-500">
+//             <div className="flex items-center">
+//               <BanknotesIcon className="h-6 w-6 mr-4 transition-transform transform hover:scale-110" /> {/* Added hover effect */}
+//               {isOpen && 'Salary'}
+//             </div>
+//             {isOpen && (isSalaryDropdownOpen ? <ChevronUpIcon className="h-4 w-4" /> : <ChevronDownIcon className="h-4 w-4" />)}
 //           </button>
-//           {isSalaryDropdownOpen && (
-//             <ul className="pl-4 space-y-2">
+//           {isSalaryDropdownOpen && isOpen && (
+//             <ul className="mt-2 pl-6 space-y-2">
 //               <li>
-//                 <NavLink
-//                   to="/salary/create-payslip"
-//                   className={({ isActive }) => (isActive ? 'text-blue-500 font-bold' : 'text-black')}
-//                 >
+//                 <NavLink to="/salary/create-payslip" className={({ isActive }) => (isActive ? 'text-blue-500 font-bold' : 'text-black hover:text-blue-500')}>
 //                   Create Payslip
 //                 </NavLink>
 //               </li>
 //               <li>
-//                 <NavLink
-//                   to="/salary/payslip-list"
-//                   className={({ isActive }) => (isActive ? 'text-blue-500 font-bold' : 'text-black')}
-//                 >
+//                 <NavLink to="/salary/payslip-list" className={({ isActive }) => (isActive ? 'text-blue-500 font-bold' : 'text-black hover:text-blue-500')}>
 //                   Payslip List
 //                 </NavLink>
 //               </li>
@@ -128,99 +97,248 @@
 
 // export default Sidebar;
 
+
+
+// import React, { useState } from 'react';
+// import { NavLink } from 'react-router-dom';
+// import {
+//   Bars3Icon,
+//   XMarkIcon,
+//   ChevronDownIcon,
+//   UserGroupIcon,
+//   BanknotesIcon,
+//   Squares2X2Icon,
+//   HomeIcon,
+//   CurrencyDollarIcon,
+// } from '@heroicons/react/24/outline';
+
+// function Sidebar() {
+//   const [isOpen, setIsOpen] = useState(false);
+//   const [isSalaryDropdownOpen, setIsSalaryDropdownOpen] = useState(false);
+
+//   const toggleSidebar = () => setIsOpen(!isOpen);
+//   const toggleSalaryDropdown = () => setIsSalaryDropdownOpen(!isSalaryDropdownOpen);
+
+//   return (
+//     <div className={`h-screen bg-gradient-to-b from-blue-600 to-blue-800 text-white p-4 ${isOpen ? 'w-72' : 'w-24'} transition-all duration-300 ease-in-out shadow-lg`}>
+//       {/* Logo and Toggle Button */}
+//       <div className="flex items-center justify-between mb-10">
+//         {/* Company Logo and Name */}
+//         <div className="flex items-center">
+//           <img 
+//             src="/path-to-your-logo.png"
+//             alt="Company Logo" 
+//             className={`h-12 mr-3 ${isOpen ? 'block' : 'hidden'} transition-all duration-300`}
+//           />
+//         </div>
+        
+//         {/* Toggle Button */}
+//         <button 
+//           onClick={toggleSidebar}
+//           className="p-2 rounded-full bg-blue-500 hover:bg-blue-400 active:bg-blue-700 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-300"
+//         >
+//           {isOpen ? (
+//             <XMarkIcon className="h-7 w-7 text-white" />
+//           ) : (
+//             <Bars3Icon className="h-7 w-7 text-white" />
+//           )}
+//         </button>
+//       </div>
+
+//       <ul className="space-y-5">
+//         <NavItem to="/dashboard" icon={<HomeIcon className="h-7 w-7" />} text="Dashboard" isOpen={isOpen} />
+//         <NavItem to="/employees" icon={<UserGroupIcon className="h-7 w-7" />} text="Employees" isOpen={isOpen} />
+//         <NavItem to="/expense" icon={<BanknotesIcon className="h-7 w-7" />} text="Expenses" isOpen={isOpen} />
+//         <NavItem to="/expenseCate" icon={<Squares2X2Icon className="h-7 w-7" />} text="Expense Categories" isOpen={isOpen} />
+        
+//         <li>
+//           <button 
+//             onClick={toggleSalaryDropdown} 
+//             className="w-full text-left flex items-center justify-between py-3 px-5 rounded-lg hover:bg-blue-500 active:bg-blue-700 transition-colors duration-200"
+//           >
+//             <div className="flex items-center">
+//               <CurrencyDollarIcon className="h-7 w-7 mr-4" />
+//               {isOpen && <span className="text-medium font-bold">Salary</span>}
+//             </div>
+//             {isOpen && (
+//               <ChevronDownIcon 
+//                 className={`h-5 w-5 transition-transform duration-200 ${isSalaryDropdownOpen ? 'rotate-180' : ''}`} 
+//               />
+//             )}
+//           </button>
+//           {isSalaryDropdownOpen && isOpen && (
+//             <ul className="mt-2 ml-7 space-y-2">
+//               <SubNavItem to="/salary/create-payslip" text="Create Payslip" />
+//               <SubNavItem to="/salary/payslip-list" text="Payslip List" />
+//             </ul>
+//           )}
+//         </li>
+//       </ul>
+//     </div>
+//   );
+// }
+
+// function NavItem({ to, icon, text, isOpen }) {
+//   return (
+//     <li>
+//       <NavLink 
+//         to={to} 
+//         className={({ isActive }) => 
+//           `flex items-center py-3 px-5 rounded-lg transition-colors duration-200 text-medium font-bold
+//           ${isActive 
+//             ? 'bg-black text-white' 
+//             : 'text-blue-100 hover:bg-blue-500 hover:text-white active:bg-blue-700'}`
+//         }
+//       >
+//         {icon}
+//         {isOpen && <span className="ml-4">{text}</span>}
+//       </NavLink>
+//     </li>
+//   );
+// }
+
+// function SubNavItem({ to, text }) {
+//   return (
+//     <li>
+//       <NavLink 
+//         to={to} 
+//         className={({ isActive }) => 
+//           `block py-2 px-4 rounded-lg transition-colors duration-200 text-medium font-bold
+//           ${isActive 
+//             ? 'bg-black text-white' 
+//             : 'text-blue-100 hover:bg-blue-500 hover:text-white active:bg-blue-700'}`
+//         }
+//       >
+//         {text}
+//       </NavLink>
+//     </li>
+//   );
+// }
+
+// export default Sidebar;
+
 import React, { useState } from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
 import {
-  Bars3Icon,   // Hamburger icon for opening the sidebar
-  XMarkIcon,   // Close icon for collapsing the sidebar
+  Bars3Icon,
+  XMarkIcon,
   ChevronDownIcon,
-  ChevronUpIcon,
   UserGroupIcon,
   BanknotesIcon,
   Squares2X2Icon,
   HomeIcon,
+  CurrencyDollarIcon,
 } from '@heroicons/react/24/outline';
 
 function Sidebar() {
   const [isOpen, setIsOpen] = useState(false);
   const [isSalaryDropdownOpen, setIsSalaryDropdownOpen] = useState(false);
+  const navigate = useNavigate();
 
   const toggleSidebar = () => setIsOpen(!isOpen);
   const toggleSalaryDropdown = () => setIsSalaryDropdownOpen(!isSalaryDropdownOpen);
 
+  const handleSalaryClick = () => {
+    if (!isOpen) {
+      navigate('/salary/create-payslip');
+    } else {
+      toggleSalaryDropdown();
+    }
+  };
+
   return (
-    <div className={`h-screen bg-gray-100 p-4 ${isOpen ? 'w-70' : 'w-20'} transition-width duration-300 relative`}>
-      {/* Logo and Hamburger Menu */}
-      <div className="flex items-center justify-between mb-6">
+    <div className={`h-screen bg-gradient-to-b from-blue-600 to-blue-800 text-white p-4 ${isOpen ? 'w-66' : 'w-24'} transition-all duration-300 ease-in-out shadow-lg`}>
+      {/* Logo and Toggle Button */}
+      <div className="flex items-center justify-between mb-10">
         {/* Company Logo and Name */}
         <div className="flex items-center">
           <img 
-            src="/path-to-your-logo.png" // Replace with the actual path to your logo
+            src="/path-to-your-logo.png"
             alt="Company Logo" 
-            className={`h-10 mr-3 ${isOpen ? 'block' : 'hidden'} transition-all duration-300`} // Show logo only when expanded
+            className={`h-12 mr-3 ${isOpen ? 'block' : 'hidden'} transition-all duration-300`}
           />
         </div>
         
-        {/* Hamburger Menu Icon */}
-        <div className="ml-auto ">
+        {/* Toggle Button */}
+        <button 
+          onClick={toggleSidebar}
+          className="p-2 rounded-full bg-blue-500 hover:bg-blue-400 active:bg-blue-700 transition-colors duration-200 focus:outline-none focus:ring-2 focus:ring-blue-300"
+        >
           {isOpen ? (
-            <XMarkIcon className="h-6 w-6 text-gray-700 hover:text-gray-900 cursor-pointer" onClick={toggleSidebar} />
+            <XMarkIcon className="h-7 w-7 text-white" />
           ) : (
-            <Bars3Icon className="h-6 w-6 text-gray-700 hover:text-gray-900 cursor-pointer " onClick={toggleSidebar} />
+            <Bars3Icon className="h-7 w-7 text-white" />
           )}
-        </div>
+        </button>
       </div>
 
-      <ul className="space-y-8"> {/* Increased space between menu items */}
+      <ul className="space-y-5">
+        <NavItem to="/dashboard" icon={<HomeIcon className="h-7 w-7" />} text="Dashboard" isOpen={isOpen} />
+        <NavItem to="/employees" icon={<UserGroupIcon className="h-7 w-7" />} text="Employees" isOpen={isOpen} />
+        <NavItem to="/expense" icon={<BanknotesIcon className="h-7 w-7" />} text="Expenses" isOpen={isOpen} />
+        <NavItem to="/expenseCate" icon={<Squares2X2Icon className="h-7 w-7" />} text="Expense Categories" isOpen={isOpen} />
+        
         <li>
-          <NavLink to="/dashboard" className={({ isActive }) => (isActive ? 'text-blue-500 font-bold flex items-center' : 'text-black flex items-center hover:text-blue-500')}>
-            <HomeIcon className="h-6 w-6 mr-4 transition-transform transform hover:scale-110" /> {/* Added hover effect */}
-            {isOpen && 'Dashboard'}
-          </NavLink>
-        </li>
-        <li>
-          <NavLink to="/employees" className={({ isActive }) => (isActive ? 'text-blue-500 font-bold flex items-center' : 'text-black flex items-center hover:text-blue-500')}>
-            <UserGroupIcon className="h-6 w-6 mr-4 transition-transform transform hover:scale-110" /> {/* Added hover effect */}
-            {isOpen && 'Employees'}
-          </NavLink>
-        </li>
-        <li>
-          <NavLink to="/expense" className={({ isActive }) => (isActive ? 'text-blue-500 font-bold flex items-center' : 'text-black flex items-center hover:text-blue-500')}>
-            <BanknotesIcon className="h-6 w-6 mr-4 transition-transform transform hover:scale-110" /> {/* Added hover effect */}
-            {isOpen && 'Expenses'}
-          </NavLink>
-        </li>
-        <li>
-          <NavLink to="/expenseCate" className={({ isActive }) => (isActive ? 'text-blue-500 font-bold flex items-center' : 'text-black flex items-center hover:text-blue-500')}>
-            <Squares2X2Icon className="h-6 w-6 mr-4 transition-transform transform hover:scale-110" /> {/* Added hover effect */}
-            {isOpen && 'Expense Categories'}
-          </NavLink>
-        </li>
-        <li>
-          <button onClick={toggleSalaryDropdown} className="w-full text-left flex items-center justify-between focus:outline-none text-black font-bold hover:text-blue-500">
+          <button 
+            onClick={handleSalaryClick}
+            className="w-full text-left flex items-center justify-between py-3 px-5 rounded-lg hover:bg-blue-500 active:bg-blue-700 transition-colors duration-200"
+          >
             <div className="flex items-center">
-              <BanknotesIcon className="h-6 w-6 mr-4 transition-transform transform hover:scale-110" /> {/* Added hover effect */}
-              {isOpen && 'Salary'}
+              <CurrencyDollarIcon className="h-7 w-7 mr-4" />
+              {isOpen && <span className="text-medium font-bold">Salary</span>}
             </div>
-            {isOpen && (isSalaryDropdownOpen ? <ChevronUpIcon className="h-4 w-4" /> : <ChevronDownIcon className="h-4 w-4" />)}
+            {isOpen && (
+              <ChevronDownIcon 
+                className={`h-5 w-5 transition-transform duration-200 ${isSalaryDropdownOpen ? 'rotate-180' : ''}`} 
+              />
+            )}
           </button>
           {isSalaryDropdownOpen && isOpen && (
-            <ul className="mt-2 pl-6 space-y-2">
-              <li>
-                <NavLink to="/salary/create-payslip" className={({ isActive }) => (isActive ? 'text-blue-500 font-bold' : 'text-black hover:text-blue-500')}>
-                  Create Payslip
-                </NavLink>
-              </li>
-              <li>
-                <NavLink to="/salary/payslip-list" className={({ isActive }) => (isActive ? 'text-blue-500 font-bold' : 'text-black hover:text-blue-500')}>
-                  Payslip List
-                </NavLink>
-              </li>
+            <ul className="mt-2 ml-7 space-y-2">
+              <SubNavItem to="/salary/create-payslip" text="Create Payslip" />
+              <SubNavItem to="/salary/payslip-list" text="Payslip List" />
             </ul>
           )}
         </li>
       </ul>
     </div>
+  );
+}
+
+function NavItem({ to, icon, text, isOpen }) {
+  return (
+    <li>
+      <NavLink 
+        to={to} 
+        className={({ isActive }) => 
+          `flex items-center py-3 px-5 rounded-lg transition-colors duration-200 text-medium font-bold
+          ${isActive 
+            ? 'bg-black text-white' 
+            : 'text-blue-100 hover:bg-blue-500 hover:text-white active:bg-blue-700'}`
+        }
+      >
+        {icon}
+        {isOpen && <span className="ml-4">{text}</span>}
+      </NavLink>
+    </li>
+  );
+}
+
+function SubNavItem({ to, text }) {
+  return (
+    <li>
+      <NavLink 
+        to={to} 
+        className={({ isActive }) => 
+          `block py-2 px-4 rounded-lg transition-colors duration-200 text-medium font-bold
+          ${isActive 
+            ? 'bg-black text-white' 
+            : 'text-blue-100 hover:bg-blue-500 hover:text-white active:bg-blue-700'}`
+        }
+      >
+        {text}
+      </NavLink>
+    </li>
   );
 }
 
