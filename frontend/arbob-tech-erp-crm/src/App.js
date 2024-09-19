@@ -4,7 +4,8 @@ import { AppProvider } from './contexts/AppContext';
 import Layout from './components/Layout/layOut';
 // import Dashboard from './components/Dashboard/Dashboard';
 import Employees from './components/Employees/EmployeesList';
-// import Attendance from './components/Attendance/Attendance';
+import DailyAttendance from './components/Attendence/dailyAttendance';
+import AttendanceReport from './components/Attendence/attendanceReport';
 import Salary from './components/Salary/Salary';
 import CreatePayslip from './components/Salary/CreatePayslip';
 import PayslipList from './components/Salary/PayslipList';
@@ -38,18 +39,14 @@ function App() {
           <Routes>
             {/* <Route path="/" element={<Dashboard />} /> */}
             <Route path="/employees" element={<Employees />} />
-            {/* <Route path="/attendance" element={<Attendance />} /> */}
+            <Route path="/attendance/daily-attendance" element={<DailyAttendance />} />
+            <Route path="/attendance/attendance-report" element={<AttendanceReport />} />
             <Route path="/salary" element={<Salary />} />
             <Route path="/salary/create-payslip" element={<CreatePayslip  onSubmit={addPayslip}/>} />
-            {/* <Route path="/salary/create-payslip" element={<CreatePayslip/>} /> */}
             <Route path="/salary/payslip-list" element={<PayslipList payslips={payslips}  onDelete={handleDelete}
               onPrint={handlePrint} />} />
-            {/* <Route path="/salary/payslip-list" element={<PayslipList />} /> */}
-
-            {/* <Route path="/salary/*" element={<Salary payslips={payslips} addPayslip={addPayslip} />} /> */}
             <Route path="/expense" element={<Expense />} />
             <Route path="/expenseCate" element={<ExpenseCate />} />
-            {/* <Route path="/tasks" element={<TaskManagement />} /> */}
           </Routes>
         </Layout>
       </Router>
