@@ -257,8 +257,8 @@ function CreatePayslip({ onSubmit }) {
     }
   };
 
-  const inputClass = "mt-2 block w-full rounded-lg border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500";
-  const labelClass = "block text-sm font-medium text-gray-700";
+  const inputClass = "mt-1 block  py-1 pl-1 pr-1 rounded-md border-gray-300 shadow-sm focus:ring-blue-500 focus:border-blue-500";
+  const labelClass = "block text-lg font-medium text-gray-700 mb-1";
   const buttonClass = "mt-4 px-4 py-2 border border-transparent rounded-lg shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500";
 
   return (
