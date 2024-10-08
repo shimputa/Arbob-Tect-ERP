@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { LogOut, ChevronDown } from 'lucide-react';
 
-const ProfileDropdown = ({ user }) => {
+const ProfileDropdown = ({ user, onLogout }) => {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
@@ -15,7 +15,6 @@ const ProfileDropdown = ({ user }) => {
           alt="User avatar" 
           className="w-8 h-8 rounded-full object-cover"
         />
-        {/* <span className="font-medium text-gray-700">{user.name}</span> */}
         <ChevronDown className={`w-4 h-4 text-gray-500 transition-transform duration-300 ${isOpen ? 'transform rotate-180' : ''}`} />
       </button>
       
@@ -26,7 +25,7 @@ const ProfileDropdown = ({ user }) => {
             <p className="text-xs text-gray-500">{user.email}</p>
           </div>
           <button 
-            onClick={() => {/* Add logout functionality */}} 
+            onClick={onLogout} 
             className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 flex items-center transition duration-150 ease-in-out"
           >
             <LogOut className="w-4 h-4 mr-3 text-gray-400" />
