@@ -1,0 +1,78 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Employee {
+  id        Int      @id @default(autoincrement())
+  name      String
+  contact   String
+  email     String   @unique
+  position  String
+  status   Int     @default(1) // 1 for active, 0 for inactive
+  salaries  Salary[] 
+  attendance Attendance[]
+}
+
+model Salary {
+  id         Int      @id @default(autoincrement())
+  employee   Employee @relation(fields: [employeeId], references: [id])
+  employeeId Int
+  month      String
+  year       Int
+  summary    Json     
+  status     String
+}
+
+model Attendance {
+  id         Int      @id @default(autoincrement())
+  employee   Employee @relation(fields: [employeeId], references: [id])
+  employeeId Int
+  date       DateTime
+  status     AttendanceStatus 
+}
+
+enum AttendanceStatus {
+  PRESENT
+  ONLEAVE
+  ABSENT
+}
+
+model Expense {
+  id               Int              @id @default(autoincrement())
+  name             String
+  expenseCategory  ExpenseCategory  @relation(fields: [expenseCategoryId], references: [id])
+  expenseCategoryId Int
+  currency         Currency         
+  total            Float
+  description      String
+  reference        String
+}
+
+enum Currency {
+  USD    
+  EUR    
+  GBP    
+  INR    
+  JPY    
+  AUD    
+  CAD    
+  CNY    
+}
+
+model ExpenseCategory {
+  id        Int       @id @default(autoincrement())
+  name      String
+  description String
+  expenses  Expense[] 
+}
