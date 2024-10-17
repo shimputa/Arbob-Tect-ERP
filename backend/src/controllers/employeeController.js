@@ -85,6 +85,39 @@ export const updateEmployee = async (req, res) => {
   }
 };
 
+//pacth method for updating employee
+export const patchEmployee = async (req, res) => {
+  try {
+    const { id } = req.params; // Extract employee ID from URL params
+    const updateData = req.body; // Destructure the fields to be updated from the request body
+
+    // Check if the body is empty
+    if (Object.keys(updateData).length === 0) {
+      return res.status(400).json({ message: "No fields provided for update" });
+    }
+
+    // Attempt to update only the provided fields in the database
+    const updatedEmployee = await prisma.employee.update({
+      where: { id: Number(id) }, // Ensure ID is correctly formatted as an integer
+      data: updateData, // Update only the fields that were provided
+    });
+
+    // Respond with a success message if the update is successful
+    res.status(200).json({
+      message: `Employee with ID ${id} updated successfully`,
+      employee: updatedEmployee,
+    });
+  } catch (error) {
+    // Handle specific Prisma error when the employee is not found (P2025 error code)
+    if (error.code === 'P2025') {
+      return res.status(404).json({ message: `Employee with ID ${id} not found` });
+    }
+
+    // Handle any other server error
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+};
+
 // Soft delete employee by setting status to 0 (inactive)
 export const softDeleteEmployee = async (req, res) => {
   try {
