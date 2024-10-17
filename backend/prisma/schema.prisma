@@ -72,7 +72,8 @@ enum Currency {
 
 model ExpenseCategory {
   id        Int       @id @default(autoincrement())
-  name      String
+  name      String    @unique
   description String
   expenses  Expense[] 
+  status   Int     @default(1) // 1 for active, 0 for inactive
 }

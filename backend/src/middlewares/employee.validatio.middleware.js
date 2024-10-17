@@ -9,6 +9,7 @@ export const validateEmployeeCreation = [
     .matches(/^[a-zA-Z\s]+$/).withMessage('Name can only contain letters and spaces'),
 
   check('email')
+   .notEmpty().withMessage('Email is required')
     .isEmail().withMessage('Valid email is required')
     .normalizeEmail().withMessage('Email must be normalized to a standard format'),
 
@@ -69,3 +70,5 @@ export const validateEmployeeUpdate = [
     next();
   }
 ];
+
+
