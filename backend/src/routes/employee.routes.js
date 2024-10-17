@@ -7,18 +7,22 @@ import {
   getInactiveEmployees,
   createEmployee,
   updateEmployee,
+  patchEmployee,
   softDeleteEmployee
 } from '../controllers/employeeController.js';
+
+import {validateEmployeeCreation,validateEmployeeUpdate} from '../middlewares/employee.validatio.middleware.js'
 
 const router = express.Router();
 
 // Define employee routes
-router.get('/employees', getAllEmployees);          // Get all employees
-router.get('/employees/:id', getEmployeeById);      // Get an employee by ID
-router.get('/activeEmployees', getActiveEmployees);      // Get only active employee 
-router.get('/inactiveEmployees', getInactiveEmployees);      // Get only inactive employee 
-router.post('/employees', createEmployee);          // Create a new employee
-router.put('/employees/:id', updateEmployee);       // Update an employee by ID
-router.delete('/employees/:id/deactivate', softDeleteEmployee);
+router.get('/employees', getAllEmployees);      
+router.get('/employee/:id', getEmployeeById);     
+router.get('/activeEmployees', getActiveEmployees);      
+router.get('/inactiveEmployees', getInactiveEmployees);      
+router.post('/employees',validateEmployeeCreation, createEmployee);        
+router.put('/employees/:id',validateEmployeeUpdate, updateEmployee);      
+router.patch('/employee/:id',validateEmployeeUpdate, patchEmployee);     
+router.delete('/employee/:id/deactivate', softDeleteEmployee);
 
 export default router;
