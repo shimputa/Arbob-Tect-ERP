@@ -16,8 +16,6 @@ const Currency = {
 
 const VALID_CURRENCIES = Object.values(Currency);
 
-console.log('Valid currencies:', VALID_CURRENCIES);
-
 const validateExpenseCategoryExists = async (value) => {
   const category = await prisma.expenseCategory.findUnique({
     where: { id: Number(value) }

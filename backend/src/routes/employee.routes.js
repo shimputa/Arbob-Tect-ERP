@@ -11,7 +11,12 @@ import {
   softDeleteEmployee
 } from '../controllers/employeeController.js';
 
-import {validateEmployeeCreation,validateEmployeeUpdate} from '../middlewares/employee.validatio.middleware.js'
+import {
+  validateEmployeeCreation,
+  validateEmployeeUpdate,
+  validateEmployeePatch,
+} from '../validators/employee.validation.js';
+import { handleValidationErrors } from '../middlewares/validation.middleware.js';
 
 const router = express.Router();
 
@@ -20,9 +25,9 @@ router.get('/employees', getAllEmployees);
 router.get('/employee/:id', getEmployeeById);     
 router.get('/activeEmployees', getActiveEmployees);      
 router.get('/inactiveEmployees', getInactiveEmployees);      
-router.post('/employees',validateEmployeeCreation, createEmployee);        
-router.put('/employees/:id',validateEmployeeUpdate, updateEmployee);      
-router.patch('/employee/:id',validateEmployeeUpdate, patchEmployee);     
+router.post('/employees',validateEmployeeCreation, handleValidationErrors,  createEmployee);        
+router.put('/employees/:id',validateEmployeeUpdate, handleValidationErrors, updateEmployee);      
+router.patch('/employee/:id',validateEmployeePatch, handleValidationErrors, patchEmployee);     
 router.delete('/employee/:id/deactivate', softDeleteEmployee);
 
 export default router;
