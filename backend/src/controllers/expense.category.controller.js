@@ -4,7 +4,9 @@ import { prisma } from '../config/db.js';
 // Get all expense categories
 export const getAllExpenseCategories = async (req, res) => {
   try {
-    const categories = await prisma.expenseCategory.findMany();
+    const categories = await prisma.expenseCategory.findMany(
+      { where: { status: 1 } }
+    );
     if (categories.length === 0) {
       return res.status(404).json({ message: 'No expense categories found' });
     }
@@ -22,7 +24,7 @@ export const getExpenseCategoryById = async (req, res) => {
   try {
     const { id } = req.params;
     const category = await prisma.expenseCategory.findUnique({
-      where: { id: Number(id) },
+      where: { id: Number(id), status: 1 },
     });
     if (!category) {
       return res.status(404).json({ message: `Expense category with ID ${id} not found` });

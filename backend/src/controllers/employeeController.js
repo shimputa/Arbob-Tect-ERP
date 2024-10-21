@@ -4,7 +4,7 @@ import { prisma } from '../config/db.js';
 // 1. Get all employees
 export const getAllEmployees = async (req, res) => {
   try {
-    const employees = await prisma.employee.findMany();
+    const employees = await prisma.employee.findMany({where: {status: 1}});
     if (employees.length === 0) {
       return res.status(404).json({ message: 'No employees found' });
     }
@@ -22,7 +22,7 @@ export const getEmployeeById = async (req, res) => {
   try {
     const { id } = req.params;
     const employee = await prisma.employee.findUnique({
-      where: { id: Number(id) },
+      where: { id: Number(id), status: 1 },
     });
     if (!employee) {
       return res.status(404).json({ message: `Employee with ID ${id} not found` });

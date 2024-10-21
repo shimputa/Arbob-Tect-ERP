@@ -10,7 +10,12 @@ export const getAllExpenses = async (req, res) => {
             name: true
           }
         }
+      },
+      where: {
+        expenseCategory: {
+          status: 1
       }
+    }
     });
     if (expenses.length === 0) {
       return res.status(404).json({ message: 'No expenses found' });
@@ -53,6 +58,18 @@ export const getExpenseById = async (req, res) => {
 export const createExpense = async (req, res) => {
   try {
     const { name, expenseCategoryId, currency, total, description, reference } = req.body;
+
+    // Check if the expense category exists and has status 1
+    const expenseCategory = await prisma.expenseCategory.findFirst({
+      where: {
+        id: Number(expenseCategoryId),
+        status: 1
+      }
+    });
+
+    if (!expenseCategory) {
+      return res.status(400).json({ message: 'Invalid or inactive expense category ID' });
+    }
 
     const expense = await prisma.expense.create({
       data: { 
