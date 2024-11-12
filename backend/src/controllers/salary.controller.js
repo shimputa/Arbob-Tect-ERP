@@ -106,7 +106,7 @@ export const getAllSalaries = async (req, res) => {
     if (formattedSalaries.length === 0) {
       return res.status(404).json({ message: 'No salaries found' });
     }
-    console.log('Salaries being sent:', salaries);
+    // console.log('Salaries being sent:', salaries);
     res.status(200).json({
       message: "Salaries retrieved successfully",
       salaries: formattedSalaries
