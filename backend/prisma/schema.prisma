@@ -24,14 +24,28 @@ model Employee {
   attendance Attendance[]
 }
 
+enum SalaryStatus {
+  PAID
+  UNPAID
+}
+
+enum PaymentMethod {
+  BANK_TRANSFER
+  CASH
+  EASYPAISA
+}
+
 model Salary {
-  id         Int      @id @default(autoincrement())
-  employee   Employee @relation(fields: [employeeId], references: [id])
-  employeeId Int
-  month      String
-  year       Int
-  summary    Json     
-  status     String
+  id            Int           @id @default(autoincrement())
+  employee      Employee      @relation(fields: [employeeId], references: [id])
+  employeeId    Int
+  month         String
+  year          Int
+  summary       Json     
+  paymentMethod PaymentMethod
+  status        SalaryStatus
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
 }
 
 model Attendance {
