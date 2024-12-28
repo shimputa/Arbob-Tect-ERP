@@ -32,10 +32,15 @@ export const createExpenseValidation = [
     .isString().withMessage('Name must be a string')
     .isLength({ min: 3, max: 100 }).withMessage('Name must be between 3 and 100 characters'),
   
-  body('expenseCategoryId')
-    .notEmpty().withMessage('Expense category ID is required')
-    .isInt().withMessage('Expense category ID must be an integer')
-    .custom(validateExpenseCategoryExists),
+  // body('expenseCategoryName')
+  //   .notEmpty().withMessage('Expense category Name is required')
+  //   .isInt().withMessage('Expense category Name must be an string')
+  //   .custom(validateExpenseCategoryExists),
+
+    body('expenseCategoryName')
+    .notEmpty().withMessage('expenseCategoryName is required')
+    .isString().withMessage('expenseCategoryName must be a string')
+    .isLength({ min: 3, max: 100 }).withMessage('expenseCategoryName must be between 3 and 100 characters'),
   
   body('currency')
     .notEmpty().withMessage('Currency is required')
