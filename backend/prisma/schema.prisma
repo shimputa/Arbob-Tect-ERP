@@ -65,8 +65,10 @@ enum AttendanceStatus {
 model Expense {
   id               Int              @id @default(autoincrement())
   name             String
-  expenseCategory  ExpenseCategory  @relation(fields: [expenseCategoryId], references: [id])
-  expenseCategoryId Int
+  // expenseCategory  ExpenseCategory  @relation(fields: [expenseCategoryId], references: [id])
+  // expenseCategoryId Int
+  expenseCategory  ExpenseCategory?  @relation(fields: [expenseCategoryName], references: [name])
+  expenseCategoryName String?
   currency         Currency         
   total            Float
   description      String
@@ -81,7 +83,8 @@ enum Currency {
   JPY    
   AUD    
   CAD    
-  CNY    
+  CNY  
+  PKR 
 }
 
 model ExpenseCategory {

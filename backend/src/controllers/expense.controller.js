@@ -57,24 +57,24 @@ export const getExpenseById = async (req, res) => {
 
 export const createExpense = async (req, res) => {
   try {
-    const { name, expenseCategoryId, currency, total, description, reference } = req.body;
+    const { name, expenseCategoryName, currency, total, description, reference } = req.body;
 
     // Check if the expense category exists and has status 1
     const expenseCategory = await prisma.expenseCategory.findFirst({
       where: {
-        id: Number(expenseCategoryId),
+        name: expenseCategoryName,
         status: 1
       }
     });
 
     if (!expenseCategory) {
-      return res.status(400).json({ message: 'Invalid or inactive expense category ID' });
+      return res.status(400).json({ message: 'Invalid or inactive expense category name ' });
     }
 
     const expense = await prisma.expense.create({
       data: { 
         name, 
-        expenseCategoryId: Number(expenseCategoryId), 
+        expenseCategoryName, 
         currency, 
         total: parseFloat(total), 
         description, 
@@ -95,7 +95,7 @@ export const createExpense = async (req, res) => {
     });
   } catch (error) {
     if (error.code === 'P2003') {
-      return res.status(400).json({ message: 'Invalid expense category ID' });
+      return res.status(400).json({ message: 'Invalid expense category Name' });
     }
     res.status(500).json({ message: 'Server error', error: error.message });
   }
@@ -104,13 +104,13 @@ export const createExpense = async (req, res) => {
 export const updateExpense = async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, expenseCategoryId, currency, total, description, reference } = req.body;
+    const { name, expenseCategoryName, currency, total, description, reference } = req.body;
 
     const expense = await prisma.expense.update({
       where: { id: Number(id) },
       data: { 
         name, 
-        expenseCategoryId: Number(expenseCategoryId), 
+        expenseCategoryName, 
         currency, 
         total: parseFloat(total), 
         description, 
@@ -146,8 +146,8 @@ export const patchExpense = async (req, res) => {
     const { id } = req.params;
     const updateData = req.body;
 
-    if (updateData.expenseCategoryId) {
-      updateData.expenseCategoryId = Number(updateData.expenseCategoryId);
+    if (updateData.expenseCategoryName) {
+      updateData.expenseCategoryName = updateData.expenseCategoryName;
     }
     if (updateData.total) {
       updateData.total = parseFloat(updateData.total);
