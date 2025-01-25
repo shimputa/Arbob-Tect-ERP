@@ -1,7 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
 
-function ExpenseForm({ onSubmit, onClose, expense, error, formErrors,categories }) {
+// Form field component for reusability
+const FormField = ({ label, children }) => (
+  <div className="space-y-2">
+    <label className="block text-sm font-medium">{label}</label>
+    {children}
+  </div>
+);
+
+// Loading spinner component
+const LoadingSpinner = () => (
+  <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+  </svg>
+);
+
+function ExpenseForm({ onSubmit, onClose, expense, formErrors = {}, categories }) {
   const [formExpense, setFormExpense] = useState({
     name: '',
     expenseCategoryName: '',
@@ -10,12 +26,14 @@ function ExpenseForm({ onSubmit, onClose, expense, error, formErrors,categories 
     description: '',
     reference: ''
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [localErrors, setLocalErrors] = useState({});
 
   useEffect(() => {
     if (expense) {
       setFormExpense({
         name: expense.name || '',
-        expenseCategoryName: expense.expenseCategoryName|| '',
+        expenseCategoryName: expense.expenseCategoryName || '',
         currency: expense.currency || 'USD',
         total: expense.total || '',
         description: expense.description || '',
@@ -24,199 +42,260 @@ function ExpenseForm({ onSubmit, onClose, expense, error, formErrors,categories 
     }
   }, [expense]);
 
+  const validateForm = () => {
+    const errors = {};
+    
+    // Validate name
+    if (!formExpense.name.trim()) {
+      errors.name = 'Name is required';
+    } else if (!/^[a-zA-Z\s]+$/.test(formExpense.name.trim())) {
+      errors.name = 'Name should only contain letters and spaces';
+    } else if (formExpense.name.length < 3 || formExpense.name.length > 100) {
+      errors.name = 'Name must be between 3 and 100 characters';
+    }
+
+    // Validate expense category
+    if (!formExpense.expenseCategoryName) {
+      errors.expenseCategoryName = 'Expense category is required';
+    }
+
+    // Validate total
+    if (!formExpense.total) {
+      errors.total = 'Total amount is required';
+    } else if (isNaN(formExpense.total) || formExpense.total <= 0) {
+      errors.total = 'Total must be a positive number';
+    }
+
+    // Validate description
+    if (!formExpense.description.trim()) {
+      errors.description = 'Description is required';
+    } else if (formExpense.description.length < 3 || formExpense.description.length > 500) {
+      errors.description = 'Description must be between 3 and 500 characters';
+    }
+
+    // Validate reference
+    if (!formExpense.reference.trim()) {
+      errors.reference = 'Reference is required';
+    } else if (formExpense.reference.length < 3 || formExpense.reference.length > 50) {
+      errors.reference = 'Reference must be between 3 and 50 characters';
+    }
+
+    setLocalErrors(errors);
+    return Object.keys(errors).length === 0;
+  };
+
   const handleChange = (e) => {
     const { name, value } = e.target;
+    
+    // Clear error when user starts typing
+    setLocalErrors(prev => ({
+      ...prev,
+      [name]: ''
+    }));
+
     setFormExpense(prev => ({
       ...prev,
-      [name]: name === 'total' ? parseFloat(value) : value
+      [name]: name === 'total' ? (value === '' ? '' : parseFloat(value)) : value
     }));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    try {
-      // Validate form data before submission
-      if (!formExpense.name.trim()) return;
-      if (!formExpense.expenseCategoryName) return;
-      if (!formExpense.total) return;
-      if (!formExpense.reference.trim()) return;
+    
+    // Validate form before submission
+    if (!validateForm()) {
+      return;
+    }
 
+    setIsSubmitting(true);
+    try {
       await onSubmit(formExpense);
-    } catch (err) {
-      // Error handling is managed by parent component
+    } catch (error) {
+      console.error('Form submission error:', error);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
+  const renderFormFields = () => (
+    <>
+      <div className="space-y-2">
+        <FormField label="Name">
+          <input 
+            type="text" 
+            name="name" 
+            value={formExpense.name} 
+            onChange={handleChange} 
+            placeholder="Enter name" 
+            className={`w-full border rounded-md shadow-sm p-2 transition duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+              (formErrors?.name || localErrors?.name) ? 'border-red-500' : 'border-gray-300'
+            }`}
+            disabled={isSubmitting}
+            required 
+          />
+        </FormField>
+        {(formErrors?.name || localErrors?.name) && (
+          <p className="text-sm text-red-600">
+            {formErrors?.name || localErrors?.name}
+          </p>
+        )}
+      </div>
+
+      <div className="space-y-2">
+        <FormField label="Expense Category">
+          <select
+            name="expenseCategoryName"
+            value={formExpense.expenseCategoryName}
+            onChange={handleChange}
+            className={`w-full border rounded-md shadow-sm p-2 transition duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+              (formErrors?.expenseCategoryName || localErrors?.expenseCategoryName) ? 'border-red-500' : 'border-gray-300'
+            }`}
+            disabled={isSubmitting}
+            required
+          >
+            <option value="">Select a category</option>
+            {categories?.map(category => (
+              <option key={category.id} value={category.name}>
+                {category.name}
+              </option>
+            ))}
+          </select>
+        </FormField>
+        {(formErrors?.expenseCategoryName || localErrors?.expenseCategoryName) && (
+          <p className="text-sm text-red-600">
+            {formErrors?.expenseCategoryName || localErrors?.expenseCategoryName}
+          </p>
+        )}
+      </div>
+
+      <div className="space-y-2">
+        <FormField label="Currency">
+          <select
+            name="currency"
+            value={formExpense.currency}
+            onChange={handleChange}
+            className="w-full border border-gray-300 rounded-md shadow-sm p-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            disabled={isSubmitting}
+          >
+            <option value="USD">USD</option>
+            <option value="EUR">EUR</option>
+            <option value="GBP">GBP</option>
+            <option value="PKR">PKR</option>
+          </select>
+        </FormField>
+      </div>
+
+      <div className="space-y-2">
+        <FormField label="Total">
+          <input 
+            type="number" 
+            name="total" 
+            value={formExpense.total} 
+            onChange={handleChange} 
+            placeholder="Enter total amount" 
+            className={`w-full border rounded-md shadow-sm p-2 transition duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+              (formErrors?.total || localErrors?.total) ? 'border-red-500' : 'border-gray-300'
+            }`}
+            disabled={isSubmitting}
+            required 
+            min="0"
+            step="0.01"
+          />
+        </FormField>
+        {(formErrors?.total || localErrors?.total) && (
+          <p className="text-sm text-red-600">
+            {formErrors?.total || localErrors?.total}
+          </p>
+        )}
+      </div>
+
+      <div className="space-y-2">
+        <FormField label="Description">
+          <textarea 
+            name="description" 
+            value={formExpense.description} 
+            onChange={handleChange} 
+            placeholder="Enter description"
+            className={`w-full border rounded-md shadow-sm p-2 transition duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+              (formErrors?.description || localErrors?.description) ? 'border-red-500' : 'border-gray-300'
+            }`}
+            disabled={isSubmitting}
+            rows={4}
+            required 
+          />
+        </FormField>
+        {(formErrors?.description || localErrors?.description) && (
+          <p className="text-sm text-red-600">
+            {formErrors?.description || localErrors?.description}
+          </p>
+        )}
+      </div>
+
+      <div className="space-y-2">
+        <FormField label="Reference">
+          <input 
+            type="text" 
+            name="reference" 
+            value={formExpense.reference} 
+            onChange={handleChange} 
+            placeholder="Enter reference" 
+            className={`w-full border rounded-md shadow-sm p-2 transition duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
+              (formErrors?.reference || localErrors?.reference) ? 'border-red-500' : 'border-gray-300'
+            }`}
+            disabled={isSubmitting}
+            required 
+          />
+        </FormField>
+        {(formErrors?.reference || localErrors?.reference) && (
+          <p className="text-sm text-red-600">
+            {formErrors?.reference || localErrors?.reference}
+          </p>
+        )}
+      </div>
+    </>
+  );
+
   return (
-    <div className="fixed inset-y-0 right-0 bg-white w-96 shadow-lg p-6 overflow-y-auto">
-      <div className="flex justify-between items-center mb-6">
-        <h3 className="text-2xl font-semibold text-gray-800">
+    <div className="fixed inset-y-0 right-0 bg-white w-96 shadow-lg p-6 overflow-y-auto flex flex-col">
+      <div className="flex justify-between items-center mb-4">
+        <h3 className="text-2xl font-semibold">
           {expense ? 'Edit Expense' : 'Add New Expense'}
         </h3>
         <button 
+          type="button" 
           onClick={onClose}
-          className="text-gray-400 hover:text-gray-600 transition duration-150 ease-in-out"
+          disabled={isSubmitting}
+          className="text-gray-500 hover:text-gray-700 transition duration-150 ease-in-out"
+          aria-label="Close"
         >
           <X size={24} />
         </button>
       </div>
 
-      {error && (
-        <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-md">
-          <p className="text-red-600 text-sm">{error}</p>
-        </div>
-      )}
-
       <form onSubmit={handleSubmit} className="space-y-4">
-        <div>
-          <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">Name</label>
-          <input 
-            type="text" 
-            name="name" 
-            id="name"
-            value={formExpense.name} 
-            onChange={handleChange} 
-            placeholder="Enter expense name"
-            className={`w-full px-3 py-2 border rounded-md shadow-sm placeholder-gray-400 
-                       focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500
-                       ${formErrors?.name ? 'border-red-500' : 'border-gray-300'}`}
-            required 
-          />
-          {formErrors?.name && (
-            <p className="text-red-500 text-sm mt-1">{formErrors.name}</p>
-          )}
-        </div>
-
-        {/* <div>
-          <label htmlFor="expenseCategory" className="block text-sm font-medium text-gray-700 mb-1">Expense Category</label>
-          <input 
-            type="text" 
-            name="expenseCategory" 
-            id="expenseCategory"
-            value={formExpense.expenseCategory} 
-            onChange={handleChange} 
-            placeholder="Enter expense category"
-            className={`w-full px-3 py-2 border rounded-md shadow-sm placeholder-gray-400 
-                       focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500
-                       ${formErrors?.expenseCategory ? 'border-red-500' : 'border-gray-300'}`}
-            required 
-          />
-          {formErrors?.expenseCategory && (
-            <p className="text-red-500 text-sm mt-1">{formErrors.expenseCategory}</p>
-          )}
-        </div> */}
-<div>
-  <label htmlFor="expenseCategoryName" className="block text-sm font-medium text-gray-700 mb-1">Expense Category</label>
-  <select 
-    name="expenseCategoryName" 
-    id="expenseCategoryName"
-    value={categories.find(cat => cat.name === formExpense.expenseCategoryName)?.id || ''} 
-    onChange={(e) => {
-      const selectedCategory = categories.find(cat => cat.id === parseInt(e.target.value));
-      handleChange({
-        target: {
-          name: 'expenseCategoryName',
-          value: selectedCategory ? selectedCategory.name : ''
-        }
-      });
-    }}
-    className={`w-full px-3 py-2 border rounded-md shadow-sm placeholder-gray-400 
-                focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500
-                ${formErrors?.expenseCategoryName ? 'border-red-500' : 'border-gray-300'}`}
-    required 
-  >
-    <option value="">Select a category</option>
-    {categories.map(category => (
-      <option key={category.id} value={category.id}>
-        {category.name}
-      </option>
-    ))}
-  </select>
-  {formErrors?.expenseCategoryName && (
-    <p className="text-red-500 text-sm mt-1">{formErrors.expenseCategoryName}</p>
-  )}
-</div>
-
-        <div>
-          <label htmlFor="currency" className="block text-sm font-medium text-gray-700 mb-1">Currency</label>
-          <select 
-            name="currency" 
-            id="currency"
-            value={formExpense.currency} 
-            onChange={handleChange} 
-            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
-          >
-            <option value="PKR">PKR</option>
-            <option value="USD">USD</option>
-            <option value="EUR">EUR</option>
-            <option value="GBP">GBP</option>
-          </select>
-        </div>
-
-        <div>
-          <label htmlFor="total" className="block text-sm font-medium text-gray-700 mb-1">Total</label>
-          <input 
-            type="number" 
-            name="total" 
-            id="total"
-            value={formExpense.total} 
-            onChange={handleChange} 
-            placeholder="Enter total amount"
-            className={`w-full px-3 py-2 border rounded-md shadow-sm placeholder-gray-400 
-                       focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500
-                       ${formErrors?.total ? 'border-red-500' : 'border-gray-300'}`}
-            required 
-          />
-          {formErrors?.total && (
-            <p className="text-red-500 text-sm mt-1">{formErrors.total}</p>
-          )}
-        </div>
-
-        <div>
-          <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">Description</label>
-          <textarea 
-            name="description" 
-            id="description"
-            value={formExpense.description} 
-            onChange={handleChange} 
-            placeholder="Enter expense description"
-            className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm"
-            rows="3"
-          ></textarea>
-        </div>
-
-        <div>
-          <label htmlFor="reference" className="block text-sm font-medium text-gray-700 mb-1">Ref</label>
-          <input 
-            type="text" 
-            name="reference" 
-            id="reference"
-            value={formExpense.reference} 
-            onChange={handleChange} 
-            placeholder="Enter reference number"
-            className={`w-full px-3 py-2 border rounded-md shadow-sm placeholder-gray-400 
-                       focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500
-                       ${formErrors?.reference ? 'border-red-500' : 'border-gray-300'}`}
-            required 
-          />
-          {formErrors?.reference && (
-            <p className="text-red-500 text-sm mt-1">{formErrors.reference}</p>
-          )}
-        </div>
-
-        <div className="flex justify-end space-x-3 pt-4">
+        {renderFormFields()}
+        <div className="flex justify-end space-x-3">
           <button 
             type="button" 
-            onClick={onClose} 
-            className="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 hover:bg-gray-50"
+            onClick={onClose}
+            disabled={isSubmitting}
+            className="px-4 py-2 text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500 disabled:opacity-50"
           >
             Cancel
           </button>
           <button 
-            type="submit" 
-            className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700"
+            type="submit"
+            disabled={isSubmitting}
+            className="px-4 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 flex items-center"
           >
-            {expense ? 'Update' : 'Submit'}
+            {isSubmitting ? (
+              <>
+                <LoadingSpinner />
+                <span className="ml-2">Saving...</span>
+              </>
+            ) : (
+              expense ? 'Update' : 'Create'
+            )}
           </button>
         </div>
       </form>
@@ -225,4 +304,3 @@ function ExpenseForm({ onSubmit, onClose, expense, error, formErrors,categories 
 }
 
 export default ExpenseForm;
-
