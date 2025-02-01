@@ -121,7 +121,7 @@ export const getAttendanceReport = async (req, res) => {
         if (!attendance || attendance.length === 0) {
             return res.status(404).json({
                 success: false,
-                message: `No attendance records found for ${monthName} /${year}`,
+                message: `No attendance records found for ${monthName} ${year}`,
                 data: {
                     attendance: [],
                     statistics: {}
