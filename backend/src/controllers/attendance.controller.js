@@ -69,6 +69,13 @@ export const getAttendanceReport = async (req, res) => {
         const startDate = new Date(year, month - 1, 1);
         const endDate = new Date(year, month, 0);
 
+        // Get month name
+        const monthNames = [
+            'January', 'February', 'March', 'April', 'May', 'June',
+            'July', 'August', 'September', 'October', 'November', 'December'
+        ];
+        const monthName = monthNames[parseInt(month) - 1];
+
         // First check if employees exist
         let employeeCheck;
         if (employeeId && employeeId !== 'all') {
@@ -114,7 +121,7 @@ export const getAttendanceReport = async (req, res) => {
         if (!attendance || attendance.length === 0) {
             return res.status(404).json({
                 success: false,
-                message: `No attendance records found for ${month}/${year}`,
+                message: `No attendance records found for ${monthName} /${year}`,
                 data: {
                     attendance: [],
                     statistics: {}
@@ -159,26 +166,26 @@ export const getAttendanceReport = async (req, res) => {
 };
 
 // Update attendance status
-export const updateAttendance = async (req, res) => {
-    try {
-        const { id } = req.params;
-        const { status } = req.body;
+// export const updateAttendance = async (req, res) => {
+//     try {
+//         const { id } = req.params;
+//         const { status } = req.body;
 
-        const updatedAttendance = await prisma.attendance.update({
-            where: { id: parseInt(id) },
-            data: { status }
-        });
+//         const updatedAttendance = await prisma.attendance.update({
+//             where: { id: parseInt(id) },
+//             data: { status }
+//         });
 
-        res.status(200).json({
-            success: true,
-            message: 'Attendance updated successfully',
-            data: updatedAttendance
-        });
-    } catch (error) {
-        res.status(500).json({
-            success: false,
-            message: 'Error updating attendance',
-            error: error.message
-        });
-    }
-};
+//         res.status(200).json({
+//             success: true,
+//             message: 'Attendance updated successfully',
+//             data: updatedAttendance
+//         });
+//     } catch (error) {
+//         res.status(500).json({
+//             success: false,
+//             message: 'Error updating attendance',
+//             error: error.message
+//         });
+//     }
+// };
