@@ -255,6 +255,268 @@
 
 // export default Sidebar;
 
+// import React, { useState, useMemo, useCallback } from 'react';
+// import { NavLink, useNavigate } from 'react-router-dom';
+// import {
+//   XMarkIcon,
+//   ChevronDownIcon,
+//   UserGroupIcon,
+//   BanknotesIcon,
+//   Squares2X2Icon,
+//   HomeIcon,
+//   CurrencyDollarIcon,
+//   ClockIcon
+// } from '@heroicons/react/24/outline';
+
+// // Custom Tooltip component for reusability
+// function CustomTooltip({ children, content }) {
+//   return (
+//     <div className="relative group">
+//       {children}
+//       <div className="absolute z-[60] left-full ml-2 px-3 py-2 bg-gray-900/90 backdrop-blur-sm 
+//         text-white text-sm rounded-md shadow-lg whitespace-nowrap opacity-0 group-hover:opacity-100
+//         pointer-events-none transition-opacity duration-200">
+//         {content}
+//       </div>
+//     </div>
+//   );
+// }
+
+// function Sidebar({ isMobile, isOpen, toggleSidebar }) {
+//   // Dropdown states
+//   const [isSalaryDropdownOpen, setIsSalaryDropdownOpen] = useState(false);
+//   const [isAttendanceDropdownOpen, setIsAttendanceDropdownOpen] = useState(false);
+
+//   const navigate = useNavigate();
+
+//   const toggleSalaryDropdown = useCallback(() => {
+//     setIsSalaryDropdownOpen((prev) => !prev);
+//   }, []);
+
+//   const toggleAttendanceDropdown = useCallback(() => {
+//     setIsAttendanceDropdownOpen((prev) => !prev);
+//   }, []);
+
+//   const handleSalaryClick = useCallback(() => {
+//     // If the sidebar is collapsed on desktop, just navigate
+//     if (!isOpen && !isMobile) {
+//       navigate('/salary/create-payslip');
+//     } else {
+//       toggleSalaryDropdown();
+//     }
+//   }, [isOpen, isMobile, navigate, toggleSalaryDropdown]);
+
+//   const handleAttendanceClick = useCallback(() => {
+//     if (!isOpen && !isMobile) {
+//       navigate('/attendance/daily-attendance');
+//     } else {
+//       toggleAttendanceDropdown();
+//     }
+//   }, [isOpen, isMobile, navigate, toggleAttendanceDropdown]);
+
+//   // Build the main navigation items
+//   const navigationItems = useMemo(() => (
+//     <ul className="space-y-5">
+//       <NavItem to="/dashboard" icon={<HomeIcon className="h-7 w-7" />} text="Dashboard" isOpen={isOpen} />
+//       <NavItem to="/employees" icon={<UserGroupIcon className="h-7 w-7" />} text="Employees" isOpen={isOpen} />
+//       <NavItem to="/expense" icon={<BanknotesIcon className="h-7 w-7" />} text="Expenses" isOpen={isOpen} />
+//       <NavItem to="/expenseCate" icon={<Squares2X2Icon className="h-7 w-7" />} text="Expense Categories" isOpen={isOpen} />
+
+//       {/* Salary Dropdown */}
+//       <li>
+//         <button
+//           onClick={handleSalaryClick}
+//           className="w-full text-left flex items-center justify-between py-3 px-5 rounded-lg 
+//             transition-all duration-200 group hover:scale-105 hover:bg-white/5"
+//           aria-expanded={isSalaryDropdownOpen}
+//         >
+//           <div className="flex items-center">
+//             {!isOpen ? (
+//               <CustomTooltip content="Salary">
+//                 <CurrencyDollarIcon className="h-7 w-7 mr-4" />
+//               </CustomTooltip>
+//             ) : (
+//               <CurrencyDollarIcon className="h-7 w-7 mr-4" />
+//             )}
+//             {isOpen && (
+//               <span className="text-medium font-bold group-hover:translate-x-1 transition-transform">
+//                 Salary
+//               </span>
+//             )}
+//           </div>
+//           {isOpen && (
+//             <ChevronDownIcon
+//               className={`h-5 w-5 transition-transform duration-200 ${isSalaryDropdownOpen ? 'rotate-180' : ''}`}
+//             />
+//           )}
+//         </button>
+//         {isSalaryDropdownOpen && isOpen && (
+//           <ul className="mt-2 ml-7 space-y-2">
+//             <SubNavItem to="/salary/create-payslip" text="Create Payslip" />
+//             <SubNavItem to="/salary/payslip-list" text="Payslip List" />
+//           </ul>
+//         )}
+//       </li>
+
+//       {/* Attendance Dropdown */}
+//       <li>
+//         <button
+//           onClick={handleAttendanceClick}
+//           className="w-full text-left flex items-center justify-between py-3 px-5 rounded-lg 
+//             transition-all duration-200 group hover:scale-105 hover:bg-white/5"
+//           aria-expanded={isAttendanceDropdownOpen}
+//         >
+//           <div className="flex items-center">
+//             {!isOpen ? (
+//               <CustomTooltip content="Attendance">
+//                 <ClockIcon className="h-7 w-7 mr-4" />
+//               </CustomTooltip>
+//             ) : (
+//               <ClockIcon className="h-7 w-7 mr-4" />
+//             )}
+//             {isOpen && (
+//               <span className="text-medium font-bold group-hover:translate-x-1 transition-transform">
+//                 Attendance
+//               </span>
+//             )}
+//           </div>
+//           {isOpen && (
+//             <ChevronDownIcon
+//               className={`h-5 w-5 transition-transform duration-200 ${isAttendanceDropdownOpen ? 'rotate-180' : ''}`}
+//             />
+//           )}
+//         </button>
+//         {isAttendanceDropdownOpen && isOpen && (
+//           <ul className="mt-2 ml-7 space-y-2">
+//             <SubNavItem to="/attendance/daily-attendance" text="Daily Attendance" />
+//             <SubNavItem to="/attendance/attendance-report" text="Attendance Report" />
+//           </ul>
+//         )}
+//       </li>
+//     </ul>
+//   ), [
+//     isOpen,
+//     isMobile,
+//     isSalaryDropdownOpen,
+//     isAttendanceDropdownOpen,
+//     handleAttendanceClick,
+//     handleSalaryClick
+//   ]);
+
+//   return (
+//     <>
+//       {/* Mobile overlay (only if isMobile and open) */}
+//       {isMobile && isOpen && (
+//         <div
+//           className="fixed inset-0 bg-black bg-opacity-30 z-40"
+//           onClick={toggleSidebar}
+//         />
+//       )}
+
+//       {/* Sidebar container */}
+//       <div
+//         className={`
+//           bg-gradient-to-b from-indigo-600 via-blue-700 to-purple-800
+//           text-white p-4 flex flex-col z-50
+//           ${isMobile
+//             ? 'fixed top-0 left-0 h-screen w-64 transition-transform duration-300'
+//             : 'relative h-screen transition-all duration-300'}
+//           ${isMobile && (isOpen ? 'translate-x-0' : '-translate-x-full')}
+//           ${!isMobile && (isOpen ? 'w-64' : 'w-24')}
+//         `}
+//       >
+//         {/* Header area (logo + close button if mobile) */}
+//         <div className="flex items-center justify-between mb-10">
+//           {/* Show the logo if sidebar is open OR if we’re on desktop and want to display it collapsed as well */}
+//           {(!isMobile || isOpen) && (
+//             <img
+//               src="https://placehold.co/100x40/667EEA/ffffff?text=ATT"
+//               alt="ATT Logo"
+//               className="h-10"
+//             />
+//           )}
+//           {/* Mobile close button */}
+//           {isMobile && (
+//             <button
+//               onClick={toggleSidebar}
+//               aria-label="Close sidebar"
+//               className="p-2 rounded-full bg-white/10 hover:bg-white/20 focus:outline-none"
+//             >
+//               <XMarkIcon className="h-7 w-7 text-white" />
+//             </button>
+//           )}
+//         </div>
+
+//         {/* Navigation items */}
+//         {navigationItems}
+//       </div>
+//     </>
+//   );
+// }
+
+// // Single nav item
+// function NavItem({ to, icon, text, isOpen }) {
+//   const navigate = useNavigate();
+
+//   // If the sidebar is collapsed on desktop, navigate directly on click
+//   const handleClick = (e) => {
+//     if (!isOpen) {
+//       e.preventDefault();
+//       e.stopPropagation();
+//       navigate(to);
+//     }
+//   };
+
+//   return (
+//     <li>
+//       <NavLink
+//         to={to}
+//         onClick={handleClick}
+//         className={({ isActive }) =>
+//           `flex items-center py-3 px-5 rounded-lg transition-all duration-200
+//           group hover:scale-105
+//           ${isActive
+//             ? 'bg-white/10 text-white backdrop-blur-sm shadow-lg'
+//             : 'text-blue-100 hover:bg-white/5 hover:text-white active:bg-white/20'}`
+//         }
+//       >
+//         {icon}
+//         {isOpen && (
+//           <span className="ml-4 transition-transform duration-200 group-hover:translate-x-1">
+//             {text}
+//           </span>
+//         )}
+//       </NavLink>
+//     </li>
+//   );
+// }
+
+// // Sub nav item (for dropdowns)
+// function SubNavItem({ to, text }) {
+//   return (
+//     <li>
+//       <NavLink
+//         to={to}
+//         className={({ isActive }) =>
+//           `block py-2 px-4 rounded-lg transition-all duration-200
+//           group hover:scale-105
+//           ${isActive
+//             ? 'bg-white/10 text-white backdrop-blur-sm shadow-lg'
+//             : 'text-blue-100 hover:bg-white/5 hover:text-white active:bg-white/20'}`
+//         }
+//       >
+//         <span className="transition-transform duration-200 group-hover:translate-x-1">
+//           {text}
+//         </span>
+//       </NavLink>
+//     </li>
+//   );
+// }
+
+// export default Sidebar;
+
+
+// Sidebar.jsx
 import React, { useState, useMemo, useCallback } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import {
@@ -268,89 +530,44 @@ import {
   ClockIcon
 } from '@heroicons/react/24/outline';
 
-// Custom Tooltip component for reusability
-function CustomTooltip({ children, content }) {
-  return (
-    <div className="relative group">
-      {children}
-      <div className="absolute z-[60] left-full ml-2 px-3 py-2 bg-gray-900/90 backdrop-blur-sm 
-        text-white text-sm rounded-md shadow-lg whitespace-nowrap opacity-0 group-hover:opacity-100
-        pointer-events-none transition-opacity duration-200">
-        {content}
-      </div>
-    </div>
-  );
-}
-
 function Sidebar({ isMobile, isOpen, toggleSidebar }) {
-  // Dropdown states
   const [isSalaryDropdownOpen, setIsSalaryDropdownOpen] = useState(false);
   const [isAttendanceDropdownOpen, setIsAttendanceDropdownOpen] = useState(false);
-
   const navigate = useNavigate();
 
   const toggleSalaryDropdown = useCallback(() => {
-    setIsSalaryDropdownOpen((prev) => !prev);
+    setIsSalaryDropdownOpen(prev => !prev);
   }, []);
 
   const toggleAttendanceDropdown = useCallback(() => {
-    setIsAttendanceDropdownOpen((prev) => !prev);
+    setIsAttendanceDropdownOpen(prev => !prev);
   }, []);
 
-  const handleSalaryClick = useCallback(() => {
-    // If the sidebar is collapsed on desktop, just navigate
-    if (!isOpen && !isMobile) {
-      navigate('/salary/create-payslip');
-    } else {
-      toggleSalaryDropdown();
-    }
-  }, [isOpen, isMobile, navigate, toggleSalaryDropdown]);
-
-  const handleAttendanceClick = useCallback(() => {
-    if (!isOpen && !isMobile) {
-      navigate('/attendance/daily-attendance');
-    } else {
-      toggleAttendanceDropdown();
-    }
-  }, [isOpen, isMobile, navigate, toggleAttendanceDropdown]);
-
-  // Build the main navigation items
   const navigationItems = useMemo(() => (
     <ul className="space-y-5">
-      <NavItem to="/dashboard" icon={<HomeIcon className="h-7 w-7" />} text="Dashboard" isOpen={isOpen} />
-      <NavItem to="/employees" icon={<UserGroupIcon className="h-7 w-7" />} text="Employees" isOpen={isOpen} />
-      <NavItem to="/expense" icon={<BanknotesIcon className="h-7 w-7" />} text="Expenses" isOpen={isOpen} />
-      <NavItem to="/expenseCate" icon={<Squares2X2Icon className="h-7 w-7" />} text="Expense Categories" isOpen={isOpen} />
+      <NavItem to="/dashboard" icon={<HomeIcon className="h-7 w-7" />} text="Dashboard" />
+      <NavItem to="/employees" icon={<UserGroupIcon className="h-7 w-7" />} text="Employees" />
+      <NavItem to="/expense" icon={<BanknotesIcon className="h-7 w-7" />} text="Expenses" />
+      <NavItem to="/expenseCate" icon={<Squares2X2Icon className="h-7 w-7" />} text="Expense Categories" />
 
-      {/* Salary Dropdown */}
+      {/* Salary Section */}
       <li>
         <button
-          onClick={handleSalaryClick}
+          onClick={toggleSalaryDropdown}
           className="w-full text-left flex items-center justify-between py-3 px-5 rounded-lg 
             transition-all duration-200 group hover:scale-105 hover:bg-white/5"
-          aria-expanded={isSalaryDropdownOpen}
         >
           <div className="flex items-center">
-            {!isOpen ? (
-              <CustomTooltip content="Salary">
-                <CurrencyDollarIcon className="h-7 w-7 mr-4" />
-              </CustomTooltip>
-            ) : (
-              <CurrencyDollarIcon className="h-7 w-7 mr-4" />
-            )}
-            {isOpen && (
-              <span className="text-medium font-bold group-hover:translate-x-1 transition-transform">
-                Salary
-              </span>
-            )}
+            <CurrencyDollarIcon className="h-7 w-7 mr-4" />
+            <span className="text-medium font-bold group-hover:translate-x-1 transition-transform">
+              Salary
+            </span>
           </div>
-          {isOpen && (
-            <ChevronDownIcon
-              className={`h-5 w-5 transition-transform duration-200 ${isSalaryDropdownOpen ? 'rotate-180' : ''}`}
-            />
-          )}
+          <ChevronDownIcon
+            className={`h-5 w-5 transition-transform duration-200 ${isSalaryDropdownOpen ? 'rotate-180' : ''}`}
+          />
         </button>
-        {isSalaryDropdownOpen && isOpen && (
+        {isSalaryDropdownOpen && (
           <ul className="mt-2 ml-7 space-y-2">
             <SubNavItem to="/salary/create-payslip" text="Create Payslip" />
             <SubNavItem to="/salary/payslip-list" text="Payslip List" />
@@ -358,35 +575,24 @@ function Sidebar({ isMobile, isOpen, toggleSidebar }) {
         )}
       </li>
 
-      {/* Attendance Dropdown */}
+      {/* Attendance Section */}
       <li>
         <button
-          onClick={handleAttendanceClick}
+          onClick={toggleAttendanceDropdown}
           className="w-full text-left flex items-center justify-between py-3 px-5 rounded-lg 
             transition-all duration-200 group hover:scale-105 hover:bg-white/5"
-          aria-expanded={isAttendanceDropdownOpen}
         >
           <div className="flex items-center">
-            {!isOpen ? (
-              <CustomTooltip content="Attendance">
-                <ClockIcon className="h-7 w-7 mr-4" />
-              </CustomTooltip>
-            ) : (
-              <ClockIcon className="h-7 w-7 mr-4" />
-            )}
-            {isOpen && (
-              <span className="text-medium font-bold group-hover:translate-x-1 transition-transform">
-                Attendance
-              </span>
-            )}
+            <ClockIcon className="h-7 w-7 mr-4" />
+            <span className="text-medium font-bold group-hover:translate-x-1 transition-transform">
+              Attendance
+            </span>
           </div>
-          {isOpen && (
-            <ChevronDownIcon
-              className={`h-5 w-5 transition-transform duration-200 ${isAttendanceDropdownOpen ? 'rotate-180' : ''}`}
-            />
-          )}
+          <ChevronDownIcon
+            className={`h-5 w-5 transition-transform duration-200 ${isAttendanceDropdownOpen ? 'rotate-180' : ''}`}
+          />
         </button>
-        {isAttendanceDropdownOpen && isOpen && (
+        {isAttendanceDropdownOpen && (
           <ul className="mt-2 ml-7 space-y-2">
             <SubNavItem to="/attendance/daily-attendance" text="Daily Attendance" />
             <SubNavItem to="/attendance/attendance-report" text="Attendance Report" />
@@ -394,19 +600,12 @@ function Sidebar({ isMobile, isOpen, toggleSidebar }) {
         )}
       </li>
     </ul>
-  ), [
-    isOpen,
-    isMobile,
-    isSalaryDropdownOpen,
-    isAttendanceDropdownOpen,
-    handleAttendanceClick,
-    handleSalaryClick
-  ]);
+  ), [isSalaryDropdownOpen, isAttendanceDropdownOpen, toggleSalaryDropdown, toggleAttendanceDropdown]);
 
   return (
     <>
-      {/* Mobile overlay (only if isMobile and open) */}
-      {isMobile && isOpen && (
+      {/* Mobile overlay */}
+      {isMobile && (
         <div
           className="fixed inset-0 bg-black bg-opacity-30 z-40"
           onClick={toggleSidebar}
@@ -420,26 +619,20 @@ function Sidebar({ isMobile, isOpen, toggleSidebar }) {
           text-white p-4 flex flex-col z-50
           ${isMobile
             ? 'fixed top-0 left-0 h-screen w-64 transition-transform duration-300'
-            : 'relative h-screen transition-all duration-300'}
-          ${isMobile && (isOpen ? 'translate-x-0' : '-translate-x-full')}
-          ${!isMobile && (isOpen ? 'w-64' : 'w-24')}
+            : 'relative h-screen w-64'}
+          ${isMobile && !isOpen ? '-translate-x-full' : 'translate-x-0'}
         `}
       >
-        {/* Header area (logo + close button if mobile) */}
+        {/* Header area */}
         <div className="flex items-center justify-between mb-10">
-          {/* Show the logo if sidebar is open OR if we’re on desktop and want to display it collapsed as well */}
-          {(!isMobile || isOpen) && (
-            <img
-              src="https://placehold.co/100x40/667EEA/ffffff?text=ATT"
-              alt="ATT Logo"
-              className="h-10"
-            />
-          )}
-          {/* Mobile close button */}
+          <img
+            src="https://placehold.co/100x40/667EEA/ffffff?text=ATT"
+            alt="ATT Logo"
+            className="h-10"
+          />
           {isMobile && (
             <button
               onClick={toggleSidebar}
-              aria-label="Close sidebar"
               className="p-2 rounded-full bg-white/10 hover:bg-white/20 focus:outline-none"
             >
               <XMarkIcon className="h-7 w-7 text-white" />
@@ -454,24 +647,11 @@ function Sidebar({ isMobile, isOpen, toggleSidebar }) {
   );
 }
 
-// Single nav item
-function NavItem({ to, icon, text, isOpen }) {
-  const navigate = useNavigate();
-
-  // If the sidebar is collapsed on desktop, navigate directly on click
-  const handleClick = (e) => {
-    if (!isOpen) {
-      e.preventDefault();
-      e.stopPropagation();
-      navigate(to);
-    }
-  };
-
+function NavItem({ to, icon, text }) {
   return (
     <li>
       <NavLink
         to={to}
-        onClick={handleClick}
         className={({ isActive }) =>
           `flex items-center py-3 px-5 rounded-lg transition-all duration-200
           group hover:scale-105
@@ -481,17 +661,14 @@ function NavItem({ to, icon, text, isOpen }) {
         }
       >
         {icon}
-        {isOpen && (
-          <span className="ml-4 transition-transform duration-200 group-hover:translate-x-1">
-            {text}
-          </span>
-        )}
+        <span className="ml-4 transition-transform duration-200 group-hover:translate-x-1">
+          {text}
+        </span>
       </NavLink>
     </li>
   );
 }
 
-// Sub nav item (for dropdowns)
 function SubNavItem({ to, text }) {
   return (
     <li>
@@ -514,4 +691,3 @@ function SubNavItem({ to, text }) {
 }
 
 export default Sidebar;
-
