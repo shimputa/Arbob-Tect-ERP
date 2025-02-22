@@ -26,7 +26,7 @@ function Sidebar({ isMobile, isOpen, toggleSidebar }) {
 
   const navigationItems = useMemo(() => (
     <ul className="space-y-5">
-      <NavItem to="/dashboard" icon={<HomeIcon className="h-7 w-7" />} text="Dashboard" />
+      <NavItem to="/dashboard" icon={<HomeIcon className="h-7 w-7" />} text="Dashboard" />      
       <NavItem to="/employees" icon={<UserGroupIcon className="h-7 w-7" />} text="Employees" />
       <NavItem to="/expense" icon={<BanknotesIcon className="h-7 w-7" />} text="Expenses" />
       <NavItem to="/expenseCate" icon={<Squares2X2Icon className="h-7 w-7" />} text="Expense Categories" />
