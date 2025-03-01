@@ -102,6 +102,7 @@ import AttendanceReport from './components/Attendence/attendanceReport';
 import Salary from './components/Salary/Salary';
 import Expense from './components/Expense/ExpenseList';
 import ExpenseCate from './components/ExpenseCate/ExpenseCateList';
+import Dashboard from './components/Dashboard/dashboard';
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -208,6 +209,9 @@ function App() {
               </ProtectedRoute>
             }
           >
+             {/* Dashboard route */}
+             <Route index element={<Dashboard />} />
+            <Route path="dashboard" element={<Dashboard />} />
             {/* Nested routes within Layout */}
             <Route path="employees" element={<Employees />} />
             <Route path="attendance/daily-attendance" element={<DailyAttendance />} />
