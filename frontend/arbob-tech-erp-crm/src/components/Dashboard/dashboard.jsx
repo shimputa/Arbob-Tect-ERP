@@ -1,52 +1,97 @@
 
 
-// components/Dashboard/Dashboard.jsx
-// import React from 'react';
-// import { Link } from 'react-router-dom';
+// import React, { useEffect, useState } from 'react';
 // import { 
-//   Users, Clock, UserCheck, UserX, Calendar,
-//   PlusCircle, FileText, DollarSign 
+//   Users, UserCheck, UserX, Calendar,
+//   FileText, DollarSign 
 // } from 'lucide-react';
-// import { BarChart, Bar, AreaChart, Area, ResponsiveContainer, XAxis, YAxis, Tooltip } from 'recharts';
+// import { 
+//   BarChart, Bar, 
+//   PieChart, Pie, Cell, 
+//   LineChart, Line,
+//   ResponsiveContainer, 
+//   XAxis, YAxis, Tooltip, Legend, Text 
+// } from 'recharts';
 
 // function Dashboard() {
-//   // Enhanced dummy data with historical records
-//   const dummyData = {
-//     employees: { total: 72 },
-//     attendance: { 
-//       presentToday: 65, 
-//       absentToday: 7,
-//       leaveToday: 5
-//     },
-//     expenses: { 
-//       total: 25000,
-//       historical: [
-//         { month: 'Jan', amount: 22000 },
-//         { month: 'Feb', amount: 24500 },
-//         { month: 'Mar', amount: 25000 },
-//       ]
-//     },
-//     salary: { 
-//       paid: 450000,
-//       historical: [
-//         { month: 'Jan', amount: 420000 },
-//         { month: 'Feb', amount: 435000 },
-//         { month: 'Mar', amount: 450000 },
-//       ]
-//     }
+//   const [dashboardData, setDashboardData] = useState(null);
+//   const [loading, setLoading] = useState(true);
+//   const [error, setError] = useState(null);
+
+//   const CHART_COLORS = {
+//     salary: '#6D28D9',
+//     expenses: '#EA580C',
+//     present: '#10B981',
+//     absent: '#EF4444',
+//     leave: '#F59E0B'
 //   };
+
+//   useEffect(() => {
+//     const fetchData = async () => {
+//       try {
+//         const response = await fetch('http://localhost:3000/dashboard');
+//         if (!response.ok) throw new Error('Failed to fetch data');
+//         const { data } = await response.json();
+        
+//         const transformedData = {
+//           ...data,
+//           salary: {
+//             ...data.salary,
+//             // historical: data.salary.historical?.map(item => ({
+//             //   month: item.month,
+//             //   amount: Number(item.amount)
+//             // })) || []
+//           },
+//           yearlyTrends: {
+//             salary: data.yearlyTrends?.salary?.map(d => ({
+//               year: d.year,
+//               amount: Number(d.amount)
+//             })) || [],
+//             expenses: data.yearlyTrends?.expenses?.map(d => ({
+//               year: d.year,
+//               amount: Number(d.amount)
+//             })) || []
+//           }
+//         };
+        
+//         setDashboardData(transformedData);
+//       } catch (err) {
+//         setError(err.message);
+//       } finally {
+//         setLoading(false);
+//       }
+//     };
+
+//     fetchData();
+//   }, []);
+
+//   if (loading) {
+//     return (
+//       <div className="container mx-auto p-6 text-center text-gray-500">
+//         Loading dashboard data...
+//       </div>
+//     );
+//   }
+
+//   if (error) {
+//     return (
+//       <div className="container mx-auto p-6 text-center text-red-500">
+//         Error: {error}
+//       </div>
+//     );
+//   }
 
 //   return (
 //     <div className="container mx-auto p-4 sm:p-6 bg-gray-100 min-h-screen">
-//       {/* Main Stats Grid - 4 Columns */}
+//       {/* Main Stats Grid */}
 //       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
 //         {/* Total Employees Card */}
-//         <div className="bg-white rounded-2xl shadow-lg p-6 transform transition-all hover:scale-[1.02] hover:shadow-xl">
+//         <div className="bg-white rounded-2xl shadow-lg p-6">
 //           <div className="flex items-center justify-between">
 //             <div>
 //               <h3 className="text-lg font-semibold text-gray-500 mb-2">Total Employees</h3>
-//               <div className="text-4xl font-bold text-blue-600 animate-fade-in">
-//                 {dummyData.employees.total}
+//               <div className="text-4xl font-bold text-blue-600">
+//                 {dashboardData?.employees?.total ?? 0}
 //               </div>
 //             </div>
 //             <div className="p-3 bg-blue-100 rounded-full">
@@ -56,12 +101,12 @@
 //         </div>
 
 //         {/* Present Today Card */}
-//         <div className="bg-white rounded-2xl shadow-lg p-6 transform transition-all hover:scale-[1.02] hover:shadow-xl">
+//         <div className="bg-white rounded-2xl shadow-lg p-6">
 //           <div className="flex items-center justify-between">
 //             <div>
 //               <h3 className="text-lg font-semibold text-gray-500 mb-2">Present Today</h3>
-//               <div className="text-4xl font-bold text-green-600 animate-fade-in">
-//                 {dummyData.attendance.presentToday}
+//               <div className="text-4xl font-bold text-green-600">
+//                 {dashboardData?.attendance?.present ?? 0}
 //               </div>
 //             </div>
 //             <div className="p-3 bg-green-100 rounded-full">
@@ -71,12 +116,12 @@
 //         </div>
 
 //         {/* Absent Today Card */}
-//         <div className="bg-white rounded-2xl shadow-lg p-6 transform transition-all hover:scale-[1.02] hover:shadow-xl">
+//         <div className="bg-white rounded-2xl shadow-lg p-6">
 //           <div className="flex items-center justify-between">
 //             <div>
 //               <h3 className="text-lg font-semibold text-gray-500 mb-2">Absent Today</h3>
-//               <div className="text-4xl font-bold text-red-600 animate-fade-in">
-//                 {dummyData.attendance.absentToday}
+//               <div className="text-4xl font-bold text-red-600">
+//                 {dashboardData?.attendance?.absent ?? 0}
 //               </div>
 //             </div>
 //             <div className="p-3 bg-red-100 rounded-full">
@@ -85,13 +130,13 @@
 //           </div>
 //         </div>
 
-//         {/* Leave Today Card - New Addition */}
-//         <div className="bg-white rounded-2xl shadow-lg p-6 transform transition-all hover:scale-[1.02] hover:shadow-xl">
+//         {/* Leave Today Card */}
+//         <div className="bg-white rounded-2xl shadow-lg p-6">
 //           <div className="flex items-center justify-between">
 //             <div>
-//               <h3 className="text-lg font-semibold text-gray-500 mb-2">Leave Today</h3>
-//               <div className="text-4xl font-bold text-yellow-600 animate-fade-in">
-//                 {dummyData.attendance.leaveToday}
+//               <h3 className="text-lg font-semibold text-gray-500 mb-2">On Leave</h3>
+//               <div className="text-4xl font-bold text-yellow-600">
+//                 {dashboardData?.attendance?.leave ?? 0}
 //               </div>
 //             </div>
 //             <div className="p-3 bg-yellow-100 rounded-full">
@@ -101,93 +146,196 @@
 //         </div>
 //       </div>
 
-//       {/* Chart Section */}
+//       {/* Financial Summary Grid */}
 //       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-//         {/* Salary Paid Chart */}
-//         <div className="bg-white rounded-2xl shadow-lg p-6 h-80">
-//           <h3 className="text-lg font-semibold text-gray-500 mb-4">Salary Paid Trend</h3>
+//         {/* Salary Paid Card */}
+//         <div className="bg-white rounded-2xl shadow-lg p-6">
+//           <div className="flex items-center justify-between">
+//             <div>
+//               <h3 className="text-lg font-semibold text-gray-500 mb-2">Total Salary Paid</h3>
+//               <div className="text-3xl font-bold text-purple-600">
+//                 ${(dashboardData?.salary?.paid ?? 0).toLocaleString()}
+//               </div>
+//             </div>
+//             <FileText className="w-8 h-8 text-purple-600" />
+//           </div>
+//         </div>
+
+//         {/* Monthly Expenses Card */}
+//         <div className="bg-white rounded-2xl shadow-lg p-6">
+//           <div className="flex items-center justify-between">
+//             <div>
+//               <h3 className="text-lg font-semibold text-gray-500 mb-2">Total Expenses</h3>
+//               <div className="text-3xl font-bold text-orange-600">
+//                 ${(dashboardData?.expenses?.total ?? 0).toLocaleString()}
+//               </div>
+//             </div>
+//             <DollarSign className="w-8 h-8 text-orange-600" />
+//           </div>
+//         </div>
+//       </div>
+
+//       {/* Monthly Trends Charts */}
+//       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+//         {/* Salary Trend Chart */}
+//         {/* <div className="bg-white rounded-2xl shadow-lg p-6 h-80">
+//           <h3 className="text-lg font-semibold text-gray-500 mb-4">Monthly Salary Trend</h3>
 //           <ResponsiveContainer width="100%" height="80%">
-//             <BarChart data={dummyData.salary.historical}>
+//             <BarChart data={dashboardData?.salary?.historical ?? []}>
 //               <XAxis dataKey="month" />
 //               <YAxis />
-//               <Tooltip formatter={(value) => [`$${value.toLocaleString()}`, 'Amount']} />
+//               <Tooltip 
+//                 formatter={(value) => [`$${value.toLocaleString()}`, 'Amount']}
+//                 contentStyle={{ 
+//                   background: '#fff',
+//                   borderRadius: '8px',
+//                   boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+//                 }}
+//               />
 //               <Bar 
 //                 dataKey="amount" 
-//                 fill="#6D28D9" 
+//                 fill={CHART_COLORS.salary}
 //                 radius={[4, 4, 0, 0]}
 //               />
 //             </BarChart>
 //           </ResponsiveContainer>
-//         </div>
+//         </div> */}
 
-//         {/* Expenses Chart */}
-//         <div className="bg-white rounded-2xl shadow-lg p-6 h-80">
-//           <h3 className="text-lg font-semibold text-gray-500 mb-4">Expenses Trend</h3>
+//         {/* Expense Trend Chart */}
+//         {/* <div className="bg-white rounded-2xl shadow-lg p-6 h-80">
+//           <h3 className="text-lg font-semibold text-gray-500 mb-4">Monthly Expense Trend</h3>
 //           <ResponsiveContainer width="100%" height="80%">
-//             <AreaChart data={dummyData.expenses.historical}>
+//             <BarChart data={dashboardData?.expenses?.monthlyHistorical ?? []}>
 //               <XAxis dataKey="month" />
 //               <YAxis />
-//               <Tooltip formatter={(value) => [`$${value.toLocaleString()}`, 'Amount']} />
-//               <Area 
-//                 type="monotone" 
-//                 dataKey="amount" 
-//                 stroke="#EA580C" 
-//                 fill="#FFEDD5" 
+//               <Tooltip 
+//                 formatter={(value) => [`$${value.toLocaleString()}`, 'Amount']}
+//                 contentStyle={{ 
+//                   background: '#fff',
+//                   borderRadius: '8px',
+//                   boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+//                 }}
 //               />
-//             </AreaChart>
+//               <Bar 
+//                 dataKey="amount" 
+//                 fill={CHART_COLORS.expenses}
+//                 radius={[4, 4, 0, 0]}
+//               />
+//             </BarChart>
+//           </ResponsiveContainer>
+//         </div> */}
+//       </div>
+
+//       {/* Yearly Trends Section */}
+//       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+//         {/* Yearly Salary Trend */}
+//         <div className="bg-white rounded-2xl shadow-lg p-6 h-80">
+//           <h3 className="text-lg font-semibold text-gray-500 mb-4">Yearly Salary Trend</h3>
+//           <ResponsiveContainer width="100%" height="80%">
+//             <LineChart data={dashboardData?.yearlyTrends?.salary ?? []}>
+//               <XAxis 
+//                 dataKey="year" 
+//                 label={{ value: 'Year', position: 'bottom' }}
+//               />
+//               <YAxis 
+//                 label={{ 
+//                   value: 'Amount ($)', 
+//                   angle: -90, 
+//                   position: 'insideLeft' 
+//                 }}
+//               />
+//               <Tooltip
+//                 formatter={(value) => [`$${value.toLocaleString()}`, 'Amount']}
+//                 contentStyle={{
+//                   background: '#fff',
+//                   borderRadius: '8px',
+//                   boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+//                 }}
+//               />
+//               <Line
+//                 type="monotone"
+//                 dataKey="amount"
+//                 stroke={CHART_COLORS.salary}
+//                 strokeWidth={2}
+//                 dot={{ fill: CHART_COLORS.salary, strokeWidth: 2 }}
+//                 activeDot={{ r: 6 }}
+//               />
+//             </LineChart>
+//           </ResponsiveContainer>
+//         </div>
+
+//         {/* Yearly Expense Trend */}
+//         <div className="bg-white rounded-2xl shadow-lg p-6 h-80">
+//           <h3 className="text-lg font-semibold text-gray-500 mb-4">Yearly Expense Trend</h3>
+//           <ResponsiveContainer width="100%" height="80%">
+//             <LineChart data={dashboardData?.yearlyTrends?.expenses ?? []}>
+//               <XAxis 
+//                 dataKey="year" 
+//                 label={{ value: 'Year', position: 'bottom' }}
+//               />
+//               <YAxis 
+//                 label={{ 
+//                   value: 'Amount ($)', 
+//                   angle: -90, 
+//                   position: 'insideLeft' 
+//                 }}
+//               />
+//               <Tooltip
+//                 formatter={(value) => [`$${value.toLocaleString()}`, 'Amount']}
+//                 contentStyle={{
+//                   background: '#fff',
+//                   borderRadius: '8px',
+//                   boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+//                 }}
+//               />
+//               <Line
+//                 type="monotone"
+//                 dataKey="amount"
+//                 stroke={CHART_COLORS.expenses}
+//                 strokeWidth={2}
+//                 dot={{ fill: CHART_COLORS.expenses, strokeWidth: 2 }}
+//                 activeDot={{ r: 6 }}
+//               />
+//             </LineChart>
 //           </ResponsiveContainer>
 //         </div>
 //       </div>
 
-//       {/* Enhanced Quick Actions */}
-//       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-//         <Link
-//           to="/attendance/daily-attendance"
-//           className="bg-white rounded-2xl shadow-lg p-6 transform transition-all hover:scale-[1.02] hover:shadow-xl group"
-//         >
-//           <div className="flex items-center space-x-4">
-//             <div className="p-3 bg-blue-100 rounded-full group-hover:bg-blue-200 transition-colors">
-//               <PlusCircle className="w-6 h-6 text-blue-600" />
-//             </div>
-//             <div>
-//               <h3 className="text-lg font-semibold">Mark Attendance</h3>
-//               <p className="text-sm text-gray-500">Record daily presence</p>
-//               <span className="text-xs text-blue-500 mt-1 block">3 pending requests</span>
-//             </div>
+//       {/* Expense Breakdown Chart */}
+//       <div className="bg-white rounded-2xl shadow-lg p-6 h-80">
+//         <div className="flex justify-between items-center mb-4">
+//           <h3 className="text-lg font-semibold text-gray-500">Expense Categories</h3>
+//           <div className="text-sm text-gray-500">
+//             Total: ${(dashboardData?.expenses?.total ?? 0).toLocaleString()}
 //           </div>
-//         </Link>
-
-//         <Link
-//           to="/salary/create-payslip"
-//           className="bg-white rounded-2xl shadow-lg p-6 transform transition-all hover:scale-[1.02] hover:shadow-xl group"
-//         >
-//           <div className="flex items-center space-x-4">
-//             <div className="p-3 bg-green-100 rounded-full group-hover:bg-green-200 transition-colors">
-//               <FileText className="w-6 h-6 text-green-600" />
-//             </div>
-//             <div>
-//               <h3 className="text-lg font-semibold">Create Payslip</h3>
-//               <p className="text-sm text-gray-500">Generate salary slips</p>
-//               <span className="text-xs text-green-500 mt-1 block">2 drafts in progress</span>
-//             </div>
-//           </div>
-//         </Link>
-
-//         <Link
-//           to="/expense"
-//           className="bg-white rounded-2xl shadow-lg p-6 transform transition-all hover:scale-[1.02] hover:shadow-xl group"
-//         >
-//           <div className="flex items-center space-x-4">
-//             <div className="p-3 bg-purple-100 rounded-full group-hover:bg-purple-200 transition-colors">
-//               <DollarSign className="w-6 h-6 text-purple-600" />
-//             </div>
-//             <div>
-//               <h3 className="text-lg font-semibold">Add Expense</h3>
-//               <p className="text-sm text-gray-500">Record new expenditure</p>
-//               <span className="text-xs text-purple-500 mt-1 block">$1,200 pending approval</span>
-//             </div>
-//           </div>
-//         </Link>
+//         </div>
+//         <ResponsiveContainer width="100%" height="90%">
+//           <PieChart>
+//             <Pie
+//               data={dashboardData?.expenses?.categories ?? []}
+//               cx="50%"
+//               cy="50%"
+//               innerRadius={60}
+//               outerRadius={80}
+//               paddingAngle={5}
+//               dataKey="value"
+//             >
+//               {dashboardData?.expenses?.categories?.map((entry, index) => (
+//                 <Cell 
+//                   key={`cell-${index}`} 
+//                   fill={entry.color || CHART_COLORS.expenses}
+//                 />
+//               ))}
+//             </Pie>
+//             <Tooltip formatter={(value) => `$${value.toLocaleString()}`} />
+//             <Legend 
+//               layout="vertical"
+//               align="right"
+//               verticalAlign="middle"
+//               formatter={(value) => <span className="text-sm">{value}</span>}
+//             />
+//           </PieChart>
+//         </ResponsiveContainer>
 //       </div>
 //     </div>
 //   );
@@ -195,58 +343,390 @@
 
 // export default Dashboard;
 
-// components/Dashboard/Dashboard.jsx
-import React from 'react';
+
+
+
+// import React, { useEffect, useState } from 'react';
+// import { 
+//   Users, UserCheck, UserX, Calendar,
+//   FileText, DollarSign 
+// } from 'lucide-react';
+// import { 
+//   PieChart, Pie, Cell, 
+//   LineChart, Line,
+//   ResponsiveContainer, 
+//   XAxis, YAxis, Tooltip, Legend, Text 
+// } from 'recharts';
+
+// function Dashboard() {
+//   const [dashboardData, setDashboardData] = useState(null);
+//   const [loading, setLoading] = useState(true);
+//   const [error, setError] = useState(null);
+
+//   const CHART_COLORS = {
+//     salary: '#6D28D9',
+//     expenses: '#EA580C',
+//     present: '#10B981',
+//     absent: '#EF4444',
+//     leave: '#F59E0B'
+//   };
+
+//   useEffect(() => {
+//     const fetchData = async () => {
+//       try {
+//         const response = await fetch('http://localhost:3000/dashboard');
+//         if (!response.ok) throw new Error('Failed to fetch data');
+//         const { data } = await response.json();
+        
+//         const transformedData = {
+//           ...data,
+//           salary: {
+//             ...data.salary
+//           },
+//           yearlyTrends: {
+//             salary: data.yearlyTrends?.salary?.map(d => ({
+//               year: d.year,
+//               amount: Number(d.amount)
+//             })) || [],
+//             expenses: data.yearlyTrends?.expenses?.map(d => ({
+//               year: d.year,
+//               amount: Number(d.amount)
+//             })) || []
+//           }
+//         };
+        
+//         setDashboardData(transformedData);
+//       } catch (err) {
+//         setError(err.message);
+//       } finally {
+//         setLoading(false);
+//       }
+//     };
+
+//     fetchData();
+//   }, []);
+
+//   if (loading) {
+//     return (
+//       <div className="container mx-auto p-6 text-center text-gray-500">
+//         Loading dashboard data...
+//       </div>
+//     );
+//   }
+
+//   if (error) {
+//     return (
+//       <div className="container mx-auto p-6 text-center text-red-500">
+//         Error: {error}
+//       </div>
+//     );
+//   }
+
+//   return (
+//     <div className="container mx-auto p-4 sm:p-6 bg-gray-100 min-h-screen">
+//       {/* Main Stats Grid */}
+//       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+//         {/* Total Employees Card */}
+//         <div className="bg-white rounded-2xl shadow-lg p-6">
+//           <div className="flex items-center justify-between">
+//             <div>
+//               <h3 className="text-lg font-semibold text-gray-500 mb-2">Total Employees</h3>
+//               <div className="text-4xl font-bold text-blue-600">
+//                 {dashboardData?.employees?.total ?? 0}
+//               </div>
+//             </div>
+//             <div className="p-3 bg-blue-100 rounded-full">
+//               <Users className="w-8 h-8 text-blue-600" />
+//             </div>
+//           </div>
+//         </div>
+
+//         {/* Present Today Card */}
+//         <div className="bg-white rounded-2xl shadow-lg p-6">
+//           <div className="flex items-center justify-between">
+//             <div>
+//               <h3 className="text-lg font-semibold text-gray-500 mb-2">Present Today</h3>
+//               <div className="text-4xl font-bold text-green-600">
+//                 {dashboardData?.attendance?.present ?? 0}
+//               </div>
+//             </div>
+//             <div className="p-3 bg-green-100 rounded-full">
+//               <UserCheck className="w-8 h-8 text-green-600" />
+//             </div>
+//           </div>
+//         </div>
+
+//         {/* Absent Today Card */}
+//         <div className="bg-white rounded-2xl shadow-lg p-6">
+//           <div className="flex items-center justify-between">
+//             <div>
+//               <h3 className="text-lg font-semibold text-gray-500 mb-2">Absent Today</h3>
+//               <div className="text-4xl font-bold text-red-600">
+//                 {dashboardData?.attendance?.absent ?? 0}
+//               </div>
+//             </div>
+//             <div className="p-3 bg-red-100 rounded-full">
+//               <UserX className="w-8 h-8 text-red-600" />
+//             </div>
+//           </div>
+//         </div>
+
+//         {/* Leave Today Card */}
+//         <div className="bg-white rounded-2xl shadow-lg p-6">
+//           <div className="flex items-center justify-between">
+//             <div>
+//               <h3 className="text-lg font-semibold text-gray-500 mb-2">On Leave</h3>
+//               <div className="text-4xl font-bold text-yellow-600">
+//                 {dashboardData?.attendance?.leave ?? 0}
+//               </div>
+//             </div>
+//             <div className="p-3 bg-yellow-100 rounded-full">
+//               <Calendar className="w-8 h-8 text-yellow-600" />
+//             </div>
+//           </div>
+//         </div>
+//       </div>
+
+//       {/* Financial Summary Grid */}
+//       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+//         {/* Salary Paid Card */}
+//         <div className="bg-white rounded-2xl shadow-lg p-6">
+//           <div className="flex items-center justify-between">
+//             <div>
+//               <h3 className="text-lg font-semibold text-gray-500 mb-2">Total Salary Paid</h3>
+//               <div className="text-3xl font-bold text-purple-600">
+//                 ${(dashboardData?.salary?.paid ?? 0).toLocaleString()}
+//               </div>
+//             </div>
+//             <FileText className="w-8 h-8 text-purple-600" />
+//           </div>
+//         </div>
+
+//         {/* Monthly Expenses Card */}
+//         <div className="bg-white rounded-2xl shadow-lg p-6">
+//           <div className="flex items-center justify-between">
+//             <div>
+//               <h3 className="text-lg font-semibold text-gray-500 mb-2">Total Expenses</h3>
+//               <div className="text-3xl font-bold text-orange-600">
+//                 ${(dashboardData?.expenses?.total ?? 0).toLocaleString()}
+//               </div>
+//             </div>
+//             <DollarSign className="w-8 h-8 text-orange-600" />
+//           </div>
+//         </div>
+//       </div>
+//       {/* Yearly Trends Section */}
+//       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+//         {/* Yearly Salary Trend */}
+//         <div className="bg-white rounded-2xl shadow-lg p-6 h-80">
+//           <h3 className="text-lg font-semibold text-gray-500 mb-4">Yearly Salary Trend</h3>
+//           <ResponsiveContainer width="100%" height="80%">
+//             <LineChart data={dashboardData?.yearlyTrends?.salary ?? []}>
+//               <XAxis 
+//                 dataKey="year" 
+//                 label={{ value: 'Year', position: 'bottom' }}
+//               />
+//               <YAxis 
+//                 label={{ 
+//                   value: 'Amount ($)', 
+//                   angle: -90, 
+//                   position: 'insideLeft' 
+//                 }}
+//               />
+//               <Tooltip
+//                 formatter={(value) => [`$${value.toLocaleString()}`, 'Amount']}
+//                 contentStyle={{
+//                   background: '#fff',
+//                   borderRadius: '8px',
+//                   boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+//                 }}
+//               />
+//               <Line
+//                 type="monotone"
+//                 dataKey="amount"
+//                 stroke={CHART_COLORS.salary}
+//                 strokeWidth={2}
+//                 dot={{ fill: CHART_COLORS.salary, strokeWidth: 2 }}
+//                 activeDot={{ r: 6 }}
+//               />
+//             </LineChart>
+//           </ResponsiveContainer>
+//         </div>
+
+//         {/* Yearly Expense Trend */}
+//         <div className="bg-white rounded-2xl shadow-lg p-6 h-80">
+//           <h3 className="text-lg font-semibold text-gray-500 mb-4">Yearly Expense Trend</h3>
+//           <ResponsiveContainer width="100%" height="80%">
+//             <LineChart data={dashboardData?.yearlyTrends?.expenses ?? []}>
+//               <XAxis 
+//                 dataKey="year" 
+//                 label={{ value: 'Year', position: 'bottom' }}
+//               />
+//               <YAxis 
+//                 label={{ 
+//                   value: 'Amount ($)', 
+//                   angle: -90, 
+//                   position: 'insideLeft' 
+//                 }}
+//               />
+//               <Tooltip
+//                 formatter={(value) => [`$${value.toLocaleString()}`, 'Amount']}
+//                 contentStyle={{
+//                   background: '#fff',
+//                   borderRadius: '8px',
+//                   boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+//                 }}
+//               />
+//               <Line
+//                 type="monotone"
+//                 dataKey="amount"
+//                 stroke={CHART_COLORS.expenses}
+//                 strokeWidth={2}
+//                 dot={{ fill: CHART_COLORS.expenses, strokeWidth: 2 }}
+//                 activeDot={{ r: 6 }}
+//               />
+//             </LineChart>
+//           </ResponsiveContainer>
+//         </div>
+//       </div>
+
+//       {/* Expense Breakdown Chart */}
+//       <div className="bg-white rounded-2xl shadow-lg p-6 h-80">
+//         <div className="flex justify-between items-center mb-4">
+//           <h3 className="text-lg font-semibold text-gray-500">Expense Categories</h3>
+//           <div className="text-sm text-gray-500">
+//             Total: ${(dashboardData?.expenses?.total ?? 0).toLocaleString()}
+//           </div>
+//         </div>
+//         <ResponsiveContainer width="100%" height="90%">
+//           <PieChart>
+//             <Pie
+//               data={dashboardData?.expenses?.categories ?? []}
+//               cx="50%"
+//               cy="50%"
+//               innerRadius={60}
+//               outerRadius={80}
+//               paddingAngle={5}
+//               dataKey="value"
+//             >
+//               {dashboardData?.expenses?.categories?.map((entry, index) => (
+//                 <Cell 
+//                   key={`cell-${index}`} 
+//                   fill={entry.color || CHART_COLORS.expenses}
+//                 />
+//               ))}
+//             </Pie>
+//             <Tooltip formatter={(value) => `$${value.toLocaleString()}`} />
+//             <Legend 
+//               layout="vertical"
+//               align="right"
+//               verticalAlign="middle"
+//               formatter={(value) => <span className="text-sm">{value}</span>}
+//             />
+//           </PieChart>
+//         </ResponsiveContainer>
+//       </div>
+//     </div>
+//   );
+// }
+
+// export default Dashboard;
+
+
+
+import React, { useEffect, useState } from 'react';
 import { 
   Users, UserCheck, UserX, Calendar,
   FileText, DollarSign 
 } from 'lucide-react';
-import { BarChart, Bar, PieChart, Pie, Cell, ResponsiveContainer, XAxis, YAxis, Tooltip, Legend, Text } from 'recharts';
+import { 
+  PieChart, Pie, Cell, 
+  LineChart, Line,
+  ResponsiveContainer, 
+  XAxis, YAxis, Tooltip, Legend, Text 
+} from 'recharts';
 
 function Dashboard() {
-  // Dummy data structure
-  const dummyData = {
-    employees: { total: 72 },
-    attendance: { 
-      totalEmployeesPresentToday: 65, 
-      totalEmployeesAbsentToday: 7,
-      totalEmployeesLeaveToday: 5
-    },
-    expenses: {
-      total: 25000,
-      categories: [
-        { name: 'Office Supplies', value: 8000, color: '#EA580C' },
-        { name: 'Business Travel', value: 7000, color: '#F59E0B' },
-        { name: 'Equipment', value: 10000, color: '#D97706' }
-      ],
-      monthlyHistorical: [
-        { month: 'Jan', amount: 22000 },
-        { month: 'Feb', amount: 24500 },
-        { month: 'Mar', amount: 25000 },
-      ]
-    },
-    salary: { 
-      paid: 450000,
-      historical: [
-        { month: 'Jan', amount: 420000 },
-        { month: 'Feb', amount: 435000 },
-        { month: 'Mar', amount: 450000 },
-      ]
-    }
+  const [dashboardData, setDashboardData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  const CHART_COLORS = {
+    salary: '#6D28D9',
+    expenses: '#EA580C',
+    present: '#10B981',
+    absent: '#EF4444',
+    leave: '#F59E0B',
+    categoryColors: [
+      '#FF6B6B', '#4ECDC4', '#45B7D1', 
+      '#96CEB4', '#FFEEAD', '#D4A5A5',
+      '#9DC183', '#F4A261', '#2A9D8F'
+    ]
   };
 
-  const COLORS = ['#EA580C', '#F59E0B', '#D97706'];
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch('http://localhost:3000/dashboard');
+        if (!response.ok) throw new Error('Failed to fetch data');
+        const { data } = await response.json();
+        
+        const transformedData = {
+          ...data,
+          salary: {
+            ...data.salary
+          },
+          yearlyTrends: {
+            salary: data.yearlyTrends?.salary?.map(d => ({
+              year: d.year,
+              amount: Number(d.amount)
+            })) || [],
+            expenses: data.yearlyTrends?.expenses?.map(d => ({
+              year: d.year,
+              amount: Number(d.amount)
+            })) || []
+          }
+        };
+        
+        setDashboardData(transformedData);
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="container mx-auto p-6 text-center text-gray-500">
+        Loading dashboard data...
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="container mx-auto p-6 text-center text-red-500">
+        Error: {error}
+      </div>
+    );
+  }
 
   return (
     <div className="container mx-auto p-4 sm:p-6 bg-gray-100 min-h-screen">
-      {/* Main Stats Grid - 4 Columns */}
+      {/* Main Stats Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         {/* Total Employees Card */}
-        <div className="bg-white rounded-2xl shadow-lg p-6 transform transition-all hover:scale-[1.02] hover:shadow-xl">
+        <div className="bg-white rounded-2xl shadow-lg p-6">
           <div className="flex items-center justify-between">
             <div>
               <h3 className="text-lg font-semibold text-gray-500 mb-2">Total Employees</h3>
-              <div className="text-4xl font-bold text-blue-600">{dummyData.employees.total}</div>
+              <div className="text-4xl font-bold text-blue-600">
+                {dashboardData?.employees?.total ?? 0}
+              </div>
             </div>
             <div className="p-3 bg-blue-100 rounded-full">
               <Users className="w-8 h-8 text-blue-600" />
@@ -255,12 +735,12 @@ function Dashboard() {
         </div>
 
         {/* Present Today Card */}
-        <div className="bg-white rounded-2xl shadow-lg p-6 transform transition-all hover:scale-[1.02] hover:shadow-xl">
+        <div className="bg-white rounded-2xl shadow-lg p-6">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="text-lg font-semibold text-gray-500 mb-2">Total Employees Present Today</h3>
+              <h3 className="text-lg font-semibold text-gray-500 mb-2">Present Today</h3>
               <div className="text-4xl font-bold text-green-600">
-                {dummyData.attendance.totalEmployeesPresentToday}
+                {dashboardData?.attendance?.present ?? 0}
               </div>
             </div>
             <div className="p-3 bg-green-100 rounded-full">
@@ -270,12 +750,12 @@ function Dashboard() {
         </div>
 
         {/* Absent Today Card */}
-        <div className="bg-white rounded-2xl shadow-lg p-6 transform transition-all hover:scale-[1.02] hover:shadow-xl">
+        <div className="bg-white rounded-2xl shadow-lg p-6">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="text-lg font-semibold text-gray-500 mb-2">Total Employees Absent Today</h3>
+              <h3 className="text-lg font-semibold text-gray-500 mb-2">Absent Today</h3>
               <div className="text-4xl font-bold text-red-600">
-                {dummyData.attendance.totalEmployeesAbsentToday}
+                {dashboardData?.attendance?.absent ?? 0}
               </div>
             </div>
             <div className="p-3 bg-red-100 rounded-full">
@@ -285,12 +765,12 @@ function Dashboard() {
         </div>
 
         {/* Leave Today Card */}
-        <div className="bg-white rounded-2xl shadow-lg p-6 transform transition-all hover:scale-[1.02] hover:shadow-xl">
+        <div className="bg-white rounded-2xl shadow-lg p-6">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="text-lg font-semibold text-gray-500 mb-2">Total Employees Leave Today</h3>
+              <h3 className="text-lg font-semibold text-gray-500 mb-2">On Leave</h3>
               <div className="text-4xl font-bold text-yellow-600">
-                {dummyData.attendance.totalEmployeesLeaveToday}
+                {dashboardData?.attendance?.leave ?? 0}
               </div>
             </div>
             <div className="p-3 bg-yellow-100 rounded-full">
@@ -303,85 +783,116 @@ function Dashboard() {
       {/* Financial Summary Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
         {/* Salary Paid Card */}
-        <div className="bg-white rounded-2xl shadow-lg p-6 transform transition-all hover:scale-[1.02] hover:shadow-xl">
+        <div className="bg-white rounded-2xl shadow-lg p-6">
           <div className="flex items-center justify-between">
             <div>
               <h3 className="text-lg font-semibold text-gray-500 mb-2">Total Salary Paid</h3>
               <div className="text-3xl font-bold text-purple-600">
-                ${dummyData.salary.paid.toLocaleString()}
+                ₨{(dashboardData?.salary?.paid ?? 0).toLocaleString()}
               </div>
             </div>
-            <div className="p-3 bg-purple-100 rounded-full">
-              <FileText className="w-8 h-8 text-purple-600" />
-            </div>
+            <FileText className="w-8 h-8 text-purple-600" />
           </div>
         </div>
 
         {/* Monthly Expenses Card */}
-        <div className="bg-white rounded-2xl shadow-lg p-6 transform transition-all hover:scale-[1.02] hover:shadow-xl">
+        <div className="bg-white rounded-2xl shadow-lg p-6">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="text-lg font-semibold text-gray-500 mb-2">Monthly Expenses</h3>
+              <h3 className="text-lg font-semibold text-gray-500 mb-2">Total Expenses</h3>
               <div className="text-3xl font-bold text-orange-600">
-                ${dummyData.expenses.total.toLocaleString()}
+                ₨{(dashboardData?.expenses?.total ?? 0).toLocaleString()}
               </div>
             </div>
-            <div className="p-3 bg-orange-100 rounded-full">
-              <DollarSign className="w-8 h-8 text-orange-600" />
-            </div>
+            <DollarSign className="w-8 h-8 text-orange-600" />
           </div>
         </div>
       </div>
 
-      {/* Chart Section */}
+      {/* Yearly Trends Section */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-        {/* Salary Trend Chart */}
+        {/* Yearly Salary Trend */}
         <div className="bg-white rounded-2xl shadow-lg p-6 h-80">
-          <h3 className="text-lg font-semibold text-gray-500 mb-4">Salary Trend</h3>
+          <h3 className="text-lg font-semibold text-gray-500 mb-4">Yearly Salary Trend</h3>
           <ResponsiveContainer width="100%" height="80%">
-            <BarChart data={dummyData.salary.historical}>
-              <XAxis dataKey="month" />
-              <YAxis />
-              <Tooltip formatter={(value) => [`$${value.toLocaleString()}`, 'Amount']} />
-              <Bar 
-                dataKey="amount" 
-                fill="#6D28D9" 
-                radius={[4, 4, 0, 0]}
+            <LineChart data={dashboardData?.yearlyTrends?.salary ?? []}>
+              <XAxis 
+                dataKey="year" 
+                label={{ value: 'Year', position: 'bottom' }}
               />
-            </BarChart>
+              <YAxis 
+                label={{ 
+                  value: 'Amount (₨)', 
+                  angle: -90, 
+                  position: 'insideLeft' 
+                }}
+              />
+              <Tooltip
+                formatter={(value) => [`₨${value.toLocaleString()}`, 'Amount']}
+                contentStyle={{
+                  background: '#fff',
+                  borderRadius: '8px',
+                  boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+                }}
+              />
+              <Line
+                type="monotone"
+                dataKey="amount"
+                stroke={CHART_COLORS.salary}
+                strokeWidth={2}
+                dot={{ fill: CHART_COLORS.salary, strokeWidth: 2 }}
+                activeDot={{ r: 6 }}
+              />
+            </LineChart>
           </ResponsiveContainer>
         </div>
 
-        {/* Monthly Expenses Trend Chart */}
+        {/* Yearly Expense Trend */}
         <div className="bg-white rounded-2xl shadow-lg p-6 h-80">
-          <h3 className="text-lg font-semibold text-gray-500 mb-4">Expenses Trend</h3>
+          <h3 className="text-lg font-semibold text-gray-500 mb-4">Yearly Expense Trend</h3>
           <ResponsiveContainer width="100%" height="80%">
-            <BarChart data={dummyData.expenses.monthlyHistorical}>
-              <XAxis dataKey="month" />
-              <YAxis />
-              <Tooltip formatter={(value) => [`$${value.toLocaleString()}`, 'Amount']} />
-              <Bar 
-                dataKey="amount" 
-                fill="#EA580C" 
-                radius={[4, 4, 0, 0]}
+            <LineChart data={dashboardData?.yearlyTrends?.expenses ?? []}>
+              <XAxis 
+                dataKey="year" 
+                label={{ value: 'Year', position: 'bottom' }}
               />
-            </BarChart>
+              <YAxis 
+                label={{ 
+                  value: 'Amount (₨)', 
+                  angle: -90, 
+                  position: 'insideLeft' 
+                }}
+              />
+              <Tooltip
+                formatter={(value) => [`₨${value.toLocaleString()}`, 'Amount']}
+                contentStyle={{
+                  background: '#fff',
+                  borderRadius: '8px',
+                  boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
+                }}
+              />
+              <Line
+                type="monotone"
+                dataKey="amount"
+                stroke={CHART_COLORS.expenses}
+                strokeWidth={2}
+                dot={{ fill: CHART_COLORS.expenses, strokeWidth: 2 }}
+                activeDot={{ r: 6 }}
+              />
+            </LineChart>
           </ResponsiveContainer>
         </div>
       </div>
 
       {/* Expense Breakdown Chart */}
-      <div className="bg-white rounded-2xl shadow-lg p-6 h-80 mb-6">
+      <div className="bg-white rounded-2xl shadow-lg p-6 h-80">
         <div className="flex justify-between items-center mb-4">
           <h3 className="text-lg font-semibold text-gray-500">Expense Categories</h3>
-          <div className="text-sm text-gray-500">
-            Total: ${dummyData.expenses.total.toLocaleString()}
-          </div>
         </div>
         <ResponsiveContainer width="100%" height="90%">
           <PieChart>
             <Pie
-              data={dummyData.expenses.categories}
+              data={dashboardData?.expenses?.categories ?? []}
               cx="50%"
               cy="50%"
               innerRadius={60}
@@ -389,20 +900,14 @@ function Dashboard() {
               paddingAngle={5}
               dataKey="value"
             >
-              {dummyData.expenses.categories.map((entry, index) => (
-                <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+              {dashboardData?.expenses?.categories?.map((entry, index) => (
+                <Cell 
+                  key={`cell-${index}`} 
+                  fill={entry.color || CHART_COLORS.categoryColors[index % CHART_COLORS.categoryColors.length]}
+                />
               ))}
-              <Text
-                x="50%"
-                y="50%"
-                textAnchor="middle"
-                dominantBaseline="middle"
-                className="text-2xl font-semibold"
-              >
-                ${dummyData.expenses.total.toLocaleString()}
-              </Text>
             </Pie>
-            <Tooltip formatter={(value) => `$${value.toLocaleString()}`} />
+            <Tooltip formatter={(value) => `₨${value.toLocaleString()}`} />
             <Legend 
               layout="vertical"
               align="right"
