@@ -39,15 +39,15 @@ export const getEmployeeById = async (req, res) => {
 // 3. Create a new employee
 export const createEmployee = async (req, res) => {
   try {
-    const { name, contact, email, position } = req.body;
+    const { name, contact, email, position ,basicSalary} = req.body;
 
     // Validate required fields
-    if (!name || !contact || !email || !position) {
+    if (!name || !contact || !email || !position || !basicSalary) {
       return res.status(400).json({ message: 'All fields are required' });
     }
 
     const employee = await prisma.employee.create({
-      data: { name, contact, email, position },
+      data: { name, contact, email, position ,basicSalary},
     });
     res.status(201).json({
       message: "Employee created successfully",
@@ -56,7 +56,7 @@ export const createEmployee = async (req, res) => {
   } catch (error) {
     if (error.code === 'P2002') {
       // Prisma unique constraint violation (for email)
-      return res.status(400).json({ message: 'Email already exists' });
+      return res.status(400).json({ message: 'An employee with this email already exists' });
     }
     res.status(500).json({ message: 'Server error', error: error.message });
   }
@@ -66,16 +66,21 @@ export const createEmployee = async (req, res) => {
 export const updateEmployee = async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, contact, email, position } = req.body;
+    const { name, contact, email, position, basicSalary } = req.body;
 
     const employee = await prisma.employee.update({
       where: { id: Number(id) },
-      data: { name, contact, email, position },
+      data: { 
+        name, 
+        contact, 
+        email, 
+        position, 
+        basicSalary: parseInt(basicSalary, 10) 
+      },
     });
-
     res.status(200).json({
       message: `Employee with ID ${id} updated successfully`,
-      employee
+      employee,
     });
   } catch (error) {
     if (error.code === 'P2025') {
@@ -84,6 +89,7 @@ export const updateEmployee = async (req, res) => {
     res.status(500).json({ message: 'Server error', error: error.message });
   }
 };
+
 
 //pacth method for updating employee
 export const patchEmployee = async (req, res) => {

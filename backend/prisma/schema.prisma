@@ -19,9 +19,12 @@ model Employee {
   contact   String
   email     String   @unique
   position  String
+  basicSalary Int      @default(0)
   status   Int     @default(1) // 1 for active, 0 for inactive
   salaries  Salary[] 
   attendance Attendance[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime  @default(now()) @updatedAt
 }
 
 enum SalaryStatus {
