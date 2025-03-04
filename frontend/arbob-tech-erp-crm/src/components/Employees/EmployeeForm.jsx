@@ -49,11 +49,6 @@ function EmployeeForm({ onSubmit, onClose, employee, error, formErrors }) {
         return;
       }
       
-      // if (!formEmployee.basicSalary) {
-      //   error.basicSalary = 'Basic salary is required';
-      // } else if (isNaN(formEmployee.basicSalary) || formEmployee.basicSalary <= 0) {
-      //   error.basicSalary = 'Basic salary must be a positive number';
-      // }
       if (formEmployee.basicSalary === '' || formEmployee.basicSalary === undefined) {
         error.basicSalary = 'Basic salary is required';
       } else if (isNaN(formEmployee.basicSalary) || Number(formEmployee.basicSalary) < 0) {
