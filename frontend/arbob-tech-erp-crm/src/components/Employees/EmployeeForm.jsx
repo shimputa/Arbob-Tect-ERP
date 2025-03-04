@@ -7,6 +7,7 @@ function EmployeeForm({ onSubmit, onClose, employee, error, formErrors }) {
     contact: '',
     email: '',
     position: '',
+    basicSalary: '',
   });
 
   useEffect(() => {
@@ -17,6 +18,7 @@ function EmployeeForm({ onSubmit, onClose, employee, error, formErrors }) {
         contact: employee.contact || '',
         email: employee.email || '',
         position: employee.position || '',
+        basicSalary: employee.basicSalary || '',
       });
     }
   }, [employee]);
@@ -46,7 +48,18 @@ function EmployeeForm({ onSubmit, onClose, employee, error, formErrors }) {
       if (!formEmployee.position.trim()) {
         return;
       }
-
+      
+      // if (!formEmployee.basicSalary) {
+      //   error.basicSalary = 'Basic salary is required';
+      // } else if (isNaN(formEmployee.basicSalary) || formEmployee.basicSalary <= 0) {
+      //   error.basicSalary = 'Basic salary must be a positive number';
+      // }
+      if (formEmployee.basicSalary === '' || formEmployee.basicSalary === undefined) {
+        error.basicSalary = 'Basic salary is required';
+      } else if (isNaN(formEmployee.basicSalary) || Number(formEmployee.basicSalary) < 0) {
+        error.basicSalary = 'Basic salary must be a non-negative number';
+      }
+      
       await onSubmit(formEmployee);
     } catch (err) {
       // No need to set a separate formError state, as we're using formErrors from the parent
@@ -164,6 +177,29 @@ function EmployeeForm({ onSubmit, onClose, employee, error, formErrors }) {
           />
           {formErrors.position && (
             <p className="text-red-500 text-sm mt-1">{formErrors.position}</p>
+          )}
+        </div>
+
+        <div>
+          <label htmlFor="basicSalary" className="block text-sm font-medium text-gray-700 mb-1">
+            Basic Salary
+          </label>
+          <input
+            type="number"
+            name="basicSalary"
+            id="basicSalary"
+            value={formEmployee.basicSalary}
+            onChange={handleChange}
+            placeholder="Enter basic salary"
+            className={`w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 
+                     focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500
+                     transition duration-150 ease-in-out ${
+                       formErrors.basicSalary ? 'border-red-500' : ''
+                     }`}
+            required
+          />
+          {formErrors.basicSalary && (
+            <p className="text-red-500 text-sm mt-1">{formErrors.basicSalary}</p>
           )}
         </div>
 
