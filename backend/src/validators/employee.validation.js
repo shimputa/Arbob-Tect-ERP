@@ -74,6 +74,11 @@ export const validateEmployeePatch = [
     .isLength({ min: 2, max: 100 }).withMessage('Position must be between 2 and 100 characters long')
     .matches(/^[a-zA-Z0-9\s]+$/).withMessage('Position can only contain letters, numbers, and spaces')
     .trim().withMessage('Position must not contain leading or trailing spaces'),
+
+  check('basicSalary')
+    .optional()
+    .isNumeric().withMessage('Basic salary must be a valid number')
+    .isFloat({ min: 0 }).withMessage('Basic salary must be a positive number')
 ];
 
 
