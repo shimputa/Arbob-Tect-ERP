@@ -6,6 +6,7 @@ import expenseCategoryRoutes from './routes/expenseCategory.routes.js';
 import salaryRoutes from './routes/salary.routes.js';
 import attendanceRoutes from './routes/attendance.routes.js';
 import dashBoardRoutes from './routes/dashBoard.routes.js';
+import projectRoutes from './routes/project.routes.js'; 
 
 const app = express();
 
@@ -26,4 +27,5 @@ app.use('/expense', expenseRoutes);  // Prefix with '/api' for all expense route
 app.use('/expense-categories', expenseCategoryRoutes);  // Prefix with '/api' for all expense category routes
 app.use('/salary', salaryRoutes);  // Prefix with '/api' for all salary routes
 app.use('/attendance', attendanceRoutes);  // Prefix with '/api' for all attendance routes
+app.use('/project', projectRoutes); 
 export default app;

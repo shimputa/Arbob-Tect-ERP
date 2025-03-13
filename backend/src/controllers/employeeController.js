@@ -90,7 +90,6 @@ export const updateEmployee = async (req, res) => {
   }
 };
 
-
 //pacth method for updating employee
 export const patchEmployee = async (req, res) => {
   try {

@@ -23,6 +23,7 @@ model Employee {
   status   Int     @default(1) // 1 for active, 0 for inactive
   salaries  Salary[] 
   attendance Attendance[]
+  employeeProjects ProjectEmployee[]  
   createdAt DateTime @default(now())
   updatedAt DateTime  @default(now()) @updatedAt
 }
@@ -68,6 +69,7 @@ enum AttendanceStatus {
 model Expense {
   id               Int              @id @default(autoincrement())
   name             String
+  
   // expenseCategory  ExpenseCategory  @relation(fields: [expenseCategoryId], references: [id])
   // expenseCategoryId Int
   expenseCategory  ExpenseCategory?  @relation(fields: [expenseCategoryName], references: [name])
@@ -76,6 +78,7 @@ model Expense {
   total            Float
   description      String
   reference        String
+  status             Int         @default(1) // 1 for active, 0 for deleted/inactive
   createdAt     DateTime      @default(now())
   updatedAt     DateTime       @default(now()) @updatedAt
 }
@@ -99,3 +102,72 @@ model ExpenseCategory {
   expenses  Expense[] 
   status   Int     @default(1) // 1 for active, 0 for inactive
 }
+
+model Project {
+  id                 Int         @id @default(autoincrement())
+  projectName        String
+  ownerName          String
+  ownerEmail         String
+  ownerNumber        String
+  note               String?
+  startDate          DateTime
+  endDate            DateTime?
+  amount            Float       
+  tax               Float       
+  taxPercentage     Float       
+  amountAfterTax    Float       
+  paidAmount        Float       
+  remainingAmount   Float   
+  bonus             Float       
+  sharedBonus       Float       
+  paidStatus        PaidStatus      
+  projectStatus     ProjectStatus  
+  platform          Platform       
+  projectEmployees  ProjectEmployee[]
+  status            Int             @default(1) // 1 for active, 0 for deleted/inactive
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@index([projectStatus, paidStatus]) 
+  @@index([platform])    
+
+}
+
+model ProjectEmployee {
+  id            Int      @id @default(autoincrement())
+  employee      Employee @relation(fields: [employeeId], references: [id])
+  employeeId    Int
+  project       Project  @relation(fields: [projectId], references: [id])
+  projectId     Int
+  bonusShare    Float    @default(0) 
+  isActive      Int      @default(1)   
+  status        Int      @default(1) // 1 for active, 0 for deleted/inactive
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@unique([employeeId, projectId])    // Prevent duplicate assignments
+  @@index([employeeId])               // For querying employee's projects
+  @@index([projectId])                // For querying project's employees
+}
+
+
+enum PaidStatus {
+  NOT_PAID
+  PARTIAL_PAID
+  PAID
+}
+
+enum Platform {
+  UPWORK
+  FIVER
+  LINKEDIN
+  WHATSAPP
+  OTHER
+}
+
+enum ProjectStatus {
+  ONGOING
+  COMPLETE
+}
+
+
