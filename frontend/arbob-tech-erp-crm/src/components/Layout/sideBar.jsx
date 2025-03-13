@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useCallback } from 'react';
-import { NavLink, useNavigate } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 import {
   XMarkIcon,
   ChevronDownIcon,
@@ -8,13 +8,13 @@ import {
   Squares2X2Icon,
   HomeIcon,
   CurrencyDollarIcon,
-  ClockIcon
+  ClockIcon,
+  FolderIcon
 } from '@heroicons/react/24/outline';
 
 function Sidebar({ isMobile, isOpen, toggleSidebar }) {
   const [isSalaryDropdownOpen, setIsSalaryDropdownOpen] = useState(false);
   const [isAttendanceDropdownOpen, setIsAttendanceDropdownOpen] = useState(false);
-  const navigate = useNavigate();
 
   const toggleSalaryDropdown = useCallback(() => {
     setIsSalaryDropdownOpen(prev => !prev);
@@ -30,6 +30,7 @@ function Sidebar({ isMobile, isOpen, toggleSidebar }) {
       <NavItem to="/employees" icon={<UserGroupIcon className="h-7 w-7" />} text="Employees" />
       <NavItem to="/expense" icon={<BanknotesIcon className="h-7 w-7" />} text="Expenses" />
       <NavItem to="/expenseCate" icon={<Squares2X2Icon className="h-7 w-7" />} text="Expense Categories" />
+      <NavItem to="/projects" icon={<FolderIcon className="h-7 w-7" />} text="Projects" />
 
       {/* Salary Section */}
       <li>
