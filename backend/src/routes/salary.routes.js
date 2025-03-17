@@ -1,5 +1,6 @@
 import express from 'express';
 import {
+  getEmployeeProjectBonuses,
     createSalary,
     getAllSalaries,
     filterSalaries,
@@ -12,6 +13,8 @@ const router = express.Router();
 
 // Create a new salary record
 router.post('/', createSalary);
+
+router.get('/project-bonuses', getEmployeeProjectBonuses)
 
 // Get all salaries
 router.get('/', getAllSalaries);
