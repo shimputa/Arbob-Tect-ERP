@@ -53,6 +53,7 @@ function Sidebar({ isMobile, isOpen, toggleSidebar }) {
           <ul className="mt-2 ml-7 space-y-2">
             <SubNavItem to="/salary/create-payslip" text="Create Payslip" />
             <SubNavItem to="/salary/payslip-list" text="Payslip List" />
+            <SubNavItem to="/salary/advance-list" text="Advance Salary List" />
           </ul>
         )}
       </li>
