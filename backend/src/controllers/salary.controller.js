@@ -97,7 +97,7 @@ export const createSalary = async (req, res) => {
       bonus,
       projectBonusShare,
       advanceSalary,
-      otherDeduction,
+      advancePayment,
       basicSalary,
       totalBonus,
       totalDeduction,
@@ -106,99 +106,50 @@ export const createSalary = async (req, res) => {
       status
     } = req.body;
 
-    // Validate employee
-    const employeeRecord = await prisma.employee.findFirst({
-      where: { name: employee }
-    });
-
+    // Step 1: Validate employee existence
+    const employeeRecord = await findEmployee(employee);
     if (!employeeRecord) {
       return res.status(400).json({ message: 'Employee not found' });
     }
 
-    // Check for existing salary record
-    const existingSalary = await prisma.salary.findFirst({
-      where: {
-        employeeId: employeeRecord.id,
-        month,
-        year: parseInt(year)
-      }
-    });
-
-    if (existingSalary) {
+    // Step 2: Check for existing salary record
+    const isDuplicate = await checkDuplicateSalary(employeeRecord.id, month, year);
+    if (isDuplicate) {
       return res.status(400).json({ 
-        message: `A salary record already exists for ${employee} in ${month} ${year}`
+        message: `A salary record already exists for ${employee} in ${month} ${year}` 
       });
     }
 
-    // Get project bonuses for record keeping
-    const projectBonuses = await prisma.projectEmployee.findMany({
-      where: {
-        employeeId: employeeRecord.id,
-        status: 1,
-        project: {
-          status: 1,
-          startDate: {
-            lte: new Date(parseInt(year), getMonthNumber(month) + 1, 0)
-          },
-          OR: [
-            { endDate: null },
-            { 
-              endDate: { 
-                gte: new Date(parseInt(year), getMonthNumber(month), 1) 
-              } 
-            }
-          ]
-        }
-      },
-      include: {
-        project: {
-          select: {
-            projectName: true,
-            bonus: true,
-            sharedBonus: true
-          }
-        }
-      }
-    });
+    // Step 3: Get project bonuses for record keeping
+    const projectBonuses = await getEmployeeProjectBonusesForMonth(employeeRecord.id, month, year);
 
-    // Create salary record
-    const salary = await prisma.salary.create({
-      data: {
-        employeeId: employeeRecord.id,
-        month,
-        year: parseInt(year),
-        summary: {
-          basicSalary: parseFloat(basicSalary),
-          bonus: parseFloat(bonus || 0),
-          projectBonusShare: parseFloat(projectBonusShare || 0),
-          projectBonuses: projectBonuses.map(pb => ({
-            projectName: pb.project.projectName,
-            bonusShare: pb.bonusShare,
-            projectBonus: pb.project.bonus,
-            sharedBonus: pb.project.sharedBonus
-          })),
-          advanceSalary: parseFloat(advanceSalary || 0),
-          otherDeduction: parseFloat(otherDeduction || 0),
-          totalBonus: parseFloat(totalBonus),
-          totalDeduction: parseFloat(totalDeduction),
-          netSalary: parseFloat(netSalary)
-        },
-        paymentMethod: paymentMethod.toUpperCase().replace(' ', '_'),
-        status: status.toUpperCase()
-      },
-      include: {
-        employee: {
-          select: {
-            id: true,
-            name: true
-          }
-        }
-      }
-    });
+    // Step 4: Process advance payment if any
+    const updatedAdvanceRecords = await processAdvancePayment(employeeRecord.id, advancePayment);
 
+    // Step 5: Create the salary record
+    const salary = await createSalaryRecord(
+      employeeRecord.id,
+      month,
+      year,
+      basicSalary,
+      bonus,
+      projectBonusShare,
+      projectBonuses,
+      advanceSalary,
+      advancePayment,
+      updatedAdvanceRecords,
+      totalBonus,
+      totalDeduction,
+      netSalary,
+      paymentMethod,
+      status
+    );
+
+    // Step 6: Return successful response
     res.status(201).json({
       message: "Salary record created successfully",
       salary,
+      updatedAdvanceRecords
     });
   } catch (error) {
     console.error('Error creating salary record:', error);
@@ -206,9 +157,173 @@ export const createSalary = async (req, res) => {
   }
 };
 
+// Helper function to find employee by name
+async function findEmployee(employeeName) {
+  return await prisma.employee.findFirst({
+    where: { name: employeeName }
+  });
+}
+
+// Helper function to check for duplicate salary record
+async function checkDuplicateSalary(employeeId, month, year) {
+  const existingSalary = await prisma.salary.findFirst({
+    where: {
+      employeeId,
+      month,
+      year: parseInt(year)
+    }
+  });
+  return !!existingSalary;
+}
+
+// Helper function to get project bonuses for an employee in a specific month
+async function getEmployeeProjectBonusesForMonth(employeeId, month, year) {
+  const yearNum = parseInt(year);
+  const monthNum = getMonthNumber(month);
+  
+  return await prisma.projectEmployee.findMany({
+    where: {
+      employeeId,
+      status: 1,
+      project: {
+        status: 1,
+        startDate: {
+          lte: new Date(yearNum, monthNum + 1, 0)
+        },
+        OR: [
+          { endDate: null },
+          { 
+            endDate: { 
+              gte: new Date(yearNum, monthNum, 1) 
+            } 
+          }
+        ]
+      }
+    },
+    include: {
+      project: {
+        select: {
+          projectName: true,
+          bonus: true,
+          sharedBonus: true
+        }
+      }
+    }
+  });
+}
+
+// Helper function to process advance payment
+async function processAdvancePayment(employeeId, advancePayment) {
+  const updatedAdvanceRecords = [];
+  
+  if (!advancePayment || parseFloat(advancePayment) <= 0) {
+    return updatedAdvanceRecords;
+  }
+  
+  // Get active advance salary records with remaining amounts
+  const advanceSalaries = await prisma.advanceSalary.findMany({
+    where: {
+      employeeId,
+      status: 1,
+      remainingAmount: { gt: 0 }
+    },
+    orderBy: {
+      date: 'asc' // Process oldest advances first
+    }
+  });
+
+  let remainingPayment = parseFloat(advancePayment);
+  
+  // Update each advance record until the payment is fully allocated
+  for (const advance of advanceSalaries) {
+    if (remainingPayment <= 0) break;
+
+    const currentRemaining = advance.remainingAmount;
+    const amountToDeduct = Math.min(currentRemaining, remainingPayment);
+    const newRemaining = currentRemaining - amountToDeduct;
+    
+    // Update the advance record
+    const updatedAdvance = await prisma.advanceSalary.update({
+      where: { id: advance.id },
+      data: {
+        remainingAmount: newRemaining
+      }
+    });
+    
+    updatedAdvanceRecords.push({
+      id: updatedAdvance.id,
+      previousRemaining: currentRemaining,
+      amountPaid: amountToDeduct,
+      newRemaining: newRemaining
+    });
+    
+    remainingPayment -= amountToDeduct;
+  }
+  
+  return updatedAdvanceRecords;
+}
+
+// Helper function to create the salary record
+async function createSalaryRecord(
+  employeeId,
+  month,
+  year,
+  basicSalary,
+  bonus,
+  projectBonusShare,
+  projectBonuses,
+  advanceSalary,
+  advancePayment,
+  updatedAdvanceRecords,
+  totalBonus,
+  totalDeduction,
+  netSalary,
+  paymentMethod,
+  status
+) {
+  return await prisma.salary.create({
+    data: {
+      employeeId,
+      month,
+      year: parseInt(year),
+      summary: {
+        basicSalary: parseFloat(basicSalary),
+        bonus: parseFloat(bonus || 0),
+        projectBonusShare: parseFloat(projectBonusShare || 0),
+        projectBonuses: projectBonuses.map(pb => ({
+          projectName: pb.project.projectName,
+          bonusShare: pb.bonusShare,
+          projectBonus: pb.project.bonus,
+          sharedBonus: pb.project.sharedBonus
+        })),
+        totalAdvance: parseFloat(advanceSalary || 0),
+        advancePayment: parseFloat(advancePayment || 0),
+        advanceRecords: updatedAdvanceRecords,
+        totalBonus: parseFloat(totalBonus),
+        totalDeduction: parseFloat(totalDeduction),
+        netSalary: parseFloat(netSalary)
+      },
+      paymentMethod: paymentMethod.toUpperCase().replace(' ', '_'),
+      status: status.toUpperCase(),
+      active: 1
+    },
+    include: {
+      employee: {
+        select: {
+          id: true,
+          name: true
+        }
+      }
+    }
+  });
+}
+
 export const getAllSalaries = async (req, res) => {
   try {
     const salaries = await prisma.salary.findMany({
+      where: {
+        active: 1  // Only get active salaries
+      },
       include: {
         employee: {
           select: {
@@ -235,7 +350,7 @@ export const getAllSalaries = async (req, res) => {
     if (formattedSalaries.length === 0) {
       return res.status(404).json({ message: 'No salaries found' });
     }
-    // console.log('Salaries being sent:', salaries);
+    
     res.status(200).json({
       message: "Salaries retrieved successfully",
       salaries: formattedSalaries
@@ -294,7 +409,7 @@ export const updateSalary = async (req, res) => {
       year,
       bonus,
       advanceSalary,
-      otherDeduction,
+      advancePayment,
       basicSalary,
       totalBonus,
       totalDeduction,
@@ -311,6 +426,19 @@ export const updateSalary = async (req, res) => {
       return res.status(400).json({ message: 'Employee not found' });
     }
 
+    // Get existing salary record to check for advance payment changes
+    const existingSalary = await prisma.salary.findUnique({
+      where: { id: Number(id) }
+    });
+
+    if (!existingSalary) {
+      return res.status(404).json({ message: `Salary with ID ${id} not found` });
+    }
+
+    // Handle advance payment changes if needed
+    // Note: Updating advance payments is complex and might require additional logic
+    // to handle cases where advances were already paid off
+
     const updatedSalary = await prisma.salary.update({
       where: { id: Number(id) },
       data: {
@@ -320,8 +448,8 @@ export const updateSalary = async (req, res) => {
         summary: {
           basicSalary: parseFloat(basicSalary),
           bonus: parseFloat(bonus),
-          advanceSalary: parseFloat(advanceSalary),
-          otherDeduction: parseFloat(otherDeduction),
+          totalAdvance: parseFloat(advanceSalary || 0),
+          advancePayment: parseFloat(advancePayment || 0),
           totalBonus: parseFloat(totalBonus),
           totalDeduction: parseFloat(totalDeduction),
           netSalary: parseFloat(netSalary)
@@ -356,8 +484,19 @@ export const deleteSalary = async (req, res) => {
   try {
     const { id } = req.params;
 
-    await prisma.salary.delete({
+    // Check if salary exists
+    const salary = await prisma.salary.findUnique({
+      where: { id: Number(id) }
+    });
+
+    if (!salary) {
+      return res.status(404).json({ message: `Salary with ID ${id} not found` });
+    }
+
+    // Soft delete by setting active to 0 instead of deleting the record
+    await prisma.salary.update({
       where: { id: Number(id) },
+      data: { active: 0 }
     });
 
     res.status(200).json({
@@ -425,3 +564,65 @@ export const filterSalaries = async (req, res) => {
       res.status(500).json({ message: 'Server error', error: error.message });
     }
   };
+
+// Get employee's remaining advance salary amount
+export const getRemainingAdvanceSalary = async (req, res) => {
+  try {
+    const { employeeId } = req.query;
+
+    if (!employeeId) {
+      return res.status(400).json({ 
+        message: "Employee ID is required" 
+      });
+    }
+
+    // Check if employee exists
+    const employee = await prisma.employee.findUnique({
+      where: { id: Number(employeeId) }
+    });
+
+    if (!employee) {
+      return res.status(404).json({
+        message: "Employee not found"
+      });
+    }
+
+    // Get active advance salary records with remaining amounts
+    const advanceSalaries = await prisma.advanceSalary.findMany({
+      where: {
+        employeeId: Number(employeeId),
+        status: 1,  // Only active records
+        remainingAmount: { gt: 0 }  // Only records with remaining amount
+      },
+      select: {
+        id: true,
+        amount: true,
+        remainingAmount: true,
+        date: true,
+        description: true
+      },
+      orderBy: {
+        date: 'asc'  // Oldest advances first
+      }
+    });
+
+    // Calculate total remaining amount
+    const totalRemainingAmount = advanceSalaries.reduce(
+      (total, advance) => total + advance.remainingAmount, 
+      0
+    );
+
+    res.status(200).json({
+      message: "Remaining advance salary retrieved successfully",
+      totalRemainingAmount,
+      advanceSalaries
+    });
+
+  } catch (error) {
+    console.error('Error retrieving remaining advance salary:', error);
+    res.status(500).json({ 
+      message: 'Server error', 
+      error: error.message 
+    });
+  }
+};

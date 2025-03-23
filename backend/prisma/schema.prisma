@@ -23,6 +23,7 @@ model Employee {
   status   Int     @default(1) // 1 for active, 0 for inactive
   salaries  Salary[] 
   attendance Attendance[]
+  advanceSalaries AdvanceSalary[]
   employeeProjects ProjectEmployee[]  
   createdAt DateTime @default(now())
   updatedAt DateTime  @default(now()) @updatedAt
@@ -48,6 +49,7 @@ model Salary {
   summary       Json     
   paymentMethod PaymentMethod
   status        SalaryStatus
+  active        Int           @default(1) // 1 for active, 0 for inactive
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
 }
@@ -131,6 +133,21 @@ model Project {
   @@index([projectStatus, paidStatus]) 
   @@index([platform])    
 
+}
+
+model AdvanceSalary {
+  id              Int      @id @default(autoincrement())
+  employeeId      Int
+  employee        Employee @relation(fields: [employeeId], references: [id])
+  amount          Float
+  remainingAmount Float
+  date            DateTime
+  description     String?  // Optional note/reason for the advance
+  status          Int      @default(1) // 1 for active/pending, 0 for completed/paid
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([employeeId])
 }
 
 model ProjectEmployee {
