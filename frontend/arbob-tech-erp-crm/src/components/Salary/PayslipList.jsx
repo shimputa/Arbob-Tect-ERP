@@ -293,10 +293,10 @@ const handleClearFilters = () => {
                       {payslip.year}
                     </td>
                     <td className="px-6 py-4">
-                      <p>Basic Salary: <span className="font-medium">${payslip.basicSalary}</span></p>
-                      <p>Total Bonus: <span className="font-medium">${payslip.totalBonus}</span></p>
-                      <p>Total Deduction: <span className="font-medium">${payslip.totalDeduction}</span></p>
-                      <p>Net Salary: <span className="font-medium">${payslip.netSalary}</span></p>
+                      <p>Basic Salary: <span className="font-medium">PKR {payslip.basicSalary}</span></p>
+                      <p>Total Bonus: <span className="font-medium">PKR {payslip.totalBonus}</span></p>
+                      <p>Total Deduction: <span className="font-medium">PKR {payslip.totalDeduction}</span></p>
+                      <p>Net Salary: <span className="font-medium">PKR {payslip.netSalary}</span></p>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${

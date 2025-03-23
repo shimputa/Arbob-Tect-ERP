@@ -14,8 +14,8 @@ function CreatePayslip({ onSubmit }) {
     year: '',
     bonus: '',
     projectBonusShare: 0,
-    advanceSalary: '',
-    otherDeduction: '',
+    advanceSalary: '', 
+    advancePayment: '', 
     basicSalary: 0,
     totalBonus: 0,
     totalDeduction: 0,
@@ -27,8 +27,11 @@ function CreatePayslip({ onSubmit }) {
   const [successMessage, setSuccessMessage] = useState('');
   const [error, setError] = useState('');
   const [isLoadingBonuses, setIsLoadingBonuses] = useState(false);
+  const [isLoadingAdvance, setIsLoadingAdvance] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+    // eslint-disable-next-line no-unused-vars
+  const [advanceDetails, setAdvanceDetails] = useState([]);
   const navigate = useNavigate();
 
   const months = [
@@ -76,8 +79,7 @@ function CreatePayslip({ onSubmit }) {
         calculateSalary(
           updatedData.bonus,
           totalBonusShare,
-          updatedData.advanceSalary,
-          updatedData.otherDeduction,
+          updatedData.advancePayment,
           updatedData.basicSalary
         );
 
@@ -88,6 +90,44 @@ function CreatePayslip({ onSubmit }) {
       setError('Failed to fetch project bonus share');
     } finally {
       setIsLoadingBonuses(false);
+    }
+  };
+
+  const fetchRemainingAdvanceSalary = async (employeeId) => {
+    if (!employeeId) return;
+    
+    setIsLoadingAdvance(true);
+    try {
+      const response = await axios.get(
+        `${API_BASE_URL}/salary/remaining-advance`,
+        { params: { employeeId } }
+      );
+      
+      const { totalRemainingAmount, advanceSalaries } = response.data;
+      
+      setAdvanceDetails(advanceSalaries || []);
+      
+      setFormData(prev => {
+        const updatedData = {
+          ...prev,
+          advanceSalary: totalRemainingAmount || 0,
+          advancePayment: '', // Initialize empty to let user decide how much to pay
+        };
+
+        calculateSalary(
+          updatedData.bonus,
+          updatedData.projectBonusShare,
+          0, // No advance payment initially
+          updatedData.basicSalary
+        );
+
+        return updatedData;
+      });
+    } catch (error) {
+      console.error('Error fetching remaining advance salary:', error);
+      // Don't show error to user as this is an enhancement, not a critical feature
+    } finally {
+      setIsLoadingAdvance(false);
     }
   };
 
@@ -105,13 +145,15 @@ function CreatePayslip({ onSubmit }) {
           calculateSalary(
             updatedData.bonus,
             updatedData.projectBonusShare,
-            updatedData.advanceSalary,
-            updatedData.otherDeduction,
+            updatedData.advancePayment,
             updatedData.basicSalary
           );
 
           return updatedData;
         });
+        
+        // Fetch remaining advance salary when employee is selected
+        fetchRemainingAdvanceSalary(employeeId);
       }
     } catch (error) {
       console.error('Error updating employee details:', error);
@@ -121,9 +163,9 @@ function CreatePayslip({ onSubmit }) {
 
   const calculateSalary = useMemo(
     () =>
-      debounce((bonus, projectBonusShare, advanceSalary, otherDeduction, basicSalary) => {
+      debounce((bonus, projectBonusShare, advancePayment, basicSalary) => {
         const totalBonus = (Number(bonus) || 0) + (Number(projectBonusShare) || 0);
-        const totalDeduction = (Number(advanceSalary) || 0) + (Number(otherDeduction) || 0);
+        const totalDeduction = Number(advancePayment) || 0; // Only advancePayment
         const netSalary = basicSalary + totalBonus - totalDeduction;
 
         setFormData((prevData) => ({
@@ -140,17 +182,27 @@ function CreatePayslip({ onSubmit }) {
     calculateSalary(
       formData.bonus,
       formData.projectBonusShare,
-      formData.advanceSalary,
-      formData.otherDeduction,
+      formData.advancePayment,
       formData.basicSalary
     );
-  }, [formData.bonus, formData.projectBonusShare, formData.advanceSalary, formData.otherDeduction, formData.basicSalary, calculateSalary]);
+  }, [formData.bonus, formData.projectBonusShare, formData.advancePayment, formData.basicSalary, calculateSalary]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     
     if (name === 'employee' && value) {
       updateEmployeeDetails(value);
+    }
+    
+    // Special validation for advancePayment
+    if (name === 'advancePayment') {
+      const numValue = Number(value);
+      const maxAdvance = Number(formData.advanceSalary);
+      
+      // Don't allow advance payment larger than available advance
+      if (numValue > maxAdvance) {
+        return;
+      }
     }
     
     setFormData(prevData => ({ ...prevData, [name]: value }));
@@ -172,48 +224,55 @@ function CreatePayslip({ onSubmit }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
-    setIsSaving(true);
-
+    
     try {
       if (step === 1) {
         if (!formData.employee || !formData.month || !formData.year) {
-          throw new Error('Please fill in all fields');
+          setError('Please fill in all fields');
+          return;
         }
+        setError(''); // Clear any errors when moving to next step
         setStep(2);
       } else if (step === 2) {
-        if (formData.bonus === '' || formData.advanceSalary === '' || formData.otherDeduction === '') {
-          throw new Error('Please fill in all fields');
+        if (formData.bonus === '' || formData.advancePayment === '') {
+          setError('Please fill in all fields');
+          return;
         }
+        setError(''); // Clear any errors when moving to next step
         setStep(3);
       } else if (step === 3) {
         if (!formData.paymentMethod || !formData.status) {
-          throw new Error('Please fill in all fields');
+          setError('Please fill in all fields');
+          return;
         }
+        setIsSaving(true);
         
+        // Find the selected employee to get their name
+        const selectedEmployee = employees.find(emp => emp.id === Number(formData.employee));
+        if (!selectedEmployee) {
+          setError('Selected employee not found');
+          setIsSaving(false);
+          return;
+        }
+
+        // Format the data before submission
+        const formattedData = {
+          ...formData,
+          employee: selectedEmployee.name, // Send employee name instead of ID
+          bonus: Number(formData.bonus) || 0,
+          projectBonusShare: Number(formData.projectBonusShare) || 0,
+          advanceSalary: Number(formData.advanceSalary) || 0,
+          advancePayment: Number(formData.advancePayment) || 0,
+          basicSalary: Number(formData.basicSalary) || 0,
+          totalBonus: Number(formData.totalBonus) || 0,
+          totalDeduction: Number(formData.totalDeduction) || 0,
+          netSalary: Number(formData.netSalary) || 0,
+          year: formData.year.toString()
+        };
+
         try {
-          // Find the selected employee to get their name
-          const selectedEmployee = employees.find(emp => emp.id === Number(formData.employee));
-          if (!selectedEmployee) {
-            throw new Error('Selected employee not found');
-          }
-
-          // Format the data before submission
-          const formattedData = {
-            ...formData,
-            employee: selectedEmployee.name, // Send employee name instead of ID
-            bonus: Number(formData.bonus) || 0,
-            projectBonusShare: Number(formData.projectBonusShare) || 0,
-            advanceSalary: Number(formData.advanceSalary) || 0,
-            otherDeduction: Number(formData.otherDeduction) || 0,
-            basicSalary: Number(formData.basicSalary) || 0,
-            totalBonus: Number(formData.totalBonus) || 0,
-            totalDeduction: Number(formData.totalDeduction) || 0,
-            netSalary: Number(formData.netSalary) || 0,
-            year: formData.year.toString()
-          };
-
           await onSubmit(formattedData);
+          
           setSuccessMessage('Payslip successfully created.');
           
           // Reset form after success
@@ -224,7 +283,7 @@ function CreatePayslip({ onSubmit }) {
             bonus: '',
             projectBonusShare: 0,
             advanceSalary: '',
-            otherDeduction: '',
+            advancePayment: '',
             basicSalary: 0,
             totalBonus: 0,
             totalDeduction: 0,
@@ -239,30 +298,42 @@ function CreatePayslip({ onSubmit }) {
           }, 2000);
 
         } catch (error) {
-          const errorMessage = 
-            error.response?.data?.message || 
-            error.message || 
-            'Failed to create payslip';
-
+          console.error("Form submission error:", error);
+          
+          let errorMessage = 'Failed to create payslip';
+          
+          if (error.response && error.response.data) {
+            if (typeof error.response.data === 'string') {
+              try {
+                const parsedData = JSON.parse(error.response.data);
+                errorMessage = parsedData.message || errorMessage;
+              } catch (e) {
+                // If it's not valid JSON string
+                errorMessage = error.response.data;
+              }
+            } else if (error.response.data.message) {
+              errorMessage = error.response.data.message;
+            }
+          }
+          
+          console.log("Setting error message:", errorMessage);
+          
+          // Set the error before changing step
           setError(errorMessage);
           
+          // Use setTimeout to ensure the error is set before changing the step
           if (errorMessage.includes('already exists')) {
-            setStep(1);
-          }
-          
-          if (!errorMessage.includes('already exists')) {
             setTimeout(() => {
-              setError('');
-            }, 3000);
+              setStep(1);
+            }, 50);
           }
+        } finally {
+          setIsSaving(false);
         }
       }
-    } catch (error) {
-      setError(error.message || 'An error occurred');
-      setTimeout(() => {
-        setError('');
-      }, 3000);
-    } finally {
+    } catch (err) {
+      console.error("Unexpected error:", err);
+      setError(err.message || 'An unexpected error occurred');
       setIsSaving(false);
     }
   };
@@ -458,25 +529,34 @@ function CreatePayslip({ onSubmit }) {
             </div>
             <div>
               <h3 className="text-lg font-semibold mb-4">Deductions</h3>
-              <label htmlFor="advanceSalary" className={labelClass}>Advance Salary</label>
+              <label htmlFor="advanceSalary" className={labelClass}>
+                Remaining Advance Salary
+                {isLoadingAdvance && (
+                  <span className="ml-2 text-sm text-gray-500">Loading...</span>
+                )}
+              </label>
               <input
                 type="number"
                 id="advanceSalary"
                 name="advanceSalary"
                 value={formData.advanceSalary}
-                onChange={handleChange}
-                className={inputClass}
+                readOnly
+                className={`${inputClass} bg-gray-100`}
                 min="0"
-              />
-              <label htmlFor="otherDeduction" className={`${labelClass} mt-4`}>Other Deduction</label>
+              />             
+              <label htmlFor="advancePayment" className={`${labelClass} mt-4`}>
+                Advance Salary Payment
+                <span className="ml-2 text-xs text-gray-500"></span>
+              </label>
               <input
                 type="number"
-                id="otherDeduction"
-                name="otherDeduction"
-                value={formData.otherDeduction}
+                id="advancePayment"
+                name="advancePayment"
+                value={formData.advancePayment}
                 onChange={handleChange}
                 className={inputClass}
                 min="0"
+                max={formData.advanceSalary || 0}
               />
             </div>
             <div>
