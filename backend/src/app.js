@@ -7,7 +7,7 @@ import salaryRoutes from './routes/salary.routes.js';
 import attendanceRoutes from './routes/attendance.routes.js';
 import dashBoardRoutes from './routes/dashBoard.routes.js';
 import projectRoutes from './routes/project.routes.js'; 
-
+import advanceSalaryRoutes from './routes/advanceSalary.routes.js';
 const app = express();
 
 // Enable CORS
@@ -28,4 +28,5 @@ app.use('/expense-categories', expenseCategoryRoutes);  // Prefix with '/api' fo
 app.use('/salary', salaryRoutes);  // Prefix with '/api' for all salary routes
 app.use('/attendance', attendanceRoutes);  // Prefix with '/api' for all attendance routes
 app.use('/project', projectRoutes); 
+app.use('/advance-salary', advanceSalaryRoutes);
 export default app;

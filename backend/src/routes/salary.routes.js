@@ -6,27 +6,44 @@ import {
     filterSalaries,
     getSalaryById,
     updateSalary,
-    deleteSalary
+    deleteSalary,
+    getRemainingAdvanceSalary
   }from '../controllers/salary.controller.js';
+import { 
+  validateSalaryCreation, 
+  validateSalaryUpdate, 
+  validateSalaryPatch, 
+  validateProjectBonusRetrieval, 
+  validateAdvanceSalaryRetrieval, 
+  validateSalaryFilter 
+} from '../validators/salary.validation.js';
+import { handleValidationErrors } from '../middlewares/validation.middleware.js';
 
 const router = express.Router();
 
 // Create a new salary record
-router.post('/', createSalary);
+router.post('/', validateSalaryCreation, handleValidationErrors, createSalary);
 
-router.get('/project-bonuses', getEmployeeProjectBonuses)
+// Get project bonuses for an employee
+router.get('/project-bonuses', validateProjectBonusRetrieval, handleValidationErrors, getEmployeeProjectBonuses);
 
 // Get all salaries
 router.get('/', getAllSalaries);
 
 // Filter salaries
-router.get('/filter', filterSalaries);
+router.get('/filter', validateSalaryFilter, handleValidationErrors, filterSalaries);
+
+// Get remaining advance salary amount
+router.get('/remaining-advance', validateAdvanceSalaryRetrieval, handleValidationErrors, getRemainingAdvanceSalary);
 
 // Get a specific salary by ID
-router.get('/:id',getSalaryById);
+router.get('/:id', getSalaryById);
 
-// Update a salary record
-router.put('/:id', updateSalary);
+// Update a salary record (full update)
+router.put('/:id', validateSalaryUpdate, handleValidationErrors, updateSalary);
+
+// Update a salary record (partial update)
+router.patch('/:id', validateSalaryPatch, handleValidationErrors, updateSalary);
 
 // Delete a salary record
 router.delete('/:id', deleteSalary);

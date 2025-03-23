@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "Salary" ADD COLUMN     "active" INTEGER NOT NULL DEFAULT 1;
