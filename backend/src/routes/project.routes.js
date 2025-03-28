@@ -14,15 +14,19 @@ import {
   validateProjectFilter
 } from '../validators/project.validation.js';
 import { handleValidationErrors } from '../middlewares/validation.middleware.js';
+import { authenticate, hasPermission } from '../middlewares/auth.middleware.js';
 
 const router = express.Router();
 
+// Apply authentication to all routes
+router.use(authenticate);
+
 // Define project routes
-router.get('/projects', getAllProjects);
-router.get('/project/:id', getProjectById);
-router.get('/filter', validateProjectFilter, handleValidationErrors, filterProjects);
-router.post('/projects', validateProjectCreation, handleValidationErrors, createProject);
-router.put('/project/:id', validateProjectUpdate, handleValidationErrors, updateProject);
-router.delete('/project/:id', deleteProject);
+router.get('/projects', hasPermission('project:view'), getAllProjects);
+router.get('/project/:id', hasPermission('project:view'), getProjectById);
+router.get('/filter', hasPermission('project:view'), validateProjectFilter, handleValidationErrors, filterProjects);
+router.post('/projects', hasPermission('project:create'), validateProjectCreation, handleValidationErrors, createProject);
+router.put('/project/:id', hasPermission('project:edit'), validateProjectUpdate, handleValidationErrors, updateProject);
+router.delete('/project/:id', hasPermission('project:delete'), deleteProject);
 
 export default router;

@@ -15,15 +15,19 @@ import {
   filterExpensesValidation
 } from '../validators/expense.validator.js';
 import { handleValidationErrors } from '../middlewares/validation.middleware.js';
+import { authenticate, hasPermission } from '../middlewares/auth.middleware.js';
 
 const router = express.Router();
 
-router.get('/', getAllExpenses);
-router.get('/filter', filterExpensesValidation, handleValidationErrors, filterExpenses);
-router.get('/:id', getExpenseById);
-router.post('/', createExpenseValidation, handleValidationErrors, createExpense);
-router.put('/:id', updateExpenseValidation, handleValidationErrors, updateExpense);
-router.patch('/patch/:id', patchExpenseValidation, handleValidationErrors, patchExpense);
-router.delete('/:id', deleteExpense);
+// Apply authentication to all routes
+router.use(authenticate);
+
+router.get('/', hasPermission('expense:view'), getAllExpenses);
+router.get('/filter', hasPermission('expense:view'), filterExpensesValidation, handleValidationErrors, filterExpenses);
+router.get('/:id', hasPermission('expense:view'), getExpenseById);
+router.post('/', hasPermission('expense:create'), createExpenseValidation, handleValidationErrors, createExpense);
+router.put('/:id', hasPermission('expense:edit'), updateExpenseValidation, handleValidationErrors, updateExpense);
+router.patch('/patch/:id', hasPermission('expense:edit'), patchExpenseValidation, handleValidationErrors, patchExpense);
+router.delete('/:id', hasPermission('expense:delete'), deleteExpense);
 
 export default router;
