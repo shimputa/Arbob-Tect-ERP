@@ -1,99 +1,8 @@
-// import React, { useState } from 'react';
-// import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
-// import { AppProvider } from './contexts/AppContext';
-// import Layout from './components/Layout/layOut';
-// import Login from './components/Layout/login';
-// import Employees from './components/Employees/EmployeesList';
-// import DailyAttendance from './components/Attendence/dailyAttendance';
-// import AttendanceReport from './components/Attendence/attendanceReport';
-// import Salary from './components/Salary/Salary';
-// import CreatePayslip from './components/Salary/CreatePayslip';
-// import PayslipList from './components/Salary/PayslipList';
-// import Expense from './components/Expense/ExpenseList';
-// import ExpenseCate from './components/ExpenseCate/ExpenseCateList';
-
-// function App() {
-//   const [isAuthenticated, setIsAuthenticated] = useState(false);
-//   const [user, setUser] = useState(null);
-//   const [payslips, setPayslips] = useState([]);
-
-//    // Dummy login with hardcoded email and password
-//    const login = (email, password) => {
-//     if (email === 'waseemkhyber123@gmail.com' && password === 'passpass') {
-//       setIsAuthenticated(true);
-//       setUser({
-//         name: "Waseem",
-//         email: "waseemkhyber123@gmail.com",
-//         avatar: "https://randomuser.me/api/portraits/men/1.jpg" // Placeholder image for now
-//       });
-//     } else {
-//       alert('Invalid credentials!');
-//     }
-//   };
-
-//   const logout = () => {
-//     setIsAuthenticated(false);
-//     setUser(null);
-//   };
-
-//   const addPayslip = (payslip) => {
-//     setPayslips([...payslips, payslip]);
-//   };
-
-//   const handleDelete = (id) => {
-//     setPayslips((prevPayslips) => prevPayslips.filter((payslip) => payslip.id !== id));
-//   };
-
-//   const handlePrint = (payslip) => {
-//     console.log('Printing payslip:', payslip);
-//   };
-
-//   // Protected Route component
-//   const ProtectedRoute = ({ children }) => {
-//     if (!isAuthenticated) {
-//       return <Navigate to="/login" replace />;
-//     }
-//     return children;
-//   };
-
-//   return (
-//     <AppProvider>
-//       <Router>
-//         <Routes>
-//           {/* Login route */}
-//           <Route path="/login" element={<Login onLogin={login} />} />
-
-//           {/* Protected routes */}
-//           <Route
-//             path="/"
-//             element={
-//               <ProtectedRoute>
-//                 <Layout onLogout={logout} user={user}/>
-//               </ProtectedRoute>
-//             }
-//           >
-//             {/* Nested routes within Layout */}
-//             <Route path="employees" element={<Employees />} />
-//             <Route path="attendance/daily-attendance" element={<DailyAttendance />} />
-//             <Route path="attendance/attendance-report" element={<AttendanceReport />} />
-//             <Route path="salary" element={<Salary />} />
-//             <Route path="salary/create-payslip" element={<CreatePayslip onSubmit={addPayslip} />} />
-//             <Route path="salary/payslip-list" element={<PayslipList payslips={payslips} onDelete={handleDelete} onPrint={handlePrint} />} />
-//             <Route path="expense" element={<Expense />} />
-//             <Route path="expenseCate" element={<ExpenseCate />} />
-//           </Route>
-//         </Routes>
-//       </Router>
-//     </AppProvider>
-//   );
-// }
-
-// export default App;
-
 import { useState, useEffect, useCallback } from 'react';
 import { BrowserRouter as Router, Route, Routes, Navigate } from 'react-router-dom';
 import axios from 'axios';
 import { AppProvider } from './contexts/AppContext';
+import { PermissionProvider } from './contexts/PermissionContext';
 import Layout from './components/Layout/layOut';
 import Login from './components/Layout/login';
 import Employees from './components/Employees/EmployeesList';
@@ -104,29 +13,67 @@ import Expense from './components/Expense/ExpenseList';
 import ExpenseCate from './components/ExpenseCate/ExpenseCateList';
 import Dashboard from './components/Dashboard/dashboard';
 import ProjectList from './components/Project Management/projectList';
+import authService from './services/authService';
+import PermissionRoute from './components/common/PermissionRoute';
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [user, setUser] = useState(null);
   const [payslips, setPayslips] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Dummy login with hardcoded email and password
-  const login = (email, password) => {
-    if (email === 'waseemkhyber123@gmail.com' && password === 'passpass') {
-      setIsAuthenticated(true);
-      setUser({
-        name: "Waseem",
-        email: "waseemkhyber123@gmail.com",
-        avatar: "https://randomuser.me/api/portraits/men/1.jpg" // Placeholder image
-      });
-    } else {
-      alert('Invalid credentials!');
+  // Check for existing authentication on app load
+  useEffect(() => {
+    const checkAuth = async () => {
+      setIsLoading(true);
+      const result = await authService.getCurrentUser();
+      
+      if (result.success) {
+        setIsAuthenticated(true);
+        setUser(result.user);
+      }
+      
+      setIsLoading(false);
+    };
+    
+    checkAuth();
+  }, []);
+
+  // Login using auth service with improved error handling
+  const login = async (email, password) => {
+    setIsLoading(true);
+    setError(null); // Clear any previous errors
+    
+    try {
+      const result = await authService.loginUser(email, password);
+      
+      if (result.success) {
+        setIsAuthenticated(true);
+        setUser(result.user);
+        return { success: true };
+      } else {
+        // Return error information instead of showing alert
+        return { 
+          success: false, 
+          message: result.message || 'Invalid credentials!' 
+        };
+      }
+    } catch (err) {
+      console.error('Login error:', err);
+      // Return error information instead of showing alert
+      return { 
+        success: false, 
+        message: 'Login failed. Please try again.' 
+      };
+    } finally {
+      setIsLoading(false);
     }
   };
 
+  // Logout using auth service
   const logout = () => {
+    authService.logoutUser();
     setIsAuthenticated(false);
     setUser(null);
   };
@@ -134,11 +81,17 @@ function App() {
   const fetchPayslips = useCallback(async () => {
     setIsLoading(true);
     try {
-      const response = await axios.get(`http://localhost:3000/salary`);
-      setPayslips(response.data.salaries);
+      const response = await axios.get('http://localhost:3000/salary');
+      
+      // Handle the response based on your API structure
+      if (response.data && response.data.salaries) {
+        setPayslips(response.data.salaries);
+      } else if (Array.isArray(response.data)) {
+        setPayslips(response.data);
+      }
     } catch (err) {
+      console.error('Error fetching payslips:', err);
       setError('Failed to fetch payslips');
-      console.error(err);
     } finally {
       setIsLoading(false);
     }
@@ -188,6 +141,19 @@ function App() {
 
   // Protected Route component
   const ProtectedRoute = ({ children }) => {
+    if (isLoading) {
+      return (
+        <div className="flex items-center justify-center h-screen bg-gray-100">
+          <div className="text-center">
+            <div className="spinner-border text-blue-500 mb-3" role="status">
+              <span className="sr-only">Loading...</span>
+            </div>
+            <p className="text-gray-600">Loading application...</p>
+          </div>
+        </div>
+      );
+    }
+    
     if (!isAuthenticated) {
       return <Navigate to="/login" replace />;
     }
@@ -196,48 +162,119 @@ function App() {
 
   return (
     <AppProvider>
-      <Router>
-        <Routes>
-          {/* Login route */}
-          <Route path="/login" element={<Login onLogin={login} />} />
+      <PermissionProvider user={user}>
+        <Router>
+          <Routes>
+            {/* Login route */}
+            <Route path="/login" element={<Login onLogin={login} />} />
 
-          {/* Protected routes */}
-          <Route
-            path="/"
-            element={
-              <ProtectedRoute>
-                <Layout onLogout={logout} user={user}/>
-              </ProtectedRoute>
-            }
-          >
-             {/* Dashboard route */}
-             <Route index element={<Dashboard />} />
-            <Route path="dashboard" element={<Dashboard />} />
-            {/* Nested routes within Layout */}
-            <Route path="employees" element={<Employees />} />
-            <Route path="projects" element={<ProjectList />} />
-            <Route path="attendance/daily-attendance" element={<DailyAttendance />} />
-            <Route path="attendance/attendance-report" element={<AttendanceReport />} />
-            <Route 
-              path="salary/*" 
+            {/* Protected routes */}
+            <Route
+              path="/"
               element={
-                <Salary 
-                  payslips={payslips}
-                  onDelete={handleDeletePayslip}
-                  onPrint={handlePrint}
-                  onSubmit={handleAddPayslip}
-                  isLoading={isLoading}
-                  error={error}
-                  setError={setError}  // Add this line
-                  onRefresh={fetchPayslips}
-                />
-              } 
-            />
-            <Route path="expense" element={<Expense />} />
-            <Route path="expenseCate" element={<ExpenseCate />} />
-          </Route>
-        </Routes>
-      </Router>
+                <ProtectedRoute>
+                  <Layout onLogout={logout} user={user}/>
+                </ProtectedRoute>
+              }
+            >
+              {/* Dashboard route - requiring dashboard:view permission */}
+              <Route 
+                index 
+                element={
+                  <PermissionRoute permissions={['dashboard:view']}>
+                    <Dashboard />
+                  </PermissionRoute>
+                } 
+              />
+              <Route 
+                path="dashboard" 
+                element={
+                  <PermissionRoute permissions={['dashboard:view']}>
+                    <Dashboard />
+                  </PermissionRoute>
+                } 
+              />
+              
+              {/* Employee routes */}
+              <Route 
+                path="employees" 
+                element={
+                  <PermissionRoute permissions={['employee:view']}>
+                    <Employees />
+                  </PermissionRoute>
+                } 
+              />
+              
+              {/* Project routes */}
+              <Route 
+                path="projects" 
+                element={
+                  <PermissionRoute permissions={['project:view']}>
+                    <ProjectList />
+                  </PermissionRoute>
+                } 
+              />
+              
+              {/* Attendance routes */}
+              <Route 
+                path="attendance/daily-attendance" 
+                element={
+                  <PermissionRoute permissions={['attendance:view']}>
+                    <DailyAttendance />
+                  </PermissionRoute>
+                } 
+              />
+              <Route 
+                path="attendance/attendance-report" 
+                element={
+                  <PermissionRoute permissions={['attendance:view']}>
+                    <AttendanceReport />
+                  </PermissionRoute>
+                } 
+              />
+              
+              {/* Salary routes */}
+              <Route 
+                path="salary/*" 
+                element={
+                  <PermissionRoute permissions={['salary:view']}>
+                    <Salary 
+                      payslips={payslips}
+                      onDelete={handleDeletePayslip}
+                      onPrint={handlePrint}
+                      onSubmit={handleAddPayslip}
+                      isLoading={isLoading}
+                      error={error}
+                      setError={setError}
+                      onRefresh={fetchPayslips}
+                    />
+                  </PermissionRoute>
+                } 
+              />
+              
+              {/* Expense routes */}
+              <Route 
+                path="expense" 
+                element={
+                  <PermissionRoute permissions={['expense:view']}>
+                    <Expense />
+                  </PermissionRoute>
+                } 
+              />
+              
+              {/* Expense Category routes */}
+              <Route 
+                path="expenseCate" 
+                element={
+                  <PermissionRoute permissions={['expenseCategory:view']}>
+                    <ExpenseCate />
+                  </PermissionRoute>
+                } 
+              />
+            </Route>
+          </Routes>
+        </Router>
+      </PermissionProvider>
     </AppProvider>
   );
 }

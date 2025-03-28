@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
+import fetchWithAuth from '../../utils/fetchWithAuth';
 
 const API_BASE_URL = 'http://localhost:3000'; 
 
@@ -39,7 +40,8 @@ const DailyAttendance = () => {
     try {
       setLoading(true);
       setError(null);
-      const response = await fetch(`${API_BASE_URL}/api/activeEmployees`);
+      
+      const response = await fetchWithAuth(`${API_BASE_URL}/api/activeEmployees`);
       const data = await response.json();
       
       if (data.employees) {  
@@ -134,11 +136,8 @@ const DailyAttendance = () => {
         date: new Date(date).toISOString()
       };
 
-      const response = await fetch(`${API_BASE_URL}/attendance/mark`, {
+      const response = await fetchWithAuth(`${API_BASE_URL}/attendance/mark`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
         body: JSON.stringify(attendancePayload),
       });
 

@@ -25,7 +25,12 @@ function PayslipList({ payslips: initialPayslips, onDelete, onPrint, isLoading, 
   const [localError, setLocalError] = useState(null);
 
   useEffect(() => {
-    setFilteredPayslips(Array.isArray(initialPayslips) ? initialPayslips : []);
+    if (Array.isArray(initialPayslips)) {
+      setFilteredPayslips(initialPayslips);
+    } else {
+      console.warn('Invalid payslips data received:', initialPayslips);
+      setFilteredPayslips([]);
+    }
   }, [initialPayslips]);
 
     // Separate search handler
