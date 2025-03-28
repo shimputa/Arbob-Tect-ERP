@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import fetchWithAuth from '../../utils/fetchWithAuth';
 
 const API_BASE_URL = 'http://localhost:3000';
 
@@ -47,8 +48,10 @@ function AttendanceReport() {
     try {
       setLoading(true);
       setError(null);
-      const response = await fetch(`${API_BASE_URL}/api/activeEmployees`);
+      
+      const response = await fetchWithAuth(`${API_BASE_URL}/api/activeEmployees`);
       const data = await response.json();
+      
       if (data.employees) {
         const employeesList = data.employees.map(emp => ({
           id: emp.id,
@@ -79,9 +82,11 @@ function AttendanceReport() {
     
     try {
       const monthNum = parseInt(month);
-      const response = await fetch(
+      
+      const response = await fetchWithAuth(
         `${API_BASE_URL}/attendance/report?year=${year}&month=${monthNum}&employeeId=${selectedEmployee}`
       );
+      
       const data = await response.json();
       
       if (data.success) {

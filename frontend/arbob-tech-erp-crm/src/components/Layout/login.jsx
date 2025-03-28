@@ -6,12 +6,54 @@ const Login = ({ onLogin }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [loginError, setLoginError] = useState('');
+  const [fieldErrors, setFieldErrors] = useState({});
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    onLogin(email, password);
-    navigate('/');
+    setIsLoading(true);
+    setLoginError('');
+    setFieldErrors({});
+    
+    // Basic validation
+    let hasErrors = false;
+    const errors = {};
+    
+    if (!email.trim()) {
+      errors.email = 'Email is required';
+      hasErrors = true;
+    } else if (!/\S+@\S+\.\S+/.test(email)) {
+      errors.email = 'Please enter a valid email';
+      hasErrors = true;
+    }
+    
+    if (!password.trim()) {
+      errors.password = 'Password is required';
+      hasErrors = true;
+    }
+    
+    if (hasErrors) {
+      setFieldErrors(errors);
+      setIsLoading(false);
+      return;
+    }
+    
+    try {
+      const response = await onLogin(email, password);
+      if (response.success) {
+        navigate('/');
+      } else {
+        // Display the error message returned from the login function
+        setLoginError(response.message);
+      }
+    } catch (err) {
+      setLoginError('Authentication failed. Please try again.');
+      console.error('Login error:', err);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -73,6 +115,13 @@ const Login = ({ onLogin }) => {
       </div>
       <div className="flex-1 flex flex-col justify-center items-center p-8 bg-white shadow-2xl">
         <h2 className="text-4xl font-bold text-gray-800 mb-8">Welcome Back</h2>
+        
+        {loginError && (
+          <div className="w-full max-w-md bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4" role="alert">
+            <span className="block sm:inline">{loginError}</span>
+          </div>
+        )}
+        
         <form onSubmit={handleSubmit} className="w-full max-w-md space-y-6">
           <div className="relative">
             <label htmlFor="email" className="text-sm font-medium text-gray-700 mb-1 block">Email</label>
@@ -84,11 +133,17 @@ const Login = ({ onLogin }) => {
                 onChange={(e) => setEmail(e.target.value)}
                 required
                 placeholder="Enter your email"
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 pl-10"
+                className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 pl-10 
+                  ${fieldErrors.email ? 'border-red-500' : 'border-gray-300'}`}
+                disabled={isLoading}
               />
               <Mail className="w-5 h-5 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2" />
             </div>
+            {fieldErrors.email && (
+              <p className="text-red-500 text-sm mt-1">{fieldErrors.email}</p>
+            )}
           </div>
+          
           <div className="relative">
             <label htmlFor="password" className="text-sm font-medium text-gray-700 mb-1 block">Password</label>
             <div className="relative">
@@ -99,18 +154,25 @@ const Login = ({ onLogin }) => {
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 placeholder="Enter your password"
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 pl-10 pr-10"
+                className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 pl-10 pr-10
+                  ${fieldErrors.password ? 'border-red-500' : 'border-gray-300'}`}
+                disabled={isLoading}
               />
               <Lock className="w-5 h-5 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2" />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
                 className="absolute right-3 top-1/2 transform -translate-y-1/2"
+                disabled={isLoading}
               >
                 {showPassword ? <EyeOff className="w-5 h-5 text-gray-400" /> : <Eye className="w-5 h-5 text-gray-400" />}
               </button>
             </div>
+            {fieldErrors.password && (
+              <p className="text-red-500 text-sm mt-1">{fieldErrors.password}</p>
+            )}
           </div>
+          
           <div className="flex items-center justify-between">
             <div className="flex items-center">
               <input
@@ -127,15 +189,27 @@ const Login = ({ onLogin }) => {
               type="button"
               className="text-sm font-medium text-blue-600 hover:text-blue-500 focus:outline-none"
               onClick={() => alert('Forgot password clicked')}
+              disabled={isLoading}
             >
               Forgot password?
             </button>
           </div>
           <button
             type="submit"
-            className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition duration-200 ease-in-out transform hover:-translate-y-1 hover:shadow-lg"
+            disabled={isLoading}
+            className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition duration-200 ease-in-out transform hover:-translate-y-1 hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Sign In
+            {isLoading ? (
+              <span className="flex items-center justify-center">
+                <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Signing In...
+              </span>
+            ) : (
+              'Sign In'
+            )}
           </button>
         </form>
         <div className="mt-8 text-center">
@@ -144,6 +218,7 @@ const Login = ({ onLogin }) => {
             type="button"
             className="text-sm font-medium text-blue-600 hover:text-blue-500 focus:outline-none"
             onClick={() => alert('Register Now clicked')}
+            disabled={isLoading}
           >
             Register Now!
           </button>

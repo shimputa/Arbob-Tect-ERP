@@ -1,12 +1,13 @@
 import React, { useEffect } from 'react';
-import { Route, Routes ,useLocation} from 'react-router-dom';
-
+import { Route, Routes, useLocation } from 'react-router-dom';
+import { usePermission } from '../../contexts/PermissionContext';
 import CreatePayslip from './CreatePayslip';
 import PayslipList from './PayslipList';
 import AdvanceList from './AdvanceList';
 
 function Salary({ payslips, onDelete, onPrint, onSubmit, isLoading, error, setError, onRefresh }) {
   const location = useLocation();
+  const { hasPermission } = usePermission();
 
   // Reset error when route changes
   useEffect(() => {
@@ -24,7 +25,6 @@ function Salary({ payslips, onDelete, onPrint, onSubmit, isLoading, error, setEr
       return response;
     } catch (error) {
       console.error("Error in Salary component:", error);
-      // Don't transform the error, just pass it through
       throw error;
     }
   };
@@ -32,24 +32,38 @@ function Salary({ payslips, onDelete, onPrint, onSubmit, isLoading, error, setEr
   return (
     <div className="container mx-auto p-4">
       <Routes>
-        <Route path="create-payslip" element={<CreatePayslip onSubmit={handleSubmit} />} />
-        <Route
-          path="payslip-list"
-          element={
-            <PayslipList
-              payslips={payslips}
-              onDelete={onDelete}
-              onPrint={onPrint}
-              isLoading={isLoading}
-              error={error}
-              onRefresh={() => {
-                setError(null);
-                onRefresh();
-              }}
-            />
-          }
-        />
-        <Route path="advance-list" element={<AdvanceList />} />
+        {/* Only show create payslip route if user has salary:create permission */}
+        {hasPermission('salary:create') && (
+          <Route 
+            path="create-payslip" 
+            element={<CreatePayslip onSubmit={handleSubmit} />} 
+          />
+        )}
+        
+        {/* Only show payslip list route if user has salary:view permission */}
+        {hasPermission('salary:view') && (
+          <Route
+            path="payslip-list"
+            element={
+              <PayslipList
+                payslips={payslips}
+                onDelete={hasPermission('salary:delete') ? onDelete : null}
+                onPrint={onPrint}
+                isLoading={isLoading}
+                error={error}
+                onRefresh={() => {
+                  setError(null);
+                  onRefresh();
+                }}
+              />
+            }
+          />
+        )}
+        
+        {/* Only show advance list route if user has advance:view permission */}
+        {hasPermission('advance:view') && (
+          <Route path="advance-list" element={<AdvanceList />} />
+        )}
       </Routes>
     </div>
   );

@@ -1,5 +1,6 @@
 import React, { useState, useMemo, useCallback } from 'react';
 import { NavLink } from 'react-router-dom';
+import { usePermission } from '../../contexts/PermissionContext';
 import {
   XMarkIcon,
   ChevronDownIcon,
@@ -15,6 +16,7 @@ import {
 function Sidebar({ isMobile, isOpen, toggleSidebar }) {
   const [isSalaryDropdownOpen, setIsSalaryDropdownOpen] = useState(false);
   const [isAttendanceDropdownOpen, setIsAttendanceDropdownOpen] = useState(false);
+  const { hasPermission } = usePermission();
 
   const toggleSalaryDropdown = useCallback(() => {
     setIsSalaryDropdownOpen(prev => !prev);
@@ -26,64 +28,101 @@ function Sidebar({ isMobile, isOpen, toggleSidebar }) {
 
   const navigationItems = useMemo(() => (
     <ul className="space-y-5">
-      <NavItem to="/dashboard" icon={<HomeIcon className="h-7 w-7" />} text="Dashboard" />      
-      <NavItem to="/employees" icon={<UserGroupIcon className="h-7 w-7" />} text="Employees" />
-      <NavItem to="/expense" icon={<BanknotesIcon className="h-7 w-7" />} text="Expenses" />
-      <NavItem to="/expenseCate" icon={<Squares2X2Icon className="h-7 w-7" />} text="Expense Categories" />
-      <NavItem to="/projects" icon={<FolderIcon className="h-7 w-7" />} text="Projects" />
+      {/* Dashboard - Only show if user has dashboard:view permission */}
+      {hasPermission('dashboard:view') && (
+        <NavItem to="/dashboard" icon={<HomeIcon className="h-7 w-7" />} text="Dashboard" />
+      )}
+      
+      {/* Employees - Only show if user has employee:view permission */}
+      {hasPermission('employee:view') && (
+        <NavItem to="/employees" icon={<UserGroupIcon className="h-7 w-7" />} text="Employees" />
+      )}
+      
+      {/* Expenses - Only show if user has expense:view permission */}
+      {hasPermission('expense:view') && (
+        <NavItem to="/expense" icon={<BanknotesIcon className="h-7 w-7" />} text="Expenses" />
+      )}
+      
+      {/* Expense Categories - Only show if user has expenseCategory:view permission */}
+      {hasPermission('expenseCategory:view') && (
+        <NavItem to="/expenseCate" icon={<Squares2X2Icon className="h-7 w-7" />} text="Expense Categories" />
+      )}
+      
+      {/* Projects - Only show if user has project:view permission */}
+      {hasPermission('project:view') && (
+        <NavItem to="/projects" icon={<FolderIcon className="h-7 w-7" />} text="Projects" />
+      )}
 
-      {/* Salary Section */}
-      <li>
-        <button
-          onClick={toggleSalaryDropdown}
-          className="w-full text-left flex items-center justify-between py-3 px-5 rounded-lg 
-            transition-all duration-200 group hover:scale-105 hover:bg-white/5"
-        >
-          <div className="flex items-center">
-            <CurrencyDollarIcon className="h-7 w-7 mr-4" />
-            <span className="text-medium font-bold group-hover:translate-x-1 transition-transform">
-              Salary
-            </span>
-          </div>
-          <ChevronDownIcon
-            className={`h-5 w-5 transition-transform duration-200 ${isSalaryDropdownOpen ? 'rotate-180' : ''}`}
-          />
-        </button>
-        {isSalaryDropdownOpen && (
-          <ul className="mt-2 ml-7 space-y-2">
-            <SubNavItem to="/salary/create-payslip" text="Create Payslip" />
-            <SubNavItem to="/salary/payslip-list" text="Payslip List" />
-            <SubNavItem to="/salary/advance-list" text="Advance Salary List" />
-          </ul>
-        )}
-      </li>
+      {/* Salary Section - Only show if user has any salary-related permissions */}
+      {(hasPermission('salary:view') || hasPermission('advance:view')) && (
+        <li>
+          <button
+            onClick={toggleSalaryDropdown}
+            className="w-full text-left flex items-center justify-between py-3 px-5 rounded-lg 
+              transition-all duration-200 group hover:scale-105 hover:bg-white/5"
+          >
+            <div className="flex items-center">
+              <CurrencyDollarIcon className="h-7 w-7 mr-4" />
+              <span className="text-medium font-bold group-hover:translate-x-1 transition-transform">
+                Salary
+              </span>
+            </div>
+            <ChevronDownIcon
+              className={`h-5 w-5 transition-transform duration-200 ${isSalaryDropdownOpen ? 'rotate-180' : ''}`}
+            />
+          </button>
+          {isSalaryDropdownOpen && (
+            <ul className="mt-2 ml-7 space-y-2">
+              {/* Only show salary items if user has salary:view permission */}
+              {hasPermission('salary:view') && (
+                <>
+                  <SubNavItem to="/salary/create-payslip" text="Create Payslip" />
+                  <SubNavItem to="/salary/payslip-list" text="Payslip List" />
+                </>
+              )}
+              {/* Only show advance salary if user has advance:view permission */}
+              {hasPermission('advance:view') && (
+                <SubNavItem to="/salary/advance-list" text="Advance Salary List" />
+              )}
+            </ul>
+          )}
+        </li>
+      )}
 
-      {/* Attendance Section */}
-      <li>
-        <button
-          onClick={toggleAttendanceDropdown}
-          className="w-full text-left flex items-center justify-between py-3 px-5 rounded-lg 
-            transition-all duration-200 group hover:scale-105 hover:bg-white/5"
-        >
-          <div className="flex items-center">
-            <ClockIcon className="h-7 w-7 mr-4" />
-            <span className="text-medium font-bold group-hover:translate-x-1 transition-transform">
-              Attendance
-            </span>
-          </div>
-          <ChevronDownIcon
-            className={`h-5 w-5 transition-transform duration-200 ${isAttendanceDropdownOpen ? 'rotate-180' : ''}`}
-          />
-        </button>
-        {isAttendanceDropdownOpen && (
-          <ul className="mt-2 ml-7 space-y-2">
-            <SubNavItem to="/attendance/daily-attendance" text="Daily Attendance" />
-            <SubNavItem to="/attendance/attendance-report" text="Attendance Report" />
-          </ul>
-        )}
-      </li>
+      {/* Attendance Section - Only show if user has attendance:view permission */}
+      {hasPermission('attendance:view') && (
+        <li>
+          <button
+            onClick={toggleAttendanceDropdown}
+            className="w-full text-left flex items-center justify-between py-3 px-5 rounded-lg 
+              transition-all duration-200 group hover:scale-105 hover:bg-white/5"
+          >
+            <div className="flex items-center">
+              <ClockIcon className="h-7 w-7 mr-4" />
+              <span className="text-medium font-bold group-hover:translate-x-1 transition-transform">
+                Attendance
+              </span>
+            </div>
+            <ChevronDownIcon
+              className={`h-5 w-5 transition-transform duration-200 ${isAttendanceDropdownOpen ? 'rotate-180' : ''}`}
+            />
+          </button>
+          {isAttendanceDropdownOpen && (
+            <ul className="mt-2 ml-7 space-y-2">
+              <SubNavItem to="/attendance/daily-attendance" text="Daily Attendance" />
+              <SubNavItem to="/attendance/attendance-report" text="Attendance Report" />
+            </ul>
+          )}
+        </li>
+      )}
     </ul>
-  ), [isSalaryDropdownOpen, isAttendanceDropdownOpen, toggleSalaryDropdown, toggleAttendanceDropdown]);
+  ), [
+    isSalaryDropdownOpen, 
+    isAttendanceDropdownOpen, 
+    toggleSalaryDropdown, 
+    toggleAttendanceDropdown,
+    hasPermission // Add hasPermission to dependencies
+  ]);
 
   return (
     <>
