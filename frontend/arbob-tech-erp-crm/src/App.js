@@ -13,6 +13,7 @@ import Expense from './components/Expense/ExpenseList';
 import ExpenseCate from './components/ExpenseCate/ExpenseCateList';
 import Dashboard from './components/Dashboard/dashboard';
 import ProjectList from './components/Project Management/projectList';
+import User from './components/Users/UserList';
 import authService from './services/authService';
 import PermissionRoute from './components/common/PermissionRoute';
 
@@ -268,6 +269,16 @@ function App() {
                 element={
                   <PermissionRoute permissions={['expenseCategory:view']}>
                     <ExpenseCate />
+                  </PermissionRoute>
+                } 
+              />
+
+              {/* User Management routes */}
+              <Route 
+                path="users" 
+                element={
+                  <PermissionRoute permissions={['user:view']}>
+                    <User/>
                   </PermissionRoute>
                 } 
               />

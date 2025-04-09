@@ -31,6 +31,20 @@ const initToken = () => {
   return null;
 };
 
+// Add request interceptor to ensure token is always set for every request
+axios.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      config.headers['Authorization'] = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
 // Login user
 const loginUser = async (email, password) => {
   try {

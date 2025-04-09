@@ -10,7 +10,8 @@ import {
   HomeIcon,
   CurrencyDollarIcon,
   ClockIcon,
-  FolderIcon
+  FolderIcon,
+  UsersIcon
 } from '@heroicons/react/24/outline';
 
 function Sidebar({ isMobile, isOpen, toggleSidebar }) {
@@ -31,6 +32,11 @@ function Sidebar({ isMobile, isOpen, toggleSidebar }) {
       {/* Dashboard - Only show if user has dashboard:view permission */}
       {hasPermission('dashboard:view') && (
         <NavItem to="/dashboard" icon={<HomeIcon className="h-7 w-7" />} text="Dashboard" />
+      )}
+
+      {/* Users - Only show if user has user:view permission */}
+      {hasPermission('user:view') && (
+        <NavItem to="/users" icon={<UsersIcon className="h-7 w-7" />} text="Users" />
       )}
       
       {/* Employees - Only show if user has employee:view permission */}
