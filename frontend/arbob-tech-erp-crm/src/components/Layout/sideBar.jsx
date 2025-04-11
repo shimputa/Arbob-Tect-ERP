@@ -153,11 +153,13 @@ function Sidebar({ isMobile, isOpen, toggleSidebar }) {
       >
         {/* Header area */}
         <div className="flex items-center justify-between mb-10">
-          <img
-            src="https://placehold.co/100x40/667EEA/ffffff?text=ATT"
-            alt="ATT Logo"
-            className="h-10"
-          />
+          <div className="h-16 w-16 rounded-full overflow-hidden border-2 border-white shadow-lg flex items-center justify-center bg-white p-1 ml-4 -mb-6 -mt-2">
+            <img
+              src="/images/logo.png.jpg"
+              alt="ATT Logo"
+              className="max-h-full max-w-full object-contain"
+            />
+          </div>
           {isMobile && (
             <button
               onClick={toggleSidebar}

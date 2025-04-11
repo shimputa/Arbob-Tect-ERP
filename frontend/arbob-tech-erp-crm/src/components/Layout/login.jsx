@@ -60,7 +60,7 @@ const Login = ({ onLogin }) => {
     <div className="flex min-h-screen bg-gradient-to-br from-blue-100 to-indigo-200">
       <div className="hidden lg:flex flex-1 flex-col justify-center items-center p-12 bg-white bg-opacity-90">
         <div className="mb-8">
-          <img src="/api/placeholder/200/80" alt="ARBOB TECH" className="w-48" />
+          <img src="/images/logo.png.jpg" alt="ARBOB TECH" className="w-64 h-auto" />
         </div>
         <h1 className="text-4xl font-bold text-blue-600 mb-6">Arbob Tech Team</h1>
         <h2 className="text-2xl font-semibold text-gray-800 mb-4">Empowering Startups with Smart Solutions</h2>
@@ -173,27 +173,6 @@ const Login = ({ onLogin }) => {
             )}
           </div>
           
-          <div className="flex items-center justify-between">
-            <div className="flex items-center">
-              <input
-                id="remember-me"
-                name="remember-me"
-                type="checkbox"
-                className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-              />
-              <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-900">
-                Remember me
-              </label>
-            </div>
-            <button
-              type="button"
-              className="text-sm font-medium text-blue-600 hover:text-blue-500 focus:outline-none"
-              onClick={() => alert('Forgot password clicked')}
-              disabled={isLoading}
-            >
-              Forgot password?
-            </button>
-          </div>
           <button
             type="submit"
             disabled={isLoading}
@@ -212,17 +191,6 @@ const Login = ({ onLogin }) => {
             )}
           </button>
         </form>
-        <div className="mt-8 text-center">
-          <span className="text-sm text-gray-600">Don't have an account? </span>
-          <button
-            type="button"
-            className="text-sm font-medium text-blue-600 hover:text-blue-500 focus:outline-none"
-            onClick={() => alert('Register Now clicked')}
-            disabled={isLoading}
-          >
-            Register Now!
-          </button>
-        </div>
       </div>
     </div>
   );

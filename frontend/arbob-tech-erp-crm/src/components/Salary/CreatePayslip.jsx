@@ -344,7 +344,14 @@ function CreatePayslip({ onSubmit }) {
 
   return (
     <div className="max-w-3xl mx-auto p-6 bg-white rounded-lg shadow-lg">
-      <h2 className="text-2xl font-bold mb-6">Create Payslip</h2>
+      <div className="flex items-center mb-6">
+        <button onClick={() => navigate(-1)} className="flex items-center text-blue-600 hover:text-blue-800 transition-colors">
+          <svg className="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+          </svg>
+          <span className="font-medium">Create Payslip</span>
+        </button>
+      </div>
 
       {/* Error Message Display */}
       {error && (
