@@ -1,3 +1,67 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+@layer base {
+  :root {
+    --brand-color: #3871ec; /* Default brand color - blue */
+    --brand-light: #3f7fe6;
+    --brand-dark: #5B21B6;
+  }
+
+  /* Light theme (default) */
+  .light {
+    --bg-primary: #f9fafb;
+    --bg-secondary: #ffffff;
+    --bg-accent: #f3f4f6;
+    --text-primary: #111827;
+    --text-secondary: #374151;
+    --text-muted: #6b7280;
+    --border-color: #e5e7eb;
+  }
+
+  /* Dark theme */
+  .dark {
+    --bg-primary: #1F2937;
+    --bg-secondary: #111827;
+    --bg-accent: #374151;
+    --text-primary: #F9FAFB;
+    --text-secondary: #E5E7EB;
+    --text-muted: #9CA3AF;
+    --border-color: #4B5563;
+  }
+
+  /* Brand blue theme */
+  .brand-blue {
+    --brand-color: #2563EB;
+    --brand-light: #3B82F6;
+    --brand-dark: #1D4ED8;
+  }
+
+  /* Brand green theme */
+  .brand-green {
+    --brand-color: #059669;
+    --brand-light: #10B981;
+    --brand-dark: #047857;
+  }
+
+  /* Apply theme variables */
+  body {
+    @apply bg-white text-gray-900 transition-colors duration-200;
+  }
+
+  .dark body {
+    @apply bg-dark-primary text-dark-primary;
+  }
+}
+
+/* Theme-compatible component styles */
+@layer components {
+  .card {
+    @apply bg-white dark:bg-dark-secondary rounded-lg shadow transition-colors duration-200;
+  }
+  
+  .btn-primary {
+    @apply bg-brand-primary hover:bg-brand-dark text-white transition-colors duration-200;
+  }
+}

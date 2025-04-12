@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
+import { useTheme } from '../../contexts/ThemeContext';
 
 function EmployeeForm({ onSubmit, onClose, employee, error, formErrors }) {
   const [formEmployee, setFormEmployee] = useState({
@@ -9,6 +10,7 @@ function EmployeeForm({ onSubmit, onClose, employee, error, formErrors }) {
     position: '',
     basicSalary: '',
   });
+  const { isDarkMode } = useTheme();
 
   useEffect(() => {
     if (employee) {
@@ -62,14 +64,14 @@ function EmployeeForm({ onSubmit, onClose, employee, error, formErrors }) {
   };
 
   return (
-    <div className="fixed inset-y-0 right-0 bg-white w-96 shadow-lg p-6 overflow-y-auto">
+    <div className={`fixed inset-y-0 right-0 ${isDarkMode ? 'bg-dark-secondary' : 'bg-white'} w-96 shadow-lg p-6 overflow-y-auto transition-colors duration-200`}>
       <div className="flex justify-between items-center mb-6">
-        <h3 className="text-2xl font-semibold text-gray-800">
+        <h3 className={`text-2xl font-semibold ${isDarkMode ? 'text-dark-primary' : 'text-gray-800'}`}>
           {employee ? 'Edit Employee' : 'Add New Employee'}
         </h3>
         <button 
           onClick={onClose}
-          className="text-gray-400 hover:text-gray-600 transition duration-150 ease-in-out"
+          className={`${isDarkMode ? 'text-gray-400 hover:text-gray-200' : 'text-gray-400 hover:text-gray-600'} transition duration-150 ease-in-out`}
         >
           <X size={24} />
         </button>
@@ -77,14 +79,14 @@ function EmployeeForm({ onSubmit, onClose, employee, error, formErrors }) {
 
       {/* Display error messages if any */}
       {(error) && (
-        <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-md">
-          <p className="text-red-600 text-sm">{error}</p>
+        <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-md dark:bg-red-900/20 dark:border-red-700">
+          <p className="text-red-600 text-sm dark:text-red-400">{error}</p>
         </div>
       )}
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="name" className={`block text-sm font-medium ${isDarkMode ? 'text-gray-200' : 'text-gray-700'} mb-1`}>
             Name
           </label>
           <input
@@ -94,20 +96,20 @@ function EmployeeForm({ onSubmit, onClose, employee, error, formErrors }) {
             value={formEmployee.name}
             onChange={handleChange}
             placeholder="Enter full name"
-            className={`w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 
-                     focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500
-                     transition duration-150 ease-in-out ${
-                       formErrors.name ? 'border-red-500' : ''
-                     }`}
+            className={`w-full px-3 py-2 border rounded-md shadow-sm placeholder-gray-400 
+                     focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary
+                     transition duration-150 ease-in-out 
+                     ${isDarkMode ? 'bg-dark-accent border-gray-600 text-white' : 'bg-white border-gray-300 text-gray-900'}
+                     ${formErrors.name ? 'border-red-500' : ''}`}
             required
           />
           {formErrors.name && (
-            <p className="text-red-500 text-sm mt-1">{formErrors.name}</p>
+            <p className="text-red-500 dark:text-red-400 text-sm mt-1">{formErrors.name}</p>
           )}
         </div>
 
         <div>
-          <label htmlFor="contact" className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="contact" className={`block text-sm font-medium ${isDarkMode ? 'text-gray-200' : 'text-gray-700'} mb-1`}>
             Contact No
           </label>
           <input
@@ -117,20 +119,20 @@ function EmployeeForm({ onSubmit, onClose, employee, error, formErrors }) {
             value={formEmployee.contact}
             onChange={handleChange}
             placeholder="Enter contact number"
-            className={`w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 
-                     focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500
-                     transition duration-150 ease-in-out ${
-                       formErrors.contact ? 'border-red-500' : ''
-                     }`}
+            className={`w-full px-3 py-2 border rounded-md shadow-sm placeholder-gray-400 
+                     focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary
+                     transition duration-150 ease-in-out 
+                     ${isDarkMode ? 'bg-dark-accent border-gray-600 text-white' : 'bg-white border-gray-300 text-gray-900'}
+                     ${formErrors.contact ? 'border-red-500' : ''}`}
             required
           />
           {formErrors.contact && (
-            <p className="text-red-500 text-sm mt-1">{formErrors.contact}</p>
+            <p className="text-red-500 dark:text-red-400 text-sm mt-1">{formErrors.contact}</p>
           )}
         </div>
 
         <div>
-          <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="email" className={`block text-sm font-medium ${isDarkMode ? 'text-gray-200' : 'text-gray-700'} mb-1`}>
             Email
           </label>
           <input
@@ -140,20 +142,20 @@ function EmployeeForm({ onSubmit, onClose, employee, error, formErrors }) {
             value={formEmployee.email}
             onChange={handleChange}
             placeholder="Enter email address"
-            className={`w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 
-                     focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500
-                     transition duration-150 ease-in-out ${
-                       formErrors.email ? 'border-red-500' : ''
-                     }`}
+            className={`w-full px-3 py-2 border rounded-md shadow-sm placeholder-gray-400 
+                     focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary
+                     transition duration-150 ease-in-out 
+                     ${isDarkMode ? 'bg-dark-accent border-gray-600 text-white' : 'bg-white border-gray-300 text-gray-900'}
+                     ${formErrors.email ? 'border-red-500' : ''}`}
             required
           />
           {formErrors.email && (
-            <p className="text-red-500 text-sm mt-1">{formErrors.email}</p>
+            <p className="text-red-500 dark:text-red-400 text-sm mt-1">{formErrors.email}</p>
           )}
         </div>
 
         <div>
-          <label htmlFor="position" className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="position" className={`block text-sm font-medium ${isDarkMode ? 'text-gray-200' : 'text-gray-700'} mb-1`}>
             Position
           </label>
           <input
@@ -163,20 +165,20 @@ function EmployeeForm({ onSubmit, onClose, employee, error, formErrors }) {
             value={formEmployee.position}
             onChange={handleChange}
             placeholder="Enter job position"
-            className={`w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 
-                     focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500
-                     transition duration-150 ease-in-out ${
-                       formErrors.position ? 'border-red-500' : ''
-                     }`}
+            className={`w-full px-3 py-2 border rounded-md shadow-sm placeholder-gray-400 
+                     focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary
+                     transition duration-150 ease-in-out 
+                     ${isDarkMode ? 'bg-dark-accent border-gray-600 text-white' : 'bg-white border-gray-300 text-gray-900'}
+                     ${formErrors.position ? 'border-red-500' : ''}`}
             required
           />
           {formErrors.position && (
-            <p className="text-red-500 text-sm mt-1">{formErrors.position}</p>
+            <p className="text-red-500 dark:text-red-400 text-sm mt-1">{formErrors.position}</p>
           )}
         </div>
 
         <div>
-          <label htmlFor="basicSalary" className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="basicSalary" className={`block text-sm font-medium ${isDarkMode ? 'text-gray-200' : 'text-gray-700'} mb-1`}>
             Basic Salary
           </label>
           <input
@@ -186,15 +188,15 @@ function EmployeeForm({ onSubmit, onClose, employee, error, formErrors }) {
             value={formEmployee.basicSalary}
             onChange={handleChange}
             placeholder="Enter basic salary"
-            className={`w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 
-                     focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500
-                     transition duration-150 ease-in-out ${
-                       formErrors.basicSalary ? 'border-red-500' : ''
-                     }`}
+            className={`w-full px-3 py-2 border rounded-md shadow-sm placeholder-gray-400 
+                     focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary
+                     transition duration-150 ease-in-out 
+                     ${isDarkMode ? 'bg-dark-accent border-gray-600 text-white' : 'bg-white border-gray-300 text-gray-900'}
+                     ${formErrors.basicSalary ? 'border-red-500' : ''}`}
             required
           />
           {formErrors.basicSalary && (
-            <p className="text-red-500 text-sm mt-1">{formErrors.basicSalary}</p>
+            <p className="text-red-500 dark:text-red-400 text-sm mt-1">{formErrors.basicSalary}</p>
           )}
         </div>
 
@@ -202,17 +204,20 @@ function EmployeeForm({ onSubmit, onClose, employee, error, formErrors }) {
           <button 
             type="button" 
             onClick={onClose} 
-            className="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 
-                     hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500
-                     transition duration-150 ease-in-out"
+            className={`px-4 py-2 border rounded-md text-sm font-medium 
+                     ${isDarkMode 
+                       ? 'border-gray-600 text-gray-300 hover:bg-dark-accent' 
+                       : 'border-gray-300 text-gray-700 hover:bg-gray-50'}
+                     focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-primary
+                     transition duration-150 ease-in-out`}
           >
             Cancel
           </button>
           <button 
             type="submit" 
             className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium 
-                     text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 
-                     focus:ring-offset-2 focus:ring-blue-500 transition duration-150 ease-in-out"
+                     text-white bg-brand-primary hover:bg-brand-dark focus:outline-none focus:ring-2 
+                     focus:ring-offset-2 focus:ring-brand-primary transition duration-150 ease-in-out"
           >
             {employee ? 'Update' : 'Submit'}
           </button>

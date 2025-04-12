@@ -1,10 +1,10 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import ExpenseForm from './ExpenseForm';
 import { usePermission } from '../../contexts/PermissionContext';
 import { PermissionGate } from '../common/PermissionGate';
+import { useTheme } from '../../contexts/ThemeContext';
 
 const CURRENCY_SYMBOLS = {
   USD: '$',
@@ -28,6 +28,7 @@ function ExpenseList() {
   const [successMessage, setSuccessMessage] = useState('');
   const navigate = useNavigate();
   const { hasPermission } = usePermission();
+  const { isDarkMode } = useTheme();
 
   useEffect(() => {
     fetchExpenses();
@@ -154,7 +155,7 @@ function ExpenseList() {
   const displayedExpenses = filteredExpenses.slice(startIndex, startIndex + ITEMS_PER_PAGE);
 
   return (
-    <div className="container mx-auto p-4 sm:p-6 bg-gray-100 min-h-screen">
+    <div className={`container mx-auto p-4 sm:p-6 ${isDarkMode ? 'bg-dark-primary' : 'bg-gray-100'} min-h-screen transition-colors duration-200`}>
       <div
         className={`transition-all duration-300 ${
           isModalOpen ? "lg:mr-96" : ""
@@ -163,7 +164,7 @@ function ExpenseList() {
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 space-y-4 sm:space-y-0">
           <button
             onClick={() => navigate(-1)}
-            className="flex items-center text-blue-600 hover:text-blue-800 transition-colors"
+            className={`flex items-center ${isDarkMode ? 'text-brand-primary hover:text-brand-light' : 'text-blue-600 hover:text-blue-800'} transition-colors`}
           >
             <svg
               className="w-5 h-5 mr-1"
@@ -188,7 +189,10 @@ function ExpenseList() {
                 placeholder="Search expenses"
                 value={searchTerm}
                 onChange={handleSearch}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+                className={`w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-brand-primary focus:border-brand-primary
+                  ${isDarkMode 
+                    ? 'bg-dark-accent border-gray-700 text-white placeholder-gray-400' 
+                    : 'bg-white border-gray-300 text-gray-900'}`}
               />
               <svg
                 className="w-5 h-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"
@@ -211,7 +215,7 @@ function ExpenseList() {
                   setEditingExpense(null);
                   setIsModalOpen(true);
                 }}
-                className="w-full sm:w-auto bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center"
+                className="w-full sm:w-auto bg-brand-primary text-white px-4 py-2 rounded-lg hover:bg-brand-dark transition-colors flex items-center justify-center"
               >
                 <svg
                   className="w-5 h-5 mr-2"
@@ -234,76 +238,76 @@ function ExpenseList() {
         </div>
 
         {error && (
-          <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
-            <p className="text-red-600">{error}</p>
+          <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg dark:bg-red-900/20 dark:border-red-700">
+            <p className="text-red-600 dark:text-red-400">{error}</p>
           </div>
         )}
 
         {successMessage && (
-          <div className="mb-4 p-4 bg-green-50 border border-green-200 rounded-lg">
-            <p className="text-green-600">{successMessage}</p>
+          <div className="mb-4 p-4 bg-green-50 border border-green-200 rounded-lg dark:bg-green-900/20 dark:border-green-700">
+            <p className="text-green-600 dark:text-green-400">{successMessage}</p>
           </div>
         )}
 
         {loading ? (
           <div className="flex justify-center items-center h-64">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand-primary"></div>
           </div>
         ) : (
-          <div className="bg-white rounded-lg shadow overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
+          <div className={`${isDarkMode ? 'bg-dark-secondary' : 'bg-white'} rounded-lg shadow overflow-x-auto transition-colors duration-200`}>
+            <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+              <thead className={`${isDarkMode ? 'bg-dark-accent' : 'bg-gray-50'}`}>
                 <tr>
                   <th
                     scope="col"
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    className={`px-6 py-3 text-left text-xs font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-500'} uppercase tracking-wider`}
                   >
                     Name
                   </th>
                   <th
                     scope="col"
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    className={`px-6 py-3 text-left text-xs font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-500'} uppercase tracking-wider`}
                   >
                     Category
                   </th>
                   <th
                     scope="col"
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    className={`px-6 py-3 text-left text-xs font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-500'} uppercase tracking-wider`}
                   >
                     Currency
                   </th>
                   <th
                     scope="col"
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    className={`px-6 py-3 text-left text-xs font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-500'} uppercase tracking-wider`}
                   >
                     Total
                   </th>
                   <th
                     scope="col"
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden md:table-cell"
+                    className={`px-6 py-3 text-left text-xs font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-500'} uppercase tracking-wider hidden md:table-cell`}
                   >
                     Description
                   </th>
                   <th
                     scope="col"
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden lg:table-cell"
+                    className={`px-6 py-3 text-left text-xs font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-500'} uppercase tracking-wider hidden lg:table-cell`}
                   >
                     Ref
                   </th>
                   <th
                     scope="col"
-                    className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider"
+                    className={`px-6 py-3 text-left text-xs font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-500'} uppercase tracking-wider`}
                   >
                     Actions
                   </th>
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
+              <tbody className={`${isDarkMode ? 'bg-dark-secondary divide-y divide-gray-700' : 'bg-white divide-y divide-gray-200'}`}>
                 {displayedExpenses.length === 0 ? (
                   <tr>
                     <td
                       colSpan="7"
-                      className="px-6 py-4 text-center text-gray-500"
+                      className={`px-6 py-4 text-center ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}
                     >
                       {searchTerm
                         ? "No expenses found matching your search"
@@ -314,37 +318,36 @@ function ExpenseList() {
                   displayedExpenses.map((expense) => (
                     <tr
                       key={expense.id}
-                      className="hover:bg-gray-50 transition-colors"
+                      className={`${isDarkMode ? 'hover:bg-dark-accent/50' : 'hover:bg-gray-50'} transition-colors`}
                     >
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                      <td className={`px-6 py-4 whitespace-nowrap text-sm font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
                         {String(expense.name || "")}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
+                      <td className={`px-6 py-4 whitespace-nowrap text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-500'}`}>
+                        <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                          isDarkMode ? 'bg-yellow-800 text-yellow-100' : 'bg-yellow-100 text-yellow-800'
+                        }`}>
                           {String(expense.expenseCategory.name || "")}
                         </span>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      <td className={`px-6 py-4 whitespace-nowrap text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-500'}`}>
                         {String(expense.currency || "")}
                       </td>
-                      {/* <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        ${Number(expense.total || 0).toFixed(2)}
-                      </td> */}
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                      <td className={`px-6 py-4 whitespace-nowrap text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-500'}`}>
                         {CURRENCY_SYMBOLS[expense.currency] || "$"}
                         {Number(expense.total || 0)}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 hidden md:table-cell">
+                      <td className={`px-6 py-4 whitespace-nowrap text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-500'} hidden md:table-cell`}>
                         {String(expense.description || "")}
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 hidden lg:table-cell">
+                      <td className={`px-6 py-4 whitespace-nowrap text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-500'} hidden lg:table-cell`}>
                         {String(expense.reference || "")}
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                         <PermissionGate permission="expense:edit">
                           <button
                             onClick={() => handleEditExpense(expense)}
-                            className="text-indigo-600 hover:text-indigo-900 mr-4 transition-colors"
+                            className={`${isDarkMode ? 'text-brand-light hover:text-brand-primary' : 'text-indigo-600 hover:text-indigo-900'} mr-4 transition-colors`}
                           >
                             <svg
                               className="w-5 h-5"
@@ -395,7 +398,10 @@ function ExpenseList() {
         <div className="flex flex-wrap justify-center mt-6 space-x-0 space-y-2 sm:space-x-2 sm:space-y-0">
           <button
             onClick={() => setCurrentPage((page) => Math.max(page - 1, 1))}
-            className="w-full sm:w-auto px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition-colors"
+            className={`w-full sm:w-auto px-4 py-2 border rounded-md text-sm font-medium 
+              ${isDarkMode 
+                ? 'border-gray-600 text-gray-300 bg-dark-secondary hover:bg-dark-accent' 
+                : 'border-gray-300 text-gray-700 bg-white hover:bg-gray-50'} transition-colors`}
             disabled={currentPage === 1}
           >
             Previous
@@ -406,8 +412,10 @@ function ExpenseList() {
               onClick={() => setCurrentPage(index + 1)}
               className={`w-full sm:w-auto px-4 py-2 border text-sm font-medium rounded-md transition-colors ${
                 currentPage === index + 1
-                  ? "bg-blue-600 text-white border-blue-600"
-                  : "border-gray-300 text-gray-700 bg-white hover:bg-gray-50"
+                  ? "bg-brand-primary text-white border-brand-primary"
+                  : isDarkMode 
+                    ? 'bg-dark-secondary text-gray-300 border-gray-600 hover:bg-dark-accent' 
+                    : 'border-gray-300 text-gray-700 bg-white hover:bg-gray-50'
               }`}
             >
               {index + 1}
@@ -417,7 +425,10 @@ function ExpenseList() {
             onClick={() =>
               setCurrentPage((page) => Math.min(page + 1, totalPages))
             }
-            className="w-full sm:w-auto px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition-colors"
+            className={`w-full sm:w-auto px-4 py-2 border rounded-md text-sm font-medium 
+              ${isDarkMode 
+                ? 'border-gray-600 text-gray-300 bg-dark-secondary hover:bg-dark-accent' 
+                : 'border-gray-300 text-gray-700 bg-white hover:bg-gray-50'} transition-colors`}
             disabled={currentPage === totalPages}
           >
             Next

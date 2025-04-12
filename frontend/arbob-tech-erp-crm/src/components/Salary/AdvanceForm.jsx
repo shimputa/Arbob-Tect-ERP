@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
 import axios from 'axios';
+import { useTheme } from '../../contexts/ThemeContext';
 
 function AdvanceForm({ onSubmit, onClose, advance, error, formErrors }) {
   const [employees, setEmployees] = useState([]);
@@ -13,6 +14,7 @@ function AdvanceForm({ onSubmit, onClose, advance, error, formErrors }) {
     description: '',
     status: 1
   });
+  const { isDarkMode } = useTheme();
 
   useEffect(() => {
     fetchEmployees();
@@ -92,28 +94,28 @@ function AdvanceForm({ onSubmit, onClose, advance, error, formErrors }) {
   };
 
   return (
-    <div className="fixed inset-y-0 right-0 bg-white w-96 shadow-lg p-6 overflow-y-auto">
+    <div className={`fixed inset-y-0 right-0 ${isDarkMode ? 'bg-dark-secondary' : 'bg-white'} w-96 shadow-lg p-6 overflow-y-auto transition-colors duration-200`}>
       <div className="flex justify-between items-center mb-6">
-        <h3 className="text-2xl font-semibold text-gray-800">
+        <h3 className={`text-2xl font-semibold ${isDarkMode ? 'text-gray-200' : 'text-gray-800'}`}>
           {advance ? 'Edit Advance Record' : 'Add New Advance'}
         </h3>
         <button 
           onClick={onClose}
-          className="text-gray-400 hover:text-gray-600 transition duration-150 ease-in-out"
+          className={`${isDarkMode ? 'text-gray-400 hover:text-gray-200' : 'text-gray-400 hover:text-gray-600'} transition duration-150 ease-in-out`}
         >
           <X size={24} />
         </button>
       </div>
 
       {error && (
-        <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-md">
-          <p className="text-red-600 text-sm">{error}</p>
+        <div className={`mb-4 p-3 rounded-md ${isDarkMode ? 'bg-red-900/20 border-red-700 text-red-400' : 'bg-red-50 border-red-200 text-red-600'}`}>
+          <p className={`text-sm ${isDarkMode ? 'text-red-400' : 'text-red-600'}`}>{error}</p>
         </div>
       )}
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label htmlFor="employeeId" className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="employeeId" className={`block text-sm font-medium ${isDarkMode ? 'text-gray-200' : 'text-gray-700'} mb-1`}>
             Employee
           </label>
           <select
@@ -121,8 +123,9 @@ function AdvanceForm({ onSubmit, onClose, advance, error, formErrors }) {
             name="employeeId"
             value={formAdvance.employeeId}
             onChange={handleChange}
-            className={`w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm 
+            className={`w-full px-3 py-2 border rounded-md shadow-sm 
                      focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500
+                     ${isDarkMode ? 'bg-dark-accent border-gray-600 text-white' : 'bg-white border-gray-300 text-gray-900'}
                      ${formErrors.employeeId ? 'border-red-500' : ''}`}
             required
           >
@@ -134,12 +137,12 @@ function AdvanceForm({ onSubmit, onClose, advance, error, formErrors }) {
             ))}
           </select>
           {formErrors.employeeId && (
-            <p className="text-red-500 text-sm mt-1">{formErrors.employeeId}</p>
+            <p className={`text-sm mt-1 ${isDarkMode ? 'text-red-400' : 'text-red-500'}`}>{formErrors.employeeId}</p>
           )}
         </div>
 
         <div>
-          <label htmlFor="amount" className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="amount" className={`block text-sm font-medium ${isDarkMode ? 'text-gray-200' : 'text-gray-700'} mb-1`}>
             Amount
           </label>
           <input
@@ -149,20 +152,21 @@ function AdvanceForm({ onSubmit, onClose, advance, error, formErrors }) {
             value={formAdvance.amount}
             onChange={handleChange}
             placeholder="Enter advance amount"
-            className={`w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm 
+            className={`w-full px-3 py-2 border rounded-md shadow-sm 
                      focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500
+                     ${isDarkMode ? 'bg-dark-accent border-gray-600 text-white placeholder-gray-400' : 'bg-white border-gray-300 text-gray-900'}
                      ${formErrors.amount ? 'border-red-500' : ''}`}
             required
             min="0"
             step="0.01"
           />
           {formErrors.amount && (
-            <p className="text-red-500 text-sm mt-1">{formErrors.amount}</p>
+            <p className={`text-sm mt-1 ${isDarkMode ? 'text-red-400' : 'text-red-500'}`}>{formErrors.amount}</p>
           )}
         </div>
 
         <div>
-          <label htmlFor="remainingAmount" className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="remainingAmount" className={`block text-sm font-medium ${isDarkMode ? 'text-gray-200' : 'text-gray-700'} mb-1`}>
             Remaining Amount
           </label>
           <input
@@ -170,19 +174,20 @@ function AdvanceForm({ onSubmit, onClose, advance, error, formErrors }) {
             name="remainingAmount"
             id="remainingAmount"
             value={formAdvance.remainingAmount}
-            className={`w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm 
-                     bg-gray-100 cursor-not-allowed
+            className={`w-full px-3 py-2 border rounded-md shadow-sm 
+                     ${isDarkMode ? 'bg-dark-accent/50 border-gray-600 text-gray-400' : 'bg-gray-100 text-gray-500 border-gray-300'}
+                     cursor-not-allowed
                      ${formErrors.remainingAmount ? 'border-red-500' : ''}`}
             readOnly
             disabled
           />
           {formErrors.remainingAmount && (
-            <p className="text-red-500 text-sm mt-1">{formErrors.remainingAmount}</p>
+            <p className={`text-sm mt-1 ${isDarkMode ? 'text-red-400' : 'text-red-500'}`}>{formErrors.remainingAmount}</p>
           )}
         </div>
 
         <div>
-          <label htmlFor="description" className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="description" className={`block text-sm font-medium ${isDarkMode ? 'text-gray-200' : 'text-gray-700'} mb-1`}>
             Description
           </label>
           <textarea
@@ -191,18 +196,19 @@ function AdvanceForm({ onSubmit, onClose, advance, error, formErrors }) {
             value={formAdvance.description}
             onChange={handleChange}
             placeholder="Enter reason for advance"
-            className={`w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm 
+            className={`w-full px-3 py-2 border rounded-md shadow-sm 
                      focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500
+                     ${isDarkMode ? 'bg-dark-accent border-gray-600 text-white placeholder-gray-400' : 'bg-white border-gray-300 text-gray-900'}
                      ${formErrors.description ? 'border-red-500' : ''}`}
             rows="3"
           />
           {formErrors.description && (
-            <p className="text-red-500 text-sm mt-1">{formErrors.description}</p>
+            <p className={`text-sm mt-1 ${isDarkMode ? 'text-red-400' : 'text-red-500'}`}>{formErrors.description}</p>
           )}
         </div>
 
         <div>
-          <label htmlFor="date" className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="date" className={`block text-sm font-medium ${isDarkMode ? 'text-gray-200' : 'text-gray-700'} mb-1`}>
             Date
           </label>
           <input
@@ -211,13 +217,14 @@ function AdvanceForm({ onSubmit, onClose, advance, error, formErrors }) {
             id="date"
             value={formAdvance.date}
             onChange={handleChange}
-            className={`w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm 
+            className={`w-full px-3 py-2 border rounded-md shadow-sm 
                      focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500
+                     ${isDarkMode ? 'bg-dark-accent border-gray-600 text-white' : 'bg-white border-gray-300 text-gray-900'}
                      ${formErrors.date ? 'border-red-500' : ''}`}
             required
           />
           {formErrors.date && (
-            <p className="text-red-500 text-sm mt-1">{formErrors.date}</p>
+            <p className={`text-sm mt-1 ${isDarkMode ? 'text-red-400' : 'text-red-500'}`}>{formErrors.date}</p>
           )}
         </div>
 
@@ -225,8 +232,12 @@ function AdvanceForm({ onSubmit, onClose, advance, error, formErrors }) {
           <button 
             type="button" 
             onClick={onClose} 
-            className="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 
-                     hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            className={`px-4 py-2 border rounded-md text-sm font-medium 
+                     ${isDarkMode 
+                       ? 'border-gray-600 text-gray-300 hover:bg-dark-accent' 
+                       : 'border-gray-300 text-gray-700 hover:bg-gray-50'} 
+                     focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500
+                     transition duration-150 ease-in-out`}
           >
             Cancel
           </button>
@@ -234,7 +245,8 @@ function AdvanceForm({ onSubmit, onClose, advance, error, formErrors }) {
             type="submit" 
             className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium 
                      text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 
-                     focus:ring-offset-2 focus:ring-blue-500"
+                     focus:ring-offset-2 focus:ring-blue-500
+                     transition duration-150 ease-in-out"
           >
             {advance ? 'Update' : 'Submit'}
           </button>

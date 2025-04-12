@@ -1,6 +1,7 @@
 import React, { useState, useMemo, useCallback } from 'react';
 import { NavLink } from 'react-router-dom';
 import { usePermission } from '../../contexts/PermissionContext';
+import { useTheme } from '../../contexts/ThemeContext';
 import {
   XMarkIcon,
   ChevronDownIcon,
@@ -18,6 +19,7 @@ function Sidebar({ isMobile, isOpen, toggleSidebar }) {
   const [isSalaryDropdownOpen, setIsSalaryDropdownOpen] = useState(false);
   const [isAttendanceDropdownOpen, setIsAttendanceDropdownOpen] = useState(false);
   const { hasPermission } = usePermission();
+  const { isDarkMode } = useTheme();
 
   const toggleSalaryDropdown = useCallback(() => {
     setIsSalaryDropdownOpen(prev => !prev);
@@ -143,8 +145,11 @@ function Sidebar({ isMobile, isOpen, toggleSidebar }) {
       {/* Sidebar container */}
       <div
         className={`
-          bg-gradient-to-b from-indigo-600 via-blue-700 to-purple-800
-          text-white p-4 flex flex-col z-50
+          ${isDarkMode 
+            ? 'bg-dark-secondary text-dark-primary' 
+            : 'bg-gradient-to-b from-brand-primary via-brand-light to-brand-dark text-white'
+          }
+          p-4 flex flex-col z-50 transition-colors duration-200
           ${isMobile
             ? 'fixed top-0 left-0 h-screen w-64 transition-transform duration-300'
             : 'relative h-screen w-64'}
@@ -165,7 +170,7 @@ function Sidebar({ isMobile, isOpen, toggleSidebar }) {
               onClick={toggleSidebar}
               className="p-2 rounded-full bg-white/10 hover:bg-white/20 focus:outline-none"
             >
-              <XMarkIcon className="h-7 w-7 text-white" />
+              <XMarkIcon className="h-7 w-7 text-white dark:text-gray-200" />
             </button>
           )}
         </div>
@@ -178,6 +183,8 @@ function Sidebar({ isMobile, isOpen, toggleSidebar }) {
 }
 
 function NavItem({ to, icon, text }) {
+  const { isDarkMode } = useTheme();
+  
   return (
     <li>
       <NavLink
@@ -186,8 +193,12 @@ function NavItem({ to, icon, text }) {
           `flex items-center py-3 px-5 rounded-lg transition-all duration-200
           group hover:scale-105
           ${isActive
-            ? 'bg-white/10 text-white backdrop-blur-sm shadow-lg'
-            : 'text-blue-100 hover:bg-white/5 hover:text-white active:bg-white/20'}`
+            ? isDarkMode 
+              ? 'bg-dark-accent text-white backdrop-blur-sm shadow-lg' 
+              : 'bg-white/10 text-white backdrop-blur-sm shadow-lg'
+            : isDarkMode
+              ? 'text-gray-300 hover:bg-dark-accent hover:text-white active:bg-dark-accent/80'
+              : 'text-blue-100 hover:bg-white/5 hover:text-white active:bg-white/20'}`
         }
       >
         {icon}
@@ -200,21 +211,25 @@ function NavItem({ to, icon, text }) {
 }
 
 function SubNavItem({ to, text }) {
+  const { isDarkMode } = useTheme();
+  
   return (
     <li>
       <NavLink
         to={to}
         className={({ isActive }) =>
-          `block py-2 px-4 rounded-lg transition-all duration-200
-          group hover:scale-105
+          `block py-2 pl-3 pr-4 rounded-md transition-all duration-200
+          text-sm font-medium
           ${isActive
-            ? 'bg-white/10 text-white backdrop-blur-sm shadow-lg'
-            : 'text-blue-100 hover:bg-white/5 hover:text-white active:bg-white/20'}`
+            ? isDarkMode 
+              ? 'bg-dark-accent text-white' 
+              : 'bg-white/10 text-white'
+            : isDarkMode
+              ? 'text-gray-300 hover:bg-dark-accent hover:text-white'
+              : 'text-blue-100 hover:bg-white/5 hover:text-white'}`
         }
       >
-        <span className="transition-transform duration-200 group-hover:translate-x-1">
-          {text}
-        </span>
+        {text}
       </NavLink>
     </li>
   );

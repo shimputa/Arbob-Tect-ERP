@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import fetchWithAuth from '../../utils/fetchWithAuth';
+import { useTheme } from '../../contexts/ThemeContext';
 
 const API_BASE_URL = 'http://localhost:3000'; 
 
@@ -34,6 +35,7 @@ const DailyAttendance = () => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [formErrors, setFormErrors] = useState({});
+  const { isDarkMode } = useTheme();
   const navigate = useNavigate();
 
   const fetchEmployees = useCallback(async () => {
@@ -184,17 +186,17 @@ const DailyAttendance = () => {
   const displayedAttendance = attendanceData.slice(startIndex, startIndex + ITEMS_PER_PAGE);
 
   return (
-    <div className="container mx-auto p-4 sm:p-6 bg-gray-100 min-h-screen">
+    <div className={`container mx-auto p-4 sm:p-6 ${isDarkMode ? 'bg-dark-primary' : 'bg-gray-100'} min-h-screen transition-colors duration-200`}>
       {error && (
-        <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-md">
-          <p className="text-red-600 text-sm">{error}</p>
+        <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-md dark:bg-red-900/20 dark:border-red-700">
+          <p className="text-red-600 text-sm dark:text-red-400">{error}</p>
         </div>
       )}
 
       {Object.keys(formErrors).length > 0 && (
-        <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-md">
+        <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-md dark:bg-red-900/20 dark:border-red-700">
           {Object.entries(formErrors).map(([field, message]) => (
-            <p key={field} className="text-red-600 text-sm">
+            <p key={field} className="text-red-600 text-sm dark:text-red-400">
               {message}
             </p>
           ))}
@@ -202,19 +204,19 @@ const DailyAttendance = () => {
       )}
 
       {showSuccessMessage && (
-        <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-md">
-          <p className="text-green-600 text-sm">Attendance marked successfully!</p>
+        <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-md dark:bg-green-900/20 dark:border-green-700">
+          <p className="text-green-600 text-sm dark:text-green-400">Attendance marked successfully!</p>
         </div>
       )}
 
       {loading && (
         <div className="flex justify-center items-center p-4">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-brand-primary"></div>
         </div>
       )}
 
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 space-y-4 sm:space-y-0">
-        <button onClick={() => navigate(-1)} className="flex items-center text-blue-600 hover:text-blue-800 transition-colors">
+        <button onClick={() => navigate(-1)} className={`flex items-center ${isDarkMode ? 'text-brand-primary hover:text-brand-light' : 'text-blue-600 hover:text-blue-800'} transition-colors`}>
           <svg className="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
           </svg>
@@ -222,23 +224,29 @@ const DailyAttendance = () => {
         </button>
       </div>
 
-      <div className="bg-white rounded-lg shadow p-6 mb-6">
+      <div className={`${isDarkMode ? 'bg-dark-secondary' : 'bg-white'} rounded-lg shadow p-6 mb-6 transition-colors duration-200`}>
         <div className="flex flex-col sm:flex-row gap-4 mb-6">
           <div className="flex-1">
-            <label className="block text-sm font-medium text-gray-700 mb-2">Select Date</label>
+            <label className={`block text-sm font-medium ${isDarkMode ? 'text-gray-200' : 'text-gray-700'} mb-2`}>Select Date</label>
             <input
               type="date"
               value={date}
               readOnly
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 bg-gray-50"
+              className={`mt-1 block w-full rounded-md shadow-sm ${
+                isDarkMode 
+                ? 'bg-dark-accent border-gray-700 text-white focus:border-brand-primary focus:ring-brand-primary' 
+                : 'border-gray-300 bg-gray-50 focus:border-blue-500 focus:ring-blue-500'}`}
             />
           </div>
           <div className="flex-1">
-            <label className="block text-sm font-medium text-gray-700 mb-2">Select Employee</label>
+            <label className={`block text-sm font-medium ${isDarkMode ? 'text-gray-200' : 'text-gray-700'} mb-2`}>Select Employee</label>
             <select
               value={selectedEmployees}
               onChange={(e) => setSelectedEmployees(e.target.value)}
-              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+              className={`mt-1 block w-full rounded-md shadow-sm ${
+                isDarkMode 
+                ? 'bg-dark-accent border-gray-700 text-white focus:border-brand-primary focus:ring-brand-primary' 
+                : 'border-gray-300 focus:border-blue-500 focus:ring-blue-500'}`}
             >
               <option value="All Employees">All Employees</option>
               {employees.map((emp) => (
@@ -253,8 +261,8 @@ const DailyAttendance = () => {
               onClick={getEmployeesList}
               disabled={!date}
               className={`w-full px-4 py-2 rounded-md text-white font-medium ${
-                !date ? 'bg-gray-400 cursor-not-allowed' : 'bg-blue-600 hover:bg-blue-700'
-              }`}
+                !date ? 'bg-gray-400 cursor-not-allowed' : 'bg-brand-primary hover:bg-brand-dark'
+              } transition-colors duration-200`}
             >
               Get Employee List
             </button>
@@ -263,26 +271,26 @@ const DailyAttendance = () => {
       </div>
 
       {attendanceData.length > 0 && (
-        <div className="bg-white rounded-lg shadow overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
+        <div className={`${isDarkMode ? 'bg-dark-secondary' : 'bg-white'} rounded-lg shadow overflow-x-auto transition-colors duration-200`}>
+          <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+            <thead className={`${isDarkMode ? 'bg-dark-accent' : 'bg-gray-50'}`}>
               <tr>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Employee Name</th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-                <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                <th scope="col" className={`px-6 py-3 text-left text-xs font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-500'} uppercase tracking-wider`}>Employee Name</th>
+                <th scope="col" className={`px-6 py-3 text-left text-xs font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-500'} uppercase tracking-wider`}>Date</th>
+                <th scope="col" className={`px-6 py-3 text-left text-xs font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-500'} uppercase tracking-wider`}>Status</th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
+            <tbody className={`${isDarkMode ? 'bg-dark-secondary divide-y divide-gray-700' : 'bg-white divide-y divide-gray-200'}`}>
               {displayedAttendance.map((employee, index) => (
-                <tr key={index} className="hover:bg-gray-50 transition-colors">
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{employee.name}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{date}</td>
+                <tr key={index} className={`${isDarkMode ? 'hover:bg-dark-accent/50' : 'hover:bg-gray-50'} transition-colors`}>
+                  <td className={`px-6 py-4 whitespace-nowrap text-sm font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{employee.name}</td>
+                  <td className={`px-6 py-4 whitespace-nowrap text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-500'}`}>{date}</td>
                   <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                     <div className="flex space-x-2">
                       <button
                         onClick={() => handleStatusChange(index, STATUS.PRESENT)}
                         className={`px-2 py-1 rounded ${
-                          employee.status === STATUS.PRESENT ? 'bg-green-500 text-white' : 'bg-gray-200'
+                          employee.status === STATUS.PRESENT ? 'bg-green-500 text-white' : isDarkMode ? 'bg-gray-600 text-gray-300' : 'bg-gray-200'
                         }`}
                       >
                         Present
@@ -290,7 +298,7 @@ const DailyAttendance = () => {
                       <button
                         onClick={() => handleStatusChange(index, STATUS.ABSENT)}
                         className={`px-2 py-1 rounded ${
-                          employee.status === STATUS.ABSENT ? 'bg-red-500 text-white' : 'bg-gray-200'
+                          employee.status === STATUS.ABSENT ? 'bg-red-500 text-white' : isDarkMode ? 'bg-gray-600 text-gray-300' : 'bg-gray-200'
                         }`}
                       >
                         Absent
@@ -298,7 +306,7 @@ const DailyAttendance = () => {
                       <button
                         onClick={() => handleStatusChange(index, STATUS.ONLEAVE)}
                         className={`px-2 py-1 rounded ${
-                          employee.status === STATUS.ONLEAVE ? 'bg-yellow-500 text-white' : 'bg-gray-200'
+                          employee.status === STATUS.ONLEAVE ? 'bg-yellow-500 text-white' : isDarkMode ? 'bg-gray-600 text-gray-300' : 'bg-gray-200'
                         }`}
                       >
                         On Leave
@@ -317,7 +325,11 @@ const DailyAttendance = () => {
           <div className="flex flex-wrap justify-center space-x-0 space-y-2 sm:space-x-2 sm:space-y-0">
             <button
               onClick={() => setCurrentPage(page => Math.max(page - 1, 1))}
-              className="w-full sm:w-auto px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition-colors"
+              className={`w-full sm:w-auto px-4 py-2 border rounded-md text-sm font-medium ${
+                isDarkMode 
+                ? 'border-gray-600 text-gray-300 bg-dark-secondary hover:bg-dark-accent' 
+                : 'border-gray-300 text-gray-700 bg-white hover:bg-gray-50'
+              } transition-colors`}
               disabled={currentPage === 1}
             >
               Previous
@@ -328,8 +340,10 @@ const DailyAttendance = () => {
                 onClick={() => setCurrentPage(index + 1)}
                 className={`w-full sm:w-auto px-4 py-2 border text-sm font-medium rounded-md transition-colors ${
                   currentPage === index + 1
-                    ? 'bg-blue-600 text-white border-blue-600'
-                    : 'border-gray-300 text-gray-700 bg-white hover:bg-gray-50'
+                    ? 'bg-brand-primary text-white border-brand-primary'
+                    : isDarkMode 
+                      ? 'bg-dark-secondary text-gray-300 border-gray-600 hover:bg-dark-accent' 
+                      : 'border-gray-300 text-gray-700 bg-white hover:bg-gray-50'
                 }`}
               >
                 {index + 1}
@@ -337,7 +351,11 @@ const DailyAttendance = () => {
             ))}
             <button
               onClick={() => setCurrentPage(page => Math.min(page + 1, totalPages))}
-              className="w-full sm:w-auto px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition-colors"
+              className={`w-full sm:w-auto px-4 py-2 border rounded-md text-sm font-medium ${
+                isDarkMode 
+                ? 'border-gray-600 text-gray-300 bg-dark-secondary hover:bg-dark-accent' 
+                : 'border-gray-300 text-gray-700 bg-white hover:bg-gray-50'
+              } transition-colors`}
               disabled={currentPage === totalPages}
             >
               Next

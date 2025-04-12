@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useMemo } from 'react';
+import React, { createContext, useContext, useMemo, useCallback } from 'react';
 
 // Import the permissions from a shared location
 export const PERMISSIONS = {
@@ -66,29 +66,29 @@ export const usePermission = () => {
 
 export const PermissionProvider = ({ children, user }) => {
   // Check if user has a specific permission
-  const hasPermission = (permission) => {
+  const hasPermission = useCallback((permission) => {
     if (!user || !user.role) return false;
     
     const allowedRoles = PERMISSIONS[permission];
     return allowedRoles?.includes(user.role) || false;
-  };
+  }, [user]);
   
   // Check if user has any of the provided permissions
-  const hasAnyPermission = (permissions) => {
+  const hasAnyPermission = useCallback((permissions) => {
     return permissions.some(permission => hasPermission(permission));
-  };
+  }, [hasPermission]);
   
   // Check if user has all of the provided permissions
-  const hasAllPermissions = (permissions) => {
+  const hasAllPermissions = useCallback((permissions) => {
     return permissions.every(permission => hasPermission(permission));
-  };
+  }, [hasPermission]);
   
   const value = useMemo(() => ({
     hasPermission,
     hasAnyPermission,
     hasAllPermissions,
     userRole: user?.role || null
-  }), [user]);
+  }), [hasPermission, hasAnyPermission, hasAllPermissions, user]);
   
   return (
     <PermissionContext.Provider value={value}>
