@@ -16,6 +16,7 @@ import ProjectList from './components/Project Management/projectList';
 import User from './components/Users/UserList';
 import authService from './services/authService';
 import PermissionRoute from './components/common/PermissionRoute';
+import NotFound from './components/common/NotFound';
 
 function App() {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -283,6 +284,7 @@ function App() {
                 } 
               />
             </Route>
+            <Route path="*" element={<NotFound />} />
           </Routes>
         </Router>
       </PermissionProvider>
