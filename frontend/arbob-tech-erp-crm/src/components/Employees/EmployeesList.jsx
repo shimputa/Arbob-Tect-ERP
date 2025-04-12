@@ -4,6 +4,7 @@ import axios from 'axios';
 import EmployeeForm from './EmployeeForm';
 import { usePermission } from '../../contexts/PermissionContext';
 import { PermissionGate } from '../common/PermissionGate';
+import { useTheme } from '../../contexts/ThemeContext';
 
 const ITEMS_PER_PAGE = 5;
 
@@ -18,6 +19,7 @@ function EmployeeList() {
   const [formErrors, setFormErrors] = useState({});
   const [successMessage, setSuccessMessage] = useState('');
   const { hasPermission } = usePermission();
+  const { isDarkMode } = useTheme();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -115,10 +117,10 @@ function EmployeeList() {
   const displayedEmployees = filteredEmployees.slice(startIndex, startIndex + ITEMS_PER_PAGE);
 
   return (
-    <div className="container mx-auto p-4 sm:p-6 bg-gray-100 min-h-screen">
+    <div className={`container mx-auto p-4 sm:p-6 ${isDarkMode ? 'bg-dark-primary' : 'bg-gray-100'} min-h-screen transition-colors duration-200`}>
       <div className={`transition-all duration-300 ${isModalOpen ? 'lg:mr-96' : ''}`}>
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 space-y-4 sm:space-y-0">
-          <button onClick={() => navigate(-1)} className="flex items-center text-blue-600 hover:text-blue-800 transition-colors">
+          <button onClick={() => navigate(-1)} className={`flex items-center ${isDarkMode ? 'text-brand-primary hover:text-brand-light' : 'text-blue-600 hover:text-blue-800'} transition-colors`}>
             <svg className="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>
@@ -132,7 +134,10 @@ function EmployeeList() {
                 placeholder="Search employees"
                 value={searchTerm}
                 onChange={handleSearch}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className={`w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-brand-primary focus:border-brand-primary
+                  ${isDarkMode 
+                    ? 'bg-dark-accent border-gray-700 text-white placeholder-gray-400' 
+                    : 'bg-white border-gray-300 text-gray-900'}`}
               />
               <svg className="w-5 h-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -145,7 +150,7 @@ function EmployeeList() {
                   setEditingEmployee(null);
                   setIsModalOpen(true);
                 }}
-                className="w-full sm:w-auto bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center"
+                className="w-full sm:w-auto bg-brand-primary text-white px-4 py-2 rounded-lg hover:bg-brand-dark transition-colors flex items-center justify-center"
               >
                 <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
@@ -157,58 +162,58 @@ function EmployeeList() {
         </div>
 
         {error && (
-          <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
-            <p className="text-red-600">{error}</p>
+          <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg dark:bg-red-900/20 dark:border-red-700">
+            <p className="text-red-600 dark:text-red-400">{error}</p>
           </div>
         )}
 
         {successMessage && (
-          <div className="mb-4 p-4 bg-green-50 border border-green-200 rounded-lg">
-            <p className="text-green-600">{successMessage}</p>
+          <div className="mb-4 p-4 bg-green-50 border border-green-200 rounded-lg dark:bg-green-900/20 dark:border-green-700">
+            <p className="text-green-600 dark:text-green-400">{successMessage}</p>
           </div>
         )}
 
         {loading ? (
           <div className="flex justify-center items-center h-64">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand-primary"></div>
           </div>
         ) : (
-          <div className="bg-white rounded-lg shadow overflow-x-auto">
-            <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-gray-50">
+          <div className={`${isDarkMode ? 'bg-dark-secondary' : 'bg-white'} rounded-lg shadow overflow-x-auto transition-colors duration-200`}>
+            <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+              <thead className={`${isDarkMode ? 'bg-dark-accent' : 'bg-gray-50'}`}>
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Contact No</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Position</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Basic Salary</th>
-                  <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                  <th className={`px-6 py-3 text-left text-xs font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-500'} uppercase tracking-wider`}>Name</th>
+                  <th className={`px-6 py-3 text-left text-xs font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-500'} uppercase tracking-wider`}>Contact No</th>
+                  <th className={`px-6 py-3 text-left text-xs font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-500'} uppercase tracking-wider`}>Email</th>
+                  <th className={`px-6 py-3 text-left text-xs font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-500'} uppercase tracking-wider`}>Position</th>
+                  <th className={`px-6 py-3 text-left text-xs font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-500'} uppercase tracking-wider`}>Basic Salary</th>
+                  <th className={`px-6 py-3 text-left text-xs font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-500'} uppercase tracking-wider`}>Actions</th>
                 </tr>
               </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
+              <tbody className={`${isDarkMode ? 'bg-dark-secondary divide-y divide-gray-700' : 'bg-white divide-y divide-gray-200'}`}>
                 {displayedEmployees.length === 0 ? (
                   <tr>
-                    <td colSpan="5" className="px-6 py-4 text-center text-gray-500">
+                    <td colSpan="5" className={`px-6 py-4 text-center ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
                       {searchTerm ? 'No employees found matching your search' : 'No employees available'}
                     </td>
                   </tr>
                 ) : (
                   displayedEmployees.map((employee) => (
-                    <tr key={employee.id} className="hover:bg-gray-50">
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{employee.name}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{employee.contact}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{employee.email}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        <span className="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                    <tr key={employee.id} className={`${isDarkMode ? 'hover:bg-dark-accent/50' : 'hover:bg-gray-50'}`}>
+                      <td className={`px-6 py-4 whitespace-nowrap text-sm font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{employee.name}</td>
+                      <td className={`px-6 py-4 whitespace-nowrap text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-500'}`}>{employee.contact}</td>
+                      <td className={`px-6 py-4 whitespace-nowrap text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-500'}`}>{employee.email}</td>
+                      <td className={`px-6 py-4 whitespace-nowrap text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-500'}`}>
+                        <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${isDarkMode ? 'bg-green-800 text-green-100' : 'bg-green-100 text-green-800'}`}>
                           {employee.position}
                         </span>
                       </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{employee.basicSalary}</td>
+                      <td className={`px-6 py-4 whitespace-nowrap text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-500'}`}>{employee.basicSalary}</td>
                       <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
                         <PermissionGate permission="employee:edit">
                           <button
                             onClick={() => handleEditEmployee(employee)}
-                            className="text-indigo-600 hover:text-indigo-900 mr-4"
+                            className={`${isDarkMode ? 'text-brand-light hover:text-brand-primary' : 'text-indigo-600 hover:text-indigo-900'} mr-4`}
                           >
                             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
@@ -238,7 +243,10 @@ function EmployeeList() {
         <div className="flex justify-center mt-6 space-x-2">
           <button
             onClick={() => setCurrentPage((page) => Math.max(page - 1, 1))}
-            className="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
+            className={`px-4 py-2 border rounded-md text-sm font-medium 
+              ${isDarkMode 
+                ? 'border-gray-600 text-gray-300 bg-dark-secondary hover:bg-dark-accent' 
+                : 'border-gray-300 text-gray-700 bg-white hover:bg-gray-50'}`}
             disabled={currentPage === 1}
           >
             Previous
@@ -249,8 +257,10 @@ function EmployeeList() {
               onClick={() => setCurrentPage(index + 1)}
               className={`px-4 py-2 border text-sm font-medium rounded-md ${
                 currentPage === index + 1
-                  ? 'bg-blue-600 text-white border-blue-600'
-                  : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
+                  ? 'bg-brand-primary text-white border-brand-primary'
+                  : isDarkMode 
+                    ? 'bg-dark-secondary text-gray-300 border-gray-600 hover:bg-dark-accent' 
+                    : 'bg-white text-gray-700 border-gray-300 hover:bg-gray-50'
               }`}
             >
               {index + 1}
@@ -258,7 +268,10 @@ function EmployeeList() {
           ))}
           <button
             onClick={() => setCurrentPage((page) => Math.min(page + 1, totalPages))}
-            className="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
+            className={`px-4 py-2 border rounded-md text-sm font-medium 
+              ${isDarkMode 
+                ? 'border-gray-600 text-gray-300 bg-dark-secondary hover:bg-dark-accent' 
+                : 'border-gray-300 text-gray-700 bg-white hover:bg-gray-50'}`}
             disabled={currentPage === totalPages}
           >
             Next

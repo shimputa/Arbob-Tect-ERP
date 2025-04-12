@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { debounce } from 'lodash';
 import PropTypes from 'prop-types';
+import { useTheme } from '../../contexts/ThemeContext';
 
 const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:3000';
 
@@ -32,6 +33,7 @@ function CreatePayslip({ onSubmit }) {
   const [isSaving, setIsSaving] = useState(false);
     // eslint-disable-next-line no-unused-vars
   const [advanceDetails, setAdvanceDetails] = useState([]);
+  const { isDarkMode } = useTheme();
   const navigate = useNavigate();
 
   const months = [
@@ -338,18 +340,20 @@ function CreatePayslip({ onSubmit }) {
     }
   };
 
-  const inputClass = "mt-1 block w-full py-2 px-3 border border-gray-300 bg-white rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm";
-  const labelClass = "block text-sm font-medium text-gray-700";
-  const buttonClass = "inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500";
+  const inputClass = `mt-1 block w-full py-2 px-3 border rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm ${
+    isDarkMode ? 'bg-dark-accent border-gray-600 text-white placeholder-gray-400' : 'bg-white border-gray-300'
+  }`;
+  const labelClass = `block text-sm font-medium ${isDarkMode ? 'text-gray-200' : 'text-gray-700'}`;
+  const buttonClass = `inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500`;
 
   return (
-    <div className="max-w-3xl mx-auto p-6 bg-white rounded-lg shadow-lg">
+    <div className={`max-w-3xl mx-auto p-6 ${isDarkMode ? 'bg-dark-secondary' : 'bg-white'} rounded-lg shadow-lg transition-colors duration-200`}>
       <div className="flex items-center mb-6">
-        <button onClick={() => navigate(-1)} className="flex items-center text-blue-600 hover:text-blue-800 transition-colors">
+        <button onClick={() => navigate(-1)} className={`flex items-center ${isDarkMode ? 'text-brand-primary hover:text-brand-light' : 'text-blue-600 hover:text-blue-800'} transition-colors`}>
           <svg className="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
           </svg>
-          <span className="font-medium">Create Payslip</span>
+          <span className={`font-medium ${isDarkMode ? 'text-gray-200' : ''}`}>Create Payslip</span>
         </button>
       </div>
 
@@ -357,17 +361,21 @@ function CreatePayslip({ onSubmit }) {
       {error && (
         <div className={`mb-4 p-4 rounded-md ${
           error.includes('already exists')
-            ? 'bg-yellow-50 border-l-4 border-yellow-400 text-yellow-700'
-            : 'bg-red-50 border-l-4 border-red-500 text-red-700'
+            ? isDarkMode 
+              ? 'bg-yellow-800/20 border-l-4 border-yellow-600 text-yellow-300'
+              : 'bg-yellow-50 border-l-4 border-yellow-400 text-yellow-700'
+            : isDarkMode
+              ? 'bg-red-800/20 border-l-4 border-red-600 text-red-300'
+              : 'bg-red-50 border-l-4 border-red-500 text-red-700'
         }`}>
           <div className="flex">
             <div className="flex-shrink-0">
               {error.includes('already exists') ? (
-                <svg className="h-5 w-5 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
+                <svg className={`h-5 w-5 ${isDarkMode ? 'text-yellow-500' : 'text-yellow-400'}`} viewBox="0 0 20 20" fill="currentColor">
                   <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
                 </svg>
               ) : (
-                <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                <svg className={`h-5 w-5 ${isDarkMode ? 'text-red-500' : 'text-red-400'}`} viewBox="0 0 20 20" fill="currentColor">
                   <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
                 </svg>
               )}
@@ -375,7 +383,7 @@ function CreatePayslip({ onSubmit }) {
             <div className="ml-3">
               <p className="text-sm font-medium">{error}</p>
               {error.includes('already exists') && (
-                <p className="mt-2 text-sm">
+                <p className={`mt-2 text-sm ${isDarkMode ? 'text-yellow-300' : ''}`}>
                   Please select a different employee, month, or year.
                 </p>
               )}
@@ -386,10 +394,10 @@ function CreatePayslip({ onSubmit }) {
 
       {/* Success Message */}
       {successMessage && (
-        <div className="mb-4 p-4 bg-green-50 border-l-4 border-green-400 text-green-700">
+        <div className={`mb-4 p-4 ${isDarkMode ? 'bg-green-800/20 border-l-4 border-green-600 text-green-300' : 'bg-green-50 border-l-4 border-green-400 text-green-700'}`}>
           <div className="flex">
             <div className="flex-shrink-0">
-              <svg className="h-5 w-5 text-green-400" viewBox="0 0 20 20" fill="currentColor">
+              <svg className={`h-5 w-5 ${isDarkMode ? 'text-green-500' : 'text-green-400'}`} viewBox="0 0 20 20" fill="currentColor">
                 <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
               </svg>
             </div>
@@ -406,17 +414,17 @@ function CreatePayslip({ onSubmit }) {
           {[1, 2, 3].map((stepNumber) => (
             <div
               key={stepNumber}
-              className={`flex items-center ${step >= stepNumber ? 'text-blue-600' : 'text-gray-400'}`}
+              className={`flex items-center ${step >= stepNumber ? 'text-blue-600' : isDarkMode ? 'text-gray-500' : 'text-gray-400'}`}
             >
               <span className={`w-8 h-8 rounded-full flex items-center justify-center border-2 
-                ${step >= stepNumber ? 'border-blue-600 bg-blue-600 text-white' : 'border-gray-400'}`}
+                ${step >= stepNumber ? 'border-blue-600 bg-blue-600 text-white' : isDarkMode ? 'border-gray-600 bg-dark-accent text-gray-400' : 'border-gray-400'}`}
               >
                 {stepNumber}
               </span>
-              <span className="ml-2">
+              <span className={`ml-2 ${isDarkMode ? 'text-gray-300' : ''}`}>
                 {stepNumber === 1 ? 'Employee Info' : stepNumber === 2 ? 'Salary Details' : 'Payment Info'}
               </span>
-              {stepNumber < 3 && <div className="w-24 h-1 mx-4 bg-gray-200"></div>}
+              {stepNumber < 3 && <div className={`w-24 h-1 mx-4 ${isDarkMode ? 'bg-gray-700' : 'bg-gray-200'}`}></div>}
             </div>
           ))}
         </div>

@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
+import { useTheme } from '../../contexts/ThemeContext';
 
 // Form field component for reusability
-const FormField = ({ label, children }) => (
+const FormField = ({ label, children, isDarkMode }) => (
   <div className="space-y-2">
-    <label className="block text-sm font-medium">{label}</label>
+    <label className={`block text-sm font-medium ${isDarkMode ? 'text-gray-200' : 'text-gray-700'}`}>{label}</label>
     {children}
   </div>
 );
@@ -28,6 +29,7 @@ function ExpenseForm({ onSubmit, onClose, expense, formErrors = {}, categories }
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [localErrors, setLocalErrors] = useState({});
+  const { isDarkMode } = useTheme();
 
   useEffect(() => {
     if (expense) {
@@ -120,35 +122,35 @@ function ExpenseForm({ onSubmit, onClose, expense, formErrors = {}, categories }
   const renderFormFields = () => (
     <>
       <div className="space-y-2">
-        <FormField label="Name">
+        <FormField label="Name" isDarkMode={isDarkMode}>
           <input 
             type="text" 
             name="name" 
             value={formExpense.name} 
             onChange={handleChange} 
             placeholder="Enter name" 
-            className={`w-full border rounded-md shadow-sm p-2 transition duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
-              (formErrors?.name || localErrors?.name) ? 'border-red-500' : 'border-gray-300'
+            className={`w-full border rounded-md shadow-sm p-2 transition duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary ${
+              (formErrors?.name || localErrors?.name) ? 'border-red-500' : isDarkMode ? 'border-gray-600 bg-dark-accent text-white' : 'border-gray-300 bg-white text-gray-900'
             }`}
             disabled={isSubmitting}
             required 
           />
         </FormField>
         {(formErrors?.name || localErrors?.name) && (
-          <p className="text-sm text-red-600">
+          <p className="text-sm text-red-600 dark:text-red-400">
             {formErrors?.name || localErrors?.name}
           </p>
         )}
       </div>
 
       <div className="space-y-2">
-        <FormField label="Expense Category">
+        <FormField label="Expense Category" isDarkMode={isDarkMode}>
           <select
             name="expenseCategoryName"
             value={formExpense.expenseCategoryName}
             onChange={handleChange}
-            className={`w-full border rounded-md shadow-sm p-2 transition duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
-              (formErrors?.expenseCategoryName || localErrors?.expenseCategoryName) ? 'border-red-500' : 'border-gray-300'
+            className={`w-full border rounded-md shadow-sm p-2 transition duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary ${
+              (formErrors?.expenseCategoryName || localErrors?.expenseCategoryName) ? 'border-red-500' : isDarkMode ? 'border-gray-600 bg-dark-accent text-white' : 'border-gray-300 bg-white text-gray-900'
             }`}
             disabled={isSubmitting}
             required
@@ -162,19 +164,21 @@ function ExpenseForm({ onSubmit, onClose, expense, formErrors = {}, categories }
           </select>
         </FormField>
         {(formErrors?.expenseCategoryName || localErrors?.expenseCategoryName) && (
-          <p className="text-sm text-red-600">
+          <p className="text-sm text-red-600 dark:text-red-400">
             {formErrors?.expenseCategoryName || localErrors?.expenseCategoryName}
           </p>
         )}
       </div>
 
       <div className="space-y-2">
-        <FormField label="Currency">
+        <FormField label="Currency" isDarkMode={isDarkMode}>
           <select
             name="currency"
             value={formExpense.currency}
             onChange={handleChange}
-            className="w-full border border-gray-300 rounded-md shadow-sm p-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            className={`w-full border rounded-md shadow-sm p-2 focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary ${
+              isDarkMode ? 'border-gray-600 bg-dark-accent text-white' : 'border-gray-300 bg-white text-gray-900'
+            }`}
             disabled={isSubmitting}
           >
             <option value="USD">USD</option>
@@ -186,15 +190,15 @@ function ExpenseForm({ onSubmit, onClose, expense, formErrors = {}, categories }
       </div>
 
       <div className="space-y-2">
-        <FormField label="Total">
+        <FormField label="Total" isDarkMode={isDarkMode}>
           <input 
             type="number" 
             name="total" 
             value={formExpense.total} 
             onChange={handleChange} 
             placeholder="Enter total amount" 
-            className={`w-full border rounded-md shadow-sm p-2 transition duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
-              (formErrors?.total || localErrors?.total) ? 'border-red-500' : 'border-gray-300'
+            className={`w-full border rounded-md shadow-sm p-2 transition duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary ${
+              (formErrors?.total || localErrors?.total) ? 'border-red-500' : isDarkMode ? 'border-gray-600 bg-dark-accent text-white' : 'border-gray-300 bg-white text-gray-900'
             }`}
             disabled={isSubmitting}
             required 
@@ -203,21 +207,21 @@ function ExpenseForm({ onSubmit, onClose, expense, formErrors = {}, categories }
           />
         </FormField>
         {(formErrors?.total || localErrors?.total) && (
-          <p className="text-sm text-red-600">
+          <p className="text-sm text-red-600 dark:text-red-400">
             {formErrors?.total || localErrors?.total}
           </p>
         )}
       </div>
 
       <div className="space-y-2">
-        <FormField label="Description">
+        <FormField label="Description" isDarkMode={isDarkMode}>
           <textarea 
             name="description" 
             value={formExpense.description} 
             onChange={handleChange} 
             placeholder="Enter description"
-            className={`w-full border rounded-md shadow-sm p-2 transition duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
-              (formErrors?.description || localErrors?.description) ? 'border-red-500' : 'border-gray-300'
+            className={`w-full border rounded-md shadow-sm p-2 transition duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary ${
+              (formErrors?.description || localErrors?.description) ? 'border-red-500' : isDarkMode ? 'border-gray-600 bg-dark-accent text-white' : 'border-gray-300 bg-white text-gray-900'
             }`}
             disabled={isSubmitting}
             rows={4}
@@ -225,29 +229,29 @@ function ExpenseForm({ onSubmit, onClose, expense, formErrors = {}, categories }
           />
         </FormField>
         {(formErrors?.description || localErrors?.description) && (
-          <p className="text-sm text-red-600">
+          <p className="text-sm text-red-600 dark:text-red-400">
             {formErrors?.description || localErrors?.description}
           </p>
         )}
       </div>
 
       <div className="space-y-2">
-        <FormField label="Reference">
+        <FormField label="Reference" isDarkMode={isDarkMode}>
           <input 
             type="text" 
             name="reference" 
             value={formExpense.reference} 
             onChange={handleChange} 
             placeholder="Enter reference" 
-            className={`w-full border rounded-md shadow-sm p-2 transition duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 ${
-              (formErrors?.reference || localErrors?.reference) ? 'border-red-500' : 'border-gray-300'
+            className={`w-full border rounded-md shadow-sm p-2 transition duration-150 ease-in-out focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary ${
+              (formErrors?.reference || localErrors?.reference) ? 'border-red-500' : isDarkMode ? 'border-gray-600 bg-dark-accent text-white' : 'border-gray-300 bg-white text-gray-900'
             }`}
             disabled={isSubmitting}
             required 
           />
         </FormField>
         {(formErrors?.reference || localErrors?.reference) && (
-          <p className="text-sm text-red-600">
+          <p className="text-sm text-red-600 dark:text-red-400">
             {formErrors?.reference || localErrors?.reference}
           </p>
         )}
@@ -256,16 +260,16 @@ function ExpenseForm({ onSubmit, onClose, expense, formErrors = {}, categories }
   );
 
   return (
-    <div className="fixed inset-y-0 right-0 bg-white w-96 shadow-lg p-6 overflow-y-auto flex flex-col">
+    <div className={`fixed inset-y-0 right-0 ${isDarkMode ? 'bg-dark-secondary' : 'bg-white'} w-96 shadow-lg p-6 overflow-y-auto flex flex-col transition-colors duration-200`}>
       <div className="flex justify-between items-center mb-4">
-        <h3 className="text-2xl font-semibold">
+        <h3 className={`text-2xl font-semibold ${isDarkMode ? 'text-dark-primary' : 'text-gray-800'}`}>
           {expense ? 'Edit Expense' : 'Add New Expense'}
         </h3>
         <button 
           type="button" 
           onClick={onClose}
           disabled={isSubmitting}
-          className="text-gray-500 hover:text-gray-700 transition duration-150 ease-in-out"
+          className={`${isDarkMode ? 'text-gray-400 hover:text-gray-200' : 'text-gray-500 hover:text-gray-700'} transition duration-150 ease-in-out`}
           aria-label="Close"
         >
           <X size={24} />
@@ -279,14 +283,18 @@ function ExpenseForm({ onSubmit, onClose, expense, formErrors = {}, categories }
             type="button" 
             onClick={onClose}
             disabled={isSubmitting}
-            className="px-4 py-2 text-gray-700 bg-gray-100 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500 disabled:opacity-50"
+            className={`px-4 py-2 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 transition-colors duration-200 ${
+              isDarkMode 
+                ? 'border-gray-600 text-gray-300 bg-dark-accent hover:bg-dark-accent/80 focus:ring-gray-500' 
+                : 'text-gray-700 bg-gray-100 hover:bg-gray-200 focus:ring-gray-500'
+            }`}
           >
             Cancel
           </button>
           <button 
             type="submit"
             disabled={isSubmitting}
-            className="px-4 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 flex items-center"
+            className="px-4 py-2 text-white bg-brand-primary hover:bg-brand-dark rounded-md focus:outline-none focus:ring-2 focus:ring-brand-primary disabled:opacity-50 flex items-center transition-colors duration-200"
           >
             {isSubmitting ? (
               <>

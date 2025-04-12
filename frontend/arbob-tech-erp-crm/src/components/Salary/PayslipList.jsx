@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import PropTypes from 'prop-types';
+import { useTheme } from '../../contexts/ThemeContext';
 
 const ITEMS_PER_PAGE = 2;
 
@@ -22,6 +23,7 @@ function PayslipList({ payslips: initialPayslips, onDelete, onPrint, isLoading, 
   const [filterName, setFilterName] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [localError, setLocalError] = useState(null);
+  const { isDarkMode } = useTheme();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -89,14 +91,14 @@ function PayslipList({ payslips: initialPayslips, onDelete, onPrint, isLoading, 
 
   if (error || localError) {
     return (
-      <div className="text-red-600 p-4 bg-red-50 rounded-md">
+      <div className={`p-4 rounded-md ${isDarkMode ? 'bg-red-900/20 text-red-400 border border-red-700' : 'text-red-600 bg-red-50'}`}>
         <p>{error || localError}</p>
         <button 
           onClick={() => {
             onRefresh();
             setLocalError(null); // Clear local error when refreshing
           }}
-          className="mt-2 text-blue-500 hover:underline"
+          className={`mt-2 ${isDarkMode ? 'text-blue-400' : 'text-blue-500'} hover:underline`}
         >
           Try again
         </button>
@@ -105,17 +107,17 @@ function PayslipList({ payslips: initialPayslips, onDelete, onPrint, isLoading, 
   }
 
   return (
-    <div className="container mx-auto p-4 sm:p-6 bg-gray-100 min-h-screen">
+    <div className={`container mx-auto p-4 sm:p-6 ${isDarkMode ? 'bg-dark-primary' : 'bg-gray-100'} min-h-screen transition-colors duration-200`}>
       <div className="container mx-auto py-2">
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 space-y-4 sm:space-y-0">
           <button 
             onClick={() => navigate(-1)} 
-            className="flex items-center text-blue-600 hover:text-blue-800 transition-colors"
+            className={`flex items-center ${isDarkMode ? 'text-brand-primary hover:text-brand-light' : 'text-blue-600 hover:text-blue-800'} transition-colors`}
           >
             <svg className="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>
-            <span className="font-medium">Payslip List</span>
+            <span className={`font-medium ${isDarkMode ? 'text-gray-200' : ''}`}>Payslip List</span>
           </button>
 
           <div className="flex flex-col sm:flex-row space-y-2 sm:space-y-0 sm:space-x-4 w-full sm:w-auto">
@@ -125,7 +127,10 @@ function PayslipList({ payslips: initialPayslips, onDelete, onPrint, isLoading, 
                 placeholder="Search by employee name"
                 value={filterName}
                 onChange={handleSearch}
-                className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className={`w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500
+                  ${isDarkMode 
+                    ? 'bg-dark-accent border-gray-700 text-white placeholder-gray-400' 
+                    : 'bg-white border-gray-300 text-gray-900'}`}
               />
               <svg className="w-5 h-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -135,7 +140,10 @@ function PayslipList({ payslips: initialPayslips, onDelete, onPrint, isLoading, 
             <select
               value={filterMonth}
               onChange={(e) => setFilterMonth(e.target.value)}
-              className="w-full sm:w-auto px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className={`w-full sm:w-auto px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500
+                ${isDarkMode 
+                  ? 'bg-dark-accent border-gray-700 text-white' 
+                  : 'bg-white border-gray-300 text-gray-900'}`}
             >
               <option value="">Select Month</option>
               {MONTHS.map(month => (
@@ -146,7 +154,10 @@ function PayslipList({ payslips: initialPayslips, onDelete, onPrint, isLoading, 
             <select
               value={filterYear}
               onChange={(e) => setFilterYear(e.target.value)}
-              className="w-full sm:w-auto px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className={`w-full sm:w-auto px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500
+                ${isDarkMode 
+                  ? 'bg-dark-accent border-gray-700 text-white' 
+                  : 'bg-white border-gray-300 text-gray-900'}`}
             >
               <option value="">Select Year</option>
               {YEARS.map(year => (
@@ -180,11 +191,11 @@ function PayslipList({ payslips: initialPayslips, onDelete, onPrint, isLoading, 
         </div>
 
         {localError && (
-          <div className="mb-4 p-4 bg-red-50 text-red-600 rounded-md">
+          <div className={`mb-4 p-4 rounded-md ${isDarkMode ? 'bg-red-900/20 text-red-400 border border-red-700' : 'bg-red-50 text-red-600'}`}>
             {localError}
             <button
               onClick={() => setLocalError(null)}
-              className="ml-2 text-sm text-red-800 hover:underline"
+              className={`ml-2 text-sm ${isDarkMode ? 'text-red-400 hover:text-red-300' : 'text-red-800 hover:text-red-700'}`}
             >
                Dismiss
             </button>
@@ -195,7 +206,9 @@ function PayslipList({ payslips: initialPayslips, onDelete, onPrint, isLoading, 
         {(filterMonth || filterYear) && (
           <div className="flex flex-wrap gap-2 mb-4">
             {filterMonth && (
-              <span className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-blue-100 text-blue-800">
+              <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm ${
+                isDarkMode ? 'bg-blue-900/30 text-blue-300' : 'bg-blue-100 text-blue-800'
+              }`}>
                 Month: {filterMonth}
                 <button
                   onClick={() => setFilterMonth('')}
@@ -206,7 +219,9 @@ function PayslipList({ payslips: initialPayslips, onDelete, onPrint, isLoading, 
               </span>
             )}
             {filterYear && (
-              <span className="inline-flex items-center px-3 py-1 rounded-full text-sm bg-blue-100 text-blue-800">
+              <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm ${
+                isDarkMode ? 'bg-blue-900/30 text-blue-300' : 'bg-blue-100 text-blue-800'
+              }`}>
                 Year: {filterYear}
                 <button
                   onClick={() => setFilterYear('')}
@@ -219,7 +234,9 @@ function PayslipList({ payslips: initialPayslips, onDelete, onPrint, isLoading, 
             {(filterMonth || filterYear) && (
               <button
                 onClick={handleClearFilters}
-                className="text-blue-600 hover:text-blue-800 text-sm font-medium"
+                className={`text-sm font-medium ${
+                  isDarkMode ? 'text-blue-400 hover:text-blue-300' : 'text-blue-600 hover:text-blue-800'
+                }`}
               >
                 Clear All
               </button>
@@ -229,43 +246,43 @@ function PayslipList({ payslips: initialPayslips, onDelete, onPrint, isLoading, 
 
         {/* Table Section */}
         <div className="overflow-x-auto shadow-md rounded-lg">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
+          <table className={`min-w-full divide-y ${isDarkMode ? 'divide-gray-700' : 'divide-gray-200'}`}>
+            <thead className={`${isDarkMode ? 'bg-dark-accent' : 'bg-gray-50'}`}>
               <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className={`px-6 py-3 text-left text-xs font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-500'} uppercase tracking-wider`}>
                   Employee Name
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className={`px-6 py-3 text-left text-xs font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-500'} uppercase tracking-wider`}>
                   Month
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className={`px-6 py-3 text-left text-xs font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-500'} uppercase tracking-wider`}>
                   Year
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className={`px-6 py-3 text-left text-xs font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-500'} uppercase tracking-wider`}>
                   Summary
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className={`px-6 py-3 text-left text-xs font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-500'} uppercase tracking-wider`}>
                   Status
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className={`px-6 py-3 text-left text-xs font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-500'} uppercase tracking-wider`}>
                   Actions
                 </th>
               </tr>
             </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
+            <tbody className={`${isDarkMode ? 'bg-dark-secondary divide-y divide-gray-700' : 'bg-white divide-y divide-gray-200'}`}>
               {displayedPayslips.length > 0 ? (
                 displayedPayslips.map((payslip, index) => (
-                  <tr key={index} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                  <tr key={index} className={`${isDarkMode ? 'hover:bg-dark-accent/50' : 'hover:bg-gray-50'}`}>
+                    <td className={`px-6 py-4 whitespace-nowrap text-sm font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>
                       {payslip.employee}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                    <td className={`px-6 py-4 whitespace-nowrap text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-900'}`}>
                       {payslip.month}
                     </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                    <td className={`px-6 py-4 whitespace-nowrap text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-900'}`}>
                       {payslip.year}
                     </td>
-                    <td className="px-6 py-4">
+                    <td className={`px-6 py-4 ${isDarkMode ? 'text-gray-300' : ''}`}>
                       <p>Basic Salary: <span className="font-medium">PKR {payslip.basicSalary}</span></p>
                       <p>Total Bonus: <span className="font-medium">PKR {payslip.totalBonus}</span></p>
                       <p>Total Deduction: <span className="font-medium">PKR {payslip.totalDeduction}</span></p>
@@ -273,7 +290,9 @@ function PayslipList({ payslips: initialPayslips, onDelete, onPrint, isLoading, 
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${
-                        payslip.status === 'Paid' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                        payslip.status === 'Paid' 
+                          ? isDarkMode ? 'bg-green-800 text-green-100' : 'bg-green-100 text-green-800' 
+                          : isDarkMode ? 'bg-red-800 text-red-100' : 'bg-red-100 text-red-800'
                       }`}>
                         {payslip.status}
                       </span>
@@ -285,7 +304,7 @@ function PayslipList({ payslips: initialPayslips, onDelete, onPrint, isLoading, 
                             onDelete(payslip.id);
                           }
                         }}
-                        className="text-red-600 hover:text-red-900 mr-4 transition-colors duration-300"
+                        className={`${isDarkMode ? 'text-red-400 hover:text-red-300' : 'text-red-600 hover:text-red-900'} mr-4 transition-colors duration-300`}
                       >
                         <svg
                           className="w-5 h-5"
@@ -304,7 +323,7 @@ function PayslipList({ payslips: initialPayslips, onDelete, onPrint, isLoading, 
                       </button>
                       <button
                         onClick={() => onPrint(payslip)}
-                        className="text-green-600 hover:text-green-900 transition-colors duration-300"
+                        className={`${isDarkMode ? 'text-green-400 hover:text-green-300' : 'text-green-600 hover:text-green-900'} transition-colors duration-300`}
                       >
                         <svg
                           className="w-5 h-5"
@@ -326,7 +345,7 @@ function PayslipList({ payslips: initialPayslips, onDelete, onPrint, isLoading, 
                 ))
               ) : (
                 <tr>
-                  <td colSpan="6" className="px-6 py-4 text-center text-gray-500">
+                  <td colSpan="6" className={`px-6 py-4 text-center ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
                     No payslips available
                   </td>
                 </tr>
@@ -340,7 +359,11 @@ function PayslipList({ payslips: initialPayslips, onDelete, onPrint, isLoading, 
           <div className="flex justify-center mt-6 space-x-2">
             <button
               onClick={() => setCurrentPage(page => Math.max(page - 1, 1))}
-              className="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+              className={`px-4 py-2 border rounded-md text-sm font-medium 
+                ${isDarkMode 
+                  ? 'border-gray-600 text-gray-300 bg-dark-secondary hover:bg-dark-accent' 
+                  : 'border-gray-300 text-gray-700 bg-white hover:bg-gray-50'} 
+                focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500`}
               disabled={currentPage === 1}
             >
               Previous
@@ -352,7 +375,9 @@ function PayslipList({ payslips: initialPayslips, onDelete, onPrint, isLoading, 
                 className={`px-4 py-2 border text-sm font-medium rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 ${
                   currentPage === index + 1
                     ? 'bg-blue-600 text-white border-blue-600'
-                    : 'border-gray-300 text-gray-700 bg-white hover:bg-gray-50'
+                    : isDarkMode 
+                      ? 'bg-dark-secondary text-gray-300 border-gray-600 hover:bg-dark-accent' 
+                      : 'border-gray-300 text-gray-700 bg-white hover:bg-gray-50'
                 }`}
               >
                 {index + 1}
@@ -360,7 +385,11 @@ function PayslipList({ payslips: initialPayslips, onDelete, onPrint, isLoading, 
             ))}
             <button
               onClick={() => setCurrentPage(page => Math.min(page + 1, totalPages))}
-              className="px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+              className={`px-4 py-2 border rounded-md text-sm font-medium 
+                ${isDarkMode 
+                  ? 'border-gray-600 text-gray-300 bg-dark-secondary hover:bg-dark-accent' 
+                  : 'border-gray-300 text-gray-700 bg-white hover:bg-gray-50'} 
+                focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500`}
               disabled={currentPage === totalPages}
             >
               Next

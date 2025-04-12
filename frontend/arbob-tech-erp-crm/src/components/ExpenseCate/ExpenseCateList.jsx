@@ -1,16 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import ExpenseCategoryForm from './ExpenseCateForm';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
 import { usePermission } from '../../contexts/PermissionContext';
 import { PermissionGate } from '../common/PermissionGate';
+import { useTheme } from '../../contexts/ThemeContext';
 
 const ITEMS_PER_PAGE = 5;
 const API_URL = 'http://localhost:3000/expense-categories';
 
 // Alert component for success and error messages
-const Alert = ({ message, type = 'error', onClose }) => (
-  <div className={`mb-4 bg-${type === 'success' ? 'green' : 'red'}-50 border border-${type === 'success' ? 'green' : 'red'}-200 text-${type === 'success' ? 'green' : 'red'}-600 px-4 py-3 rounded relative`} role="alert">
+const Alert = ({ message, type = 'error', onClose, isDarkMode }) => (
+  <div className={`mb-4 ${type === 'success' 
+    ? 'bg-green-50 border-green-200 text-green-600 dark:bg-green-900/20 dark:border-green-700 dark:text-green-400' 
+    : 'bg-red-50 border-red-200 text-red-600 dark:bg-red-900/20 dark:border-red-700 dark:text-red-400'} 
+    px-4 py-3 rounded border relative`} role="alert">
     <span className="block sm:inline">{message}</span>
     <button onClick={onClose} className="absolute top-0 bottom-0 right-0 px-4 py-3">
       <span className="sr-only">Close</span>
@@ -22,16 +25,16 @@ const Alert = ({ message, type = 'error', onClose }) => (
 );
 
 // Loading spinner component
-const LoadingSpinner = () => (
+const LoadingSpinner = ({ isDarkMode }) => (
   <div className="flex justify-center items-center h-64">
-    <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-blue-500"></div>
+    <div className={`animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 ${isDarkMode ? 'border-brand-primary' : 'border-blue-500'}`}></div>
   </div>
 );
 
 // Header component with back button and search
-const Header = ({ onSearch, searchTerm, onAddNew }) => (
+const Header = ({ onSearch, searchTerm, onAddNew, isDarkMode }) => (
   <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 space-y-4 sm:space-y-0">
-    <button onClick={() => window.history.back()} className="flex items-center text-blue-600 hover:text-blue-800 transition-colors">
+    <button onClick={() => window.history.back()} className={`flex items-center ${isDarkMode ? 'text-brand-primary hover:text-brand-light' : 'text-blue-600 hover:text-blue-800'} transition-colors`}>
       <svg className="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
       </svg>
@@ -44,7 +47,10 @@ const Header = ({ onSearch, searchTerm, onAddNew }) => (
           placeholder="Search categories"
           value={searchTerm}
           onChange={(e) => onSearch(e.target.value)}
-          className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
+          className={`w-full pl-10 pr-4 py-2 border rounded-lg focus:ring-2 focus:ring-brand-primary focus:border-brand-primary
+            ${isDarkMode 
+              ? 'bg-dark-accent border-gray-700 text-white placeholder-gray-400' 
+              : 'bg-white border-gray-300 text-gray-900'}`}
         />
         <svg className="w-5 h-5 absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -53,7 +59,7 @@ const Header = ({ onSearch, searchTerm, onAddNew }) => (
       <PermissionGate permission="expenseCategory:create">
         <button 
           onClick={onAddNew}
-          className="w-full sm:w-auto bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center"
+          className="w-full sm:w-auto bg-brand-primary text-white px-4 py-2 rounded-lg hover:bg-brand-dark transition-colors flex items-center justify-center"
         >
           <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
@@ -66,11 +72,14 @@ const Header = ({ onSearch, searchTerm, onAddNew }) => (
 );
 
 // Pagination component
-const Pagination = ({ currentPage, totalPages, onPageChange }) => (
+const Pagination = ({ currentPage, totalPages, onPageChange, isDarkMode }) => (
   <div className="flex flex-wrap justify-center mt-6 space-x-0 space-y-2 sm:space-x-2 sm:space-y-0">
     <button
       onClick={() => onPageChange(Math.max(currentPage - 1, 1))}
-      className="w-full sm:w-auto px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition-colors disabled:opacity-50"
+      className={`w-full sm:w-auto px-4 py-2 border rounded-md text-sm font-medium 
+        ${isDarkMode 
+          ? 'border-gray-600 text-gray-300 bg-dark-secondary hover:bg-dark-accent' 
+          : 'border-gray-300 text-gray-700 bg-white hover:bg-gray-50'} transition-colors disabled:opacity-50`}
       disabled={currentPage === 1}
     >
       Previous
@@ -81,8 +90,10 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => (
         onClick={() => onPageChange(index + 1)}
         className={`w-full sm:w-auto px-4 py-2 border text-sm font-medium rounded-md transition-colors ${
           currentPage === index + 1
-            ? 'bg-blue-600 text-white border-blue-600'
-            : 'border-gray-300 text-gray-700 bg-white hover:bg-gray-50'
+            ? 'bg-brand-primary text-white border-brand-primary'
+            : isDarkMode 
+              ? 'bg-dark-secondary text-gray-300 border-gray-600 hover:bg-dark-accent' 
+              : 'border-gray-300 text-gray-700 bg-white hover:bg-gray-50'
         }`}
       >
         {index + 1}
@@ -90,7 +101,10 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => (
     ))}
     <button
       onClick={() => onPageChange(Math.min(currentPage + 1, totalPages))}
-      className="w-full sm:w-auto px-4 py-2 border border-gray-300 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition-colors disabled:opacity-50"
+      className={`w-full sm:w-auto px-4 py-2 border rounded-md text-sm font-medium 
+        ${isDarkMode 
+          ? 'border-gray-600 text-gray-300 bg-dark-secondary hover:bg-dark-accent' 
+          : 'border-gray-300 text-gray-700 bg-white hover:bg-gray-50'} transition-colors disabled:opacity-50`}
       disabled={currentPage === totalPages}
     >
       Next
@@ -99,33 +113,33 @@ const Pagination = ({ currentPage, totalPages, onPageChange }) => (
 );
 
 // Category table component
-const CategoryTable = ({ categories, onEdit, onDelete }) => (
-  <div className="bg-white rounded-lg shadow overflow-x-auto">
-    <table className="min-w-full divide-y divide-gray-200">
-      <thead className="bg-gray-50">
+const CategoryTable = ({ categories, onEdit, onDelete, isDarkMode }) => (
+  <div className={`${isDarkMode ? 'bg-dark-secondary' : 'bg-white'} rounded-lg shadow overflow-x-auto transition-colors duration-200`}>
+    <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+      <thead className={`${isDarkMode ? 'bg-dark-accent' : 'bg-gray-50'}`}>
         <tr>
-          <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
-          <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Description</th>
-          <th scope="col" className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+          <th scope="col" className={`px-6 py-3 text-left text-xs font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-500'} uppercase tracking-wider`}>Name</th>
+          <th scope="col" className={`px-6 py-3 text-left text-xs font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-500'} uppercase tracking-wider`}>Description</th>
+          <th scope="col" className={`px-6 py-3 text-right text-xs font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-500'} uppercase tracking-wider`}>Actions</th>
         </tr>
       </thead>
-      <tbody className="bg-white divide-y divide-gray-200">
+      <tbody className={`${isDarkMode ? 'bg-dark-secondary divide-y divide-gray-700' : 'bg-white divide-y divide-gray-200'}`}>
         {categories.length === 0 ? (
           <tr>
-            <td colSpan="3" className="px-6 py-4 text-center text-gray-500">
+            <td colSpan="3" className={`px-6 py-4 text-center ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`}>
               No categories found
             </td>
           </tr>
         ) : (
           categories.map((category) => (
-            <tr key={category.id} className="hover:bg-gray-50 transition-colors">
-              <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{category.name}</td>
-              <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{category.description}</td>
+            <tr key={category.id} className={`${isDarkMode ? 'hover:bg-dark-accent/50' : 'hover:bg-gray-50'} transition-colors`}>
+              <td className={`px-6 py-4 whitespace-nowrap text-sm font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{category.name}</td>
+              <td className={`px-6 py-4 whitespace-nowrap text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-500'}`}>{category.description}</td>
               <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-right">
                 <PermissionGate permission="expenseCategory:edit">
                   <button 
                     onClick={() => onEdit(category)}
-                    className="text-indigo-600 hover:text-indigo-900 mr-4 transition-colors"
+                    className={`${isDarkMode ? 'text-brand-light hover:text-brand-primary' : 'text-indigo-600 hover:text-indigo-900'} mr-4 transition-colors`}
                   >
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
@@ -164,7 +178,7 @@ function ExpenseCategoryList() {
     successMessage: ''
   });
   const { hasPermission } = usePermission();
-  const navigate = useNavigate();
+  const { isDarkMode } = useTheme();
 
   const fetchCategories = async () => {
     setState(prev => ({ ...prev, loading: true, error: null }));
@@ -288,12 +302,13 @@ function ExpenseCategoryList() {
   const displayedCategories = filteredCategories.slice(startIndex, startIndex + ITEMS_PER_PAGE);
 
   return (
-    <div className="container mx-auto p-4 sm:p-6 bg-gray-100 min-h-screen">
+    <div className={`container mx-auto p-4 sm:p-6 ${isDarkMode ? 'bg-dark-primary' : 'bg-gray-100'} min-h-screen transition-colors duration-200`}>
       {state.error && (
         <Alert 
           message={state.error} 
           type="error" 
           onClose={() => setState(prev => ({ ...prev, error: null }))} 
+          isDarkMode={isDarkMode}
         />
       )}
 
@@ -302,6 +317,7 @@ function ExpenseCategoryList() {
           message={state.successMessage} 
           type="success" 
           onClose={() => setState(prev => ({ ...prev, successMessage: '' }))} 
+          isDarkMode={isDarkMode}
         />
       )}
 
@@ -310,11 +326,12 @@ function ExpenseCategoryList() {
           searchTerm={state.searchTerm}
           onSearch={(value) => setState(prev => ({ ...prev, searchTerm: value, currentPage: 1 }))}
           onAddNew={() => setState(prev => ({ ...prev, isModalOpen: true, editingCategory: null }))}
+          isDarkMode={isDarkMode}
         />
 
         {state.loading ? (
-          <div className="bg-white rounded-lg shadow overflow-hidden">
-            <LoadingSpinner />
+          <div className={`${isDarkMode ? 'bg-dark-secondary' : 'bg-white'} rounded-lg shadow overflow-hidden`}>
+            <LoadingSpinner isDarkMode={isDarkMode} />
           </div>
         ) : (
           <>
@@ -327,12 +344,14 @@ function ExpenseCategoryList() {
                 formErrors: {}
               }))}
               onDelete={handleDeleteCategory}
+              isDarkMode={isDarkMode}
             />
 
             <Pagination 
               currentPage={state.currentPage}
               totalPages={totalPages}
               onPageChange={(page) => setState(prev => ({ ...prev, currentPage: page }))}
+              isDarkMode={isDarkMode}
             />
           </>
         )}
