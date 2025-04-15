@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Eye, EyeOff, Mail, Lock, DollarSign, Users, CheckSquare, Clock, CreditCard } from 'lucide-react';
 import { useTheme } from '../../contexts/ThemeContext';
 import ThemeSwitcher from '../common/ThemeSwitcher';
+import axios from 'axios';
 
 const Login = ({ onLogin }) => {
   const [email, setEmail] = useState('');
@@ -44,15 +45,30 @@ const Login = ({ onLogin }) => {
     }
     
     try {
-      const response = await onLogin(email, password);
-      if (response.success) {
-        navigate('/');
+      const response = await axios.post(
+        `${process.env.REACT_APP_API_BASE_URL}${process.env.REACT_APP_AUTH_LOGIN_ENDPOINT}`,
+        { email, password }
+      );
+      
+      if (response.data.success) {
+        // Store token in localStorage
+        localStorage.setItem(process.env.REACT_APP_AUTH_TOKEN_KEY, response.data.token);
+        // Store user data in localStorage
+        localStorage.setItem('user', JSON.stringify(response.data.user));
+        // Set default authorization header for future requests
+        axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`;
+        // Call the parent's onLogin function to update the app state
+        const loginResult = await onLogin(email, password);
+        if (loginResult.success) {
+          navigate('/dashboard');
+        } else {
+          setLoginError(loginResult.message || 'Login failed');
+        }
       } else {
-        // Display the error message returned from the login function
-        setLoginError(response.message);
+        setLoginError(response.data.message || 'Login failed');
       }
     } catch (err) {
-      setLoginError('Authentication failed. Please try again.');
+      setLoginError(err.response?.data?.message || 'Authentication failed. Please try again.');
       console.error('Login error:', err);
     } finally {
       setIsLoading(false);

@@ -14,7 +14,6 @@ import ExpenseCate from './components/ExpenseCate/ExpenseCateList';
 import Dashboard from './components/Dashboard/dashboard';
 import ProjectList from './components/Project Management/projectList';
 import User from './components/Users/UserList';
-import authService from './services/authService';
 import PermissionRoute from './components/common/PermissionRoute';
 import NotFound from './components/common/NotFound';
 
@@ -29,14 +28,27 @@ function App() {
   useEffect(() => {
     const checkAuth = async () => {
       setIsLoading(true);
-      const result = await authService.getCurrentUser();
-      
-      if (result.success) {
-        setIsAuthenticated(true);
-        setUser(result.user);
+      try {
+        const token = localStorage.getItem(process.env.REACT_APP_AUTH_TOKEN_KEY);
+        const storedUser = localStorage.getItem('user');
+        
+        if (token && storedUser) {
+          // Set token in axios headers
+          axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+          // Set user state
+          setUser(JSON.parse(storedUser));
+          setIsAuthenticated(true);
+        } else {
+          setIsAuthenticated(false);
+          setUser(null);
+        }
+      } catch (err) {
+        console.error('Auth check error:', err);
+        setIsAuthenticated(false);
+        setUser(null);
+      } finally {
+        setIsLoading(false);
       }
-      
-      setIsLoading(false);
     };
     
     checkAuth();
@@ -45,28 +57,35 @@ function App() {
   // Login using auth service with improved error handling
   const login = async (email, password) => {
     setIsLoading(true);
-    setError(null); // Clear any previous errors
+    setError(null);
     
     try {
-      const result = await authService.loginUser(email, password);
+      const response = await axios.post(
+        `${process.env.REACT_APP_API_BASE_URL}${process.env.REACT_APP_AUTH_LOGIN_ENDPOINT}`,
+        { email, password }
+      );
       
-      if (result.success) {
+      if (response.data.success) {
+        // Store token and user data
+        localStorage.setItem(process.env.REACT_APP_AUTH_TOKEN_KEY, response.data.token);
+        localStorage.setItem('user', JSON.stringify(response.data.user));
+        // Set axios headers
+        axios.defaults.headers.common['Authorization'] = `Bearer ${response.data.token}`;
+        // Update state
         setIsAuthenticated(true);
-        setUser(result.user);
+        setUser(response.data.user);
         return { success: true };
       } else {
-        // Return error information instead of showing alert
         return { 
           success: false, 
-          message: result.message || 'Invalid credentials!' 
+          message: response.data.message || 'Invalid credentials!' 
         };
       }
     } catch (err) {
       console.error('Login error:', err);
-      // Return error information instead of showing alert
       return { 
         success: false, 
-        message: 'Login failed. Please try again.' 
+        message: err.response?.data?.message || 'Login failed. Please try again.' 
       };
     } finally {
       setIsLoading(false);
@@ -75,7 +94,9 @@ function App() {
 
   // Logout using auth service
   const logout = () => {
-    authService.logoutUser();
+    localStorage.removeItem(process.env.REACT_APP_AUTH_TOKEN_KEY);
+    localStorage.removeItem('user');
+    delete axios.defaults.headers.common['Authorization'];
     setIsAuthenticated(false);
     setUser(null);
   };
@@ -83,7 +104,9 @@ function App() {
   const fetchPayslips = useCallback(async () => {
     setIsLoading(true);
     try {
-      const response = await axios.get('http://localhost:3000/salary');
+      const response = await axios.get(
+        `${process.env.REACT_APP_API_BASE_URL}${process.env.REACT_APP_SALARY_API}`
+      );
       
       // Handle the response based on your API structure
       if (response.data && response.data.salaries) {
@@ -108,7 +131,9 @@ function App() {
   const handleAddPayslip = async (payslipData) => {
     setIsLoading(true);
     try {
-      const response = await axios.post('http://localhost:3000/salary', payslipData);
+      const response = await axios.post(
+        `${process.env.REACT_APP_API_BASE_URL}${process.env.REACT_APP_SALARY_API}`,
+        payslipData);
       setPayslips(prev => [...prev, response.data]);
       return response.data;
     } catch (err) {
@@ -126,7 +151,9 @@ function App() {
   const handleDeletePayslip = async (id) => {
     setIsLoading(true);
     try {
-      await axios.delete(`http://localhost:3000/salary/${id}`);
+      await axios.delete(
+        `${process.env.REACT_APP_API_BASE_URL}${process.env.REACT_APP_SALARY_API}/${id}`
+      );
       setPayslips(prev => prev.filter(p => p.id !== id));
     } catch (err) {
       setError('Failed to delete payslip');
@@ -168,7 +195,14 @@ function App() {
         <Router>
           <Routes>
             {/* Login route */}
-            <Route path="/login" element={<Login onLogin={login} />} />
+            <Route 
+              path="/login" 
+              element={
+                isAuthenticated ? 
+                <Navigate to="/dashboard" replace /> : 
+                <Login onLogin={login} />
+              } 
+            />
 
             {/* Protected routes */}
             <Route
@@ -273,17 +307,19 @@ function App() {
                   </PermissionRoute>
                 } 
               />
-
-              {/* User Management routes */}
+              
+              {/* User routes */}
               <Route 
                 path="users" 
                 element={
                   <PermissionRoute permissions={['user:view']}>
-                    <User/>
+                    <User />
                   </PermissionRoute>
                 } 
               />
             </Route>
+
+            {/* 404 Not Found route */}
             <Route path="*" element={<NotFound />} />
           </Routes>
         </Router>

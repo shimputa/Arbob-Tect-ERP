@@ -3,10 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import fetchWithAuth from '../../utils/fetchWithAuth';
 import { useTheme } from '../../contexts/ThemeContext';
 
-const API_BASE_URL = 'http://localhost:3000'; 
-
-// Constants
-const ITEMS_PER_PAGE = 5;
+const ITEMS_PER_PAGE = process.env.REACT_APP_DEFAULT_PAGE_SIZE || 5;
 const STATUS = {
   PRESENT: 'PRESENT',
   ABSENT: 'ABSENT',
@@ -43,7 +40,15 @@ const DailyAttendance = () => {
       setLoading(true);
       setError(null);
       
-      const response = await fetchWithAuth(`${API_BASE_URL}/api/activeEmployees`);
+      const response = await fetchWithAuth(
+        `${process.env.REACT_APP_API_BASE_URL}${process.env.REACT_APP_ACTIVE_EMPLOYEES_API}`,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem(process.env.REACT_APP_AUTH_TOKEN_KEY)}`
+          }
+        }
+      );
       const data = await response.json();
       
       if (data.employees) {  
@@ -138,10 +143,17 @@ const DailyAttendance = () => {
         date: new Date(date).toISOString()
       };
 
-      const response = await fetchWithAuth(`${API_BASE_URL}/attendance/mark`, {
-        method: 'POST',
-        body: JSON.stringify(attendancePayload),
-      });
+      const response = await fetchWithAuth(
+        `${process.env.REACT_APP_API_BASE_URL}${process.env.REACT_APP_ATTENDANCE_API}/mark`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem(process.env.REACT_APP_AUTH_TOKEN_KEY)}`
+          },
+          body: JSON.stringify(attendancePayload)
+        }
+      );
 
       const data = await response.json();
       
