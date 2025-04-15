@@ -39,15 +39,27 @@ export const getEmployeeById = async (req, res) => {
 // 3. Create a new employee
 export const createEmployee = async (req, res) => {
   try {
-    const { name, contact, email, position ,basicSalary} = req.body;
+    const { name, contact, email, position, basicSalary } = req.body;
 
     // Validate required fields
-    if (!name || !contact || !email || !position || !basicSalary) {
+    if (!name || !contact || !email || !position || basicSalary === undefined) {
       return res.status(400).json({ message: 'All fields are required' });
     }
 
+    // Convert basicSalary to integer
+    const basicSalaryInt = parseInt(basicSalary, 10);
+    if (isNaN(basicSalaryInt)) {
+      return res.status(400).json({ message: 'Basic salary must be a valid number' });
+    }
+
     const employee = await prisma.employee.create({
-      data: { name, contact, email, position ,basicSalary},
+      data: { 
+        name, 
+        contact, 
+        email, 
+        position,
+        basicSalary: basicSalaryInt 
+      },
     });
     res.status(201).json({
       message: "Employee created successfully",
