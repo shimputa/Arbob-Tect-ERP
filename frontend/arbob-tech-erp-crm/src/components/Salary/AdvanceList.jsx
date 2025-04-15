@@ -30,7 +30,9 @@ function AdvanceList() {
     try {
       setLoading(true);
       setError(null);
-      const response = await axios.get('http://localhost:3000/advance-salary');
+      const response = await axios.get(
+        `${process.env.REACT_APP_API_BASE_URL}${process.env.REACT_APP_ADVANCE_SALARY_API}`
+      );
       setAdvances(response.data.advances);
     } catch (err) {
       setError('Failed to fetch advance records. Please try again later.');
@@ -55,10 +57,13 @@ function AdvanceList() {
       };
 
       if (editingAdvance) {
-        response = await axios.put(`http://localhost:3000/advance-salary/${editingAdvance.id}`, {
-          ...editingAdvance,
-          ...formattedAdvance,
-        });
+        response = await axios.put(
+          `${process.env.REACT_APP_API_BASE_URL}${process.env.REACT_APP_ADVANCE_SALARY_API}/${editingAdvance.id}`,
+          {
+            ...editingAdvance,
+            ...formattedAdvance,
+          }
+        );
         setAdvances(advances.map((adv) => (adv.id === editingAdvance.id ? response.data : adv)));
         setSuccessMessage('Advance record updated successfully!');
       } else {
@@ -67,7 +72,10 @@ function AdvanceList() {
           setError('Amount must be greater than 0 for new advances');
           return;
         }
-        response = await axios.post('http://localhost:3000/advance-salary', formattedAdvance);
+        response = await axios.post(
+          `${process.env.REACT_APP_API_BASE_URL}${process.env.REACT_APP_ADVANCE_SALARY_API}`,
+          formattedAdvance
+        );
         setAdvances([...advances, response.data]);
         setSuccessMessage('Advance record added successfully!');
       }
@@ -97,7 +105,9 @@ function AdvanceList() {
   const handleDeleteAdvance = async (id) => {
     try {
       setError(null);
-      await axios.delete(`http://localhost:3000/advance-salary/${id}`);
+      await axios.delete(
+        `${process.env.REACT_APP_API_BASE_URL}${process.env.REACT_APP_ADVANCE_SALARY_API}/${id}`
+      );
       setAdvances(advances.filter((adv) => adv.id !== id));
       setSuccessMessage('Advance record deleted successfully!');
       setTimeout(() => setSuccessMessage(''), 3000);

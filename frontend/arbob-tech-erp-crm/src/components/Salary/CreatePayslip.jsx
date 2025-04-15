@@ -5,7 +5,6 @@ import { debounce } from 'lodash';
 import PropTypes from 'prop-types';
 import { useTheme } from '../../contexts/ThemeContext';
 
-const API_BASE_URL = process.env.REACT_APP_API_BASE_URL || 'http://localhost:3000';
 
 function CreatePayslip({ onSubmit }) {
   const [step, setStep] = useState(1);
@@ -51,7 +50,9 @@ function CreatePayslip({ onSubmit }) {
   const fetchEmployees = async () => {
     setIsLoading(true);
     try {
-      const response = await axios.get(`${API_BASE_URL}/api/employees`);
+      const response = await axios.get(
+        `${process.env.REACT_APP_API_BASE_URL}${process.env.REACT_APP_EMPLOYEES_API}`
+      );
       setEmployees(response.data.employees);
     } catch (error) {
       setError('Failed to fetch employees. Please try again later.');
@@ -66,7 +67,7 @@ function CreatePayslip({ onSubmit }) {
     setIsLoadingBonuses(true);
     try {
       const response = await axios.get(
-        `${API_BASE_URL}/salary/project-bonuses`,
+        `${process.env.REACT_APP_API_BASE_URL}${process.env.REACT_APP_SALARY_API}/project-bonuses`,
         { params: { employeeId, month, year } }
       );
       
@@ -101,7 +102,7 @@ function CreatePayslip({ onSubmit }) {
     setIsLoadingAdvance(true);
     try {
       const response = await axios.get(
-        `${API_BASE_URL}/salary/remaining-advance`,
+        `${process.env.REACT_APP_API_BASE_URL}${process.env.REACT_APP_SALARY_API}/remaining-advance`,
         { params: { employeeId } }
       );
       

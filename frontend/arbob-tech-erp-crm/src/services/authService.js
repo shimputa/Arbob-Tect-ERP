@@ -1,21 +1,19 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:3000';
-
 // Configure axios instance for auth requests
 const authAxios = axios.create({
-  baseURL: API_URL
+  baseURL: process.env.REACT_APP_API_BASE_URL
 });
 
 // Set auth token for API calls
 const setAuthToken = (token) => {
   if (token) {
-    localStorage.setItem('token', token);
+    localStorage.setItem(process.env.REACT_APP_AUTH_TOKEN_KEY, token);
     authAxios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
     // Also set it for the main axios instance
     axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
   } else {
-    localStorage.removeItem('token');
+    localStorage.removeItem(process.env.REACT_APP_AUTH_TOKEN_KEY);
     delete authAxios.defaults.headers.common['Authorization'];
     delete axios.defaults.headers.common['Authorization'];
   }
@@ -23,7 +21,7 @@ const setAuthToken = (token) => {
 
 // Initialize token from localStorage
 const initToken = () => {
-  const token = localStorage.getItem('token');
+  const token = localStorage.getItem(process.env.REACT_APP_AUTH_TOKEN_KEY);
   if (token) {
     setAuthToken(token);
     return token;
@@ -34,7 +32,7 @@ const initToken = () => {
 // Add request interceptor to ensure token is always set for every request
 axios.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem(process.env.REACT_APP_AUTH_TOKEN_KEY);
     if (token) {
       config.headers['Authorization'] = `Bearer ${token}`;
     }
@@ -48,7 +46,7 @@ axios.interceptors.request.use(
 // Login user
 const loginUser = async (email, password) => {
   try {
-    const response = await authAxios.post('/auth/login', {
+    const response = await authAxios.post(process.env.REACT_APP_AUTH_LOGIN_ENDPOINT, {
       email,
       password
     });
@@ -81,7 +79,7 @@ const getCurrentUser = async () => {
       return { success: false };
     }
     
-    const response = await authAxios.get('/auth/me');
+    const response = await authAxios.get(process.env.REACT_APP_AUTH_ME_ENDPOINT);
     
     if (response.data.success) {
       return {

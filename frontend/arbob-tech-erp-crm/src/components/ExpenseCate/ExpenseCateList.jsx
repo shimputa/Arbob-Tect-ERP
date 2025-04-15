@@ -5,8 +5,7 @@ import { usePermission } from '../../contexts/PermissionContext';
 import { PermissionGate } from '../common/PermissionGate';
 import { useTheme } from '../../contexts/ThemeContext';
 
-const ITEMS_PER_PAGE = 5;
-const API_URL = 'http://localhost:3000/expense-categories';
+const ITEMS_PER_PAGE = process.env.REACT_APP_DEFAULT_PAGE_SIZE || 5;
 
 // Alert component for success and error messages
 const Alert = ({ message, type = 'error', onClose, isDarkMode }) => (
@@ -183,7 +182,9 @@ function ExpenseCategoryList() {
   const fetchCategories = async () => {
     setState(prev => ({ ...prev, loading: true, error: null }));
     try {
-      const response = await axios.get(API_URL);
+      const response = await axios.get(
+        `${process.env.REACT_APP_API_BASE_URL}${process.env.REACT_APP_EXPENSE_CATEGORIES_API}`,
+      );
       setState(prev => ({
         ...prev,
         categories: response.data.categories || [],
@@ -204,7 +205,9 @@ function ExpenseCategoryList() {
     setState(prev => ({ ...prev, formErrors: {} }));
     try {
       if (state.editingCategory) {
-        const response = await axios.put(`${API_URL}/${state.editingCategory.id}`, categoryData);
+        const response = await axios.put(
+          `${process.env.REACT_APP_API_BASE_URL}${process.env.REACT_APP_EXPENSE_CATEGORIES_API}/${state.editingCategory.id}`,
+          categoryData);
         setState(prev => ({
           ...prev,
           categories: prev.categories.map(cat => 
@@ -213,7 +216,9 @@ function ExpenseCategoryList() {
           successMessage: 'Category updated successfully'
         }));
       } else {
-        const response = await axios.post(API_URL, categoryData);
+        const response = await axios.post(
+          `${process.env.REACT_APP_API_BASE_URL}${process.env.REACT_APP_EXPENSE_CATEGORIES_API}`,
+          categoryData);
         setState(prev => ({
           ...prev,
           categories: [...prev.categories, response.data.category],
@@ -256,7 +261,8 @@ function ExpenseCategoryList() {
 
   const handleDeleteCategory = async (id) => {
     try {
-      await axios.delete(`${API_URL}/${id}/deactivate`);
+      await axios.delete(
+        `${process.env.REACT_APP_API_BASE_URL}${process.env.REACT_APP_EXPENSE_CATEGORIES_API}/${id}/deactivate`);
       setState(prev => ({
         ...prev,
         categories: prev.categories.filter(cat => cat.id !== id),

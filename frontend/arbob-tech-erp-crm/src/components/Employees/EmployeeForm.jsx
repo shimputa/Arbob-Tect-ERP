@@ -56,8 +56,14 @@ function EmployeeForm({ onSubmit, onClose, employee, error, formErrors }) {
       } else if (isNaN(formEmployee.basicSalary) || Number(formEmployee.basicSalary) < 0) {
         error.basicSalary = 'Basic salary must be a non-negative number';
       }
+
+      // Convert basicSalary to a number before submission
+      const employeeData = {
+        ...formEmployee,
+        basicSalary: Number(formEmployee.basicSalary)
+      };
       
-      await onSubmit(formEmployee);
+      await onSubmit(employeeData);
     } catch (err) {
       // No need to set a separate formError state, as we're using formErrors from the parent
     }

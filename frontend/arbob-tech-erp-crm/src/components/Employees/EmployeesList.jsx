@@ -6,7 +6,7 @@ import { usePermission } from '../../contexts/PermissionContext';
 import { PermissionGate } from '../common/PermissionGate';
 import { useTheme } from '../../contexts/ThemeContext';
 
-const ITEMS_PER_PAGE = 5;
+const ITEMS_PER_PAGE = process.env.REACT_APP_DEFAULT_PAGE_SIZE || 5;
 
 function EmployeeList() {
   const [employees, setEmployees] = useState([]);
@@ -30,7 +30,9 @@ function EmployeeList() {
     try {
       setLoading(true);
       setError(null);
-      const response = await axios.get('http://localhost:3000/api/employees');
+      const response = await axios.get(
+        `${process.env.REACT_APP_API_BASE_URL}${process.env.REACT_APP_EMPLOYEES_API}`
+      );
       setEmployees(response.data.employees);
     } catch (err) {
       setError('Failed to fetch employees. Please try again later.');
@@ -47,14 +49,20 @@ function EmployeeList() {
       setFormErrors({});
       let response;
       if (editingEmployee) {
-        response = await axios.put(`http://localhost:3000/api/employees/${editingEmployee.id}`, {
-          ...editingEmployee,
-          ...newEmployee,
-        });
+        response = await axios.put(
+          `${process.env.REACT_APP_API_BASE_URL}${process.env.REACT_APP_UPDATE_EMPLOYEES_API}/${editingEmployee.id}`,
+          {
+            ...editingEmployee,
+            ...newEmployee,
+          }
+        );
         setEmployees(employees.map((emp) => (emp.id === editingEmployee.id ? response.data : emp)));
         setSuccessMessage('Employee updated successfully!');
       } else {
-        response = await axios.post('http://localhost:3000/api/employees', newEmployee);
+        response = await axios.post(
+          `${process.env.REACT_APP_API_BASE_URL}${process.env.REACT_APP_EMPLOYEES_API}`,
+          newEmployee
+        );
         setEmployees([...employees, response.data]);
         setSuccessMessage('Employee added successfully!');
       }
@@ -63,8 +71,8 @@ function EmployeeList() {
       // Refetch the employees to ensure the UI is up-to-date
       await fetchEmployees();
 
-       // Set a timeout to hide the success message after 3 seconds
-       const timeoutId = setTimeout(() => {
+      // Set a timeout to hide the success message after 3 seconds
+      const timeoutId = setTimeout(() => {
         setSuccessMessage('');
       }, 3000);
       return () => clearTimeout(timeoutId);
@@ -87,7 +95,9 @@ function EmployeeList() {
   const handleDeleteEmployee = async (id) => {
     try {
       setError(null);
-      await axios.delete(`http://localhost:3000/api/employee/${id}/deactivate`);
+      await axios.delete(
+        `${process.env.REACT_APP_API_BASE_URL}${process.env.REACT_APP_DEACTIVE_EMPLOYEES_API}/${id}`
+      );
       setEmployees(employees.filter((emp) => emp.id !== id));
     } catch (err) {
       setError('Failed to delete employee. Please try again.');

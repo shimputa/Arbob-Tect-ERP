@@ -3,8 +3,6 @@ import { useNavigate } from 'react-router-dom';
 import fetchWithAuth from '../../utils/fetchWithAuth';
 import { useTheme } from '../../contexts/ThemeContext';
 
-const API_BASE_URL = 'http://localhost:3000';
-
 function AttendanceReport() {
   const [selectedEmployee, setSelectedEmployee] = useState('all');
   const [month, setMonth] = useState('');
@@ -51,7 +49,15 @@ function AttendanceReport() {
       setLoading(true);
       setError(null);
       
-      const response = await fetchWithAuth(`${API_BASE_URL}/api/activeEmployees`);
+      const response = await fetchWithAuth(
+        `${process.env.REACT_APP_API_BASE_URL}${process.env.REACT_APP_ACTIVE_EMPLOYEES_API}`,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem(process.env.REACT_APP_AUTH_TOKEN_KEY)}`
+          }
+        }
+      );
       const data = await response.json();
       
       if (data.employees) {
@@ -86,7 +92,13 @@ function AttendanceReport() {
       const monthNum = parseInt(month);
       
       const response = await fetchWithAuth(
-        `${API_BASE_URL}/attendance/report?year=${year}&month=${monthNum}&employeeId=${selectedEmployee}`
+        `${process.env.REACT_APP_API_BASE_URL}${process.env.REACT_APP_ATTENDANCE_API}/report?year=${year}&month=${monthNum}&employeeId=${selectedEmployee}`,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem(process.env.REACT_APP_AUTH_TOKEN_KEY)}`
+          }
+        }
       );
       
       const data = await response.json();

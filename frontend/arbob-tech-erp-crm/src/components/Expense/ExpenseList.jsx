@@ -13,7 +13,7 @@ const CURRENCY_SYMBOLS = {
   GBP: '£'
 };
 
-const ITEMS_PER_PAGE = 5;
+const ITEMS_PER_PAGE = process.env.REACT_APP_DEFAULT_PAGE_SIZE || 5;
 
 function ExpenseList() {
   const [expenses, setExpenses] = useState([]);
@@ -39,10 +39,12 @@ function ExpenseList() {
     try {
       setLoading(true);
       setError(null);
-      const response = await axios.get('http://localhost:3000/expense');
+      const response = await axios.get(
+        `${process.env.REACT_APP_API_BASE_URL}${process.env.REACT_APP_EXPENSE_API}`
+      );
       console.log('API Response:', response.data); 
 
-       const expensesData = response.data.expenses || response.data || [];
+      const expensesData = response.data.expenses || response.data || [];
       setExpenses(expensesData);
     } catch (err) {
       console.error('Error fetching expenses:', err.response || err);
@@ -55,7 +57,9 @@ function ExpenseList() {
 
   const fetchCategories = async () => {
     try {
-      const response = await axios.get('http://localhost:3000/expense-categories');
+      const response = await axios.get(
+        `${process.env.REACT_APP_API_BASE_URL}${process.env.REACT_APP_EXPENSE_CATEGORIES_API}`
+      );
       setCategories(response.data.categories || response.data || []);
     } catch (err) {
       console.error('Error fetching categories:', err);
@@ -67,31 +71,38 @@ function ExpenseList() {
       setError(null);
       setFormErrors({});
 
-    // Validate form data
-    const errors = {};
-    if (!newExpense.name.trim()) errors.name = 'Name is required';
-    if (!newExpense.expenseCategoryName) errors.expenseCategoryName = 'Category Name is required';
-    if (!newExpense.total) errors.total = 'Total amount is required';
-    if (!newExpense.reference?.trim()) errors.reference = 'Reference is required';
+      // Validate form data
+      const errors = {};
+      if (!newExpense.name.trim()) errors.name = 'Name is required';
+      if (!newExpense.expenseCategoryName) errors.expenseCategoryName = 'Category Name is required';
+      if (!newExpense.total) errors.total = 'Total amount is required';
+      if (!newExpense.reference?.trim()) errors.reference = 'Reference is required';
 
-    if (Object.keys(errors).length > 0) {
-      setFormErrors(errors);
-      return;
-    }
+      if (Object.keys(errors).length > 0) {
+        setFormErrors(errors);
+        return;
+      }
+
       let response;
       
       if (editingExpense) {
-        response = await axios.put(`http://localhost:3000/expense/${editingExpense.id}`, {
-          ...editingExpense,
-          ...newExpense,
-        });
+        response = await axios.put(
+          `${process.env.REACT_APP_API_BASE_URL}${process.env.REACT_APP_EXPENSE_API}/${editingExpense.id}`,
+          {
+            ...editingExpense,
+            ...newExpense,
+          }
+        );
         const updatedExpense = response.data.expense || response.data;
         setExpenses(expenses.map((exp) => 
           exp.id === editingExpense.id ? updatedExpense : exp
         ));
         setSuccessMessage('Expense updated successfully!');
       } else {
-        response = await axios.post('http://localhost:3000/expense', newExpense);
+        response = await axios.post(
+          `${process.env.REACT_APP_API_BASE_URL}${process.env.REACT_APP_EXPENSE_API}`,
+          newExpense
+        );
         const createdExpense = response.data.expense || response.data;
         setExpenses(prevExpenses => [...prevExpenses, createdExpense]);
         setSuccessMessage('Expense added successfully!');
@@ -107,7 +118,7 @@ function ExpenseList() {
         setSuccessMessage('');
       }, 3000);
     } catch (err) {
-      console.error('Error in handleAddExpense:', err.response || err); // Add this to debug
+      console.error('Error in handleAddExpense:', err.response || err);
       if (err.response?.data?.errors) {
         const errors = err.response.data.errors.reduce((acc, error) => {
           acc[error.path] = error.msg;
@@ -123,11 +134,13 @@ function ExpenseList() {
   const handleDeleteExpense = async (id) => {
     try {
       setError(null);
-      await axios.delete(`http://localhost:3000/expense/${id}`);
+      await axios.delete(
+        `${process.env.REACT_APP_API_BASE_URL}${process.env.REACT_APP_EXPENSE_API}/${id}`
+      );
       setExpenses(expenses.filter((exp) => exp.id !== id));
       setSuccessMessage('Expense deleted successfully!');
-         // Refetch to ensure data is in sync
-         await fetchExpenses();
+      // Refetch to ensure data is in sync
+      await fetchExpenses();
     } catch (err) {
       setError('Failed to delete expense. Please try again.');
       console.error('Error deleting expense:', err);

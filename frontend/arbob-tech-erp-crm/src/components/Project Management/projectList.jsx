@@ -7,7 +7,7 @@ import { usePermission } from '../../contexts/PermissionContext';
 import { PermissionGate } from '../common/PermissionGate';
 import { useTheme } from '../../contexts/ThemeContext';
 
-const ITEMS_PER_PAGE = 5;
+const ITEMS_PER_PAGE = process.env.REACT_APP_DEFAULT_PAGE_SIZE || 5;
 
 function ProjectList() {
   const [projects, setProjects] = useState([]);
@@ -33,7 +33,15 @@ function ProjectList() {
     try {
       setLoading(true);
       setError(null);
-      const response = await axios.get('http://localhost:3000/project/projects');
+      const response = await axios.get(
+        `${process.env.REACT_APP_API_BASE_URL}${process.env.REACT_APP_PROJECTS_API}`,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem(process.env.REACT_APP_AUTH_TOKEN_KEY)}`
+          }
+        }
+      );
       setProjects(response.data.projects);
     } catch (err) {
       setError('Failed to fetch projects. Please try again later.');
@@ -46,7 +54,15 @@ function ProjectList() {
 
   const fetchEmployees = async () => {
     try {
-      const response = await axios.get('http://localhost:3000/api/employees');
+      const response = await axios.get(
+        `${process.env.REACT_APP_API_BASE_URL}${process.env.REACT_APP_EMPLOYEES_API}`,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem(process.env.REACT_APP_AUTH_TOKEN_KEY)}`
+          }
+        }
+      );
       setEmployees(response.data.employees || []);
     } catch (err) {
       console.error('Error fetching employees:', err);
@@ -90,10 +106,28 @@ function ProjectList() {
     try {
       if (projectId || (editingProject && editingProject.id)) {
         const id = projectId || editingProject.id;
-        await axios.put(`http://localhost:3000/project/project/${id}`, newProject);
+        await axios.put(
+          `${process.env.REACT_APP_API_BASE_URL}${process.env.REACT_APP_UPDATE_PROJECTS_API}/${id}`,
+          newProject,
+          {
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${localStorage.getItem(process.env.REACT_APP_AUTH_TOKEN_KEY)}`
+            }
+          }
+        );
         setSuccessMessage('Project updated successfully');
       } else {
-        await axios.post('http://localhost:3000/project/projects', newProject);
+        await axios.post(
+          `${process.env.REACT_APP_API_BASE_URL}${process.env.REACT_APP_PROJECTS_API}`,
+          newProject,
+          {
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': `Bearer ${localStorage.getItem(process.env.REACT_APP_AUTH_TOKEN_KEY)}`
+            }
+          }
+        );
         setSuccessMessage('Project created successfully');
       }
       
@@ -123,7 +157,15 @@ function ProjectList() {
     }
     
     try {
-      await axios.delete(`http://localhost:3000/project/project/${id}`);
+      await axios.delete(
+        `${process.env.REACT_APP_API_BASE_URL}${process.env.REACT_APP_UPDATE_PROJECTS_API}/${id}`,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem(process.env.REACT_APP_AUTH_TOKEN_KEY)}`
+          }
+        }
+      );
       setSuccessMessage('Project deleted successfully');
       await fetchProjects();
     } catch (err) {
