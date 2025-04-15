@@ -4,6 +4,7 @@ import jwt from 'jsonwebtoken';
 
 const prisma = new PrismaClient();
 const JWT_SECRET = process.env.JWT_SECRET;
+const JWT_EXPIRES_IN = process.env.JWT_EXPIRES_IN;
 
 // Login functionality
 export const login = async (req, res) => {
@@ -40,7 +41,7 @@ export const login = async (req, res) => {
         role: user.role 
       }, 
       JWT_SECRET,
-      { expiresIn: '1d' }
+      { expiresIn: JWT_EXPIRES_IN }
     );
 
     // Return success with token and user data (excluding password)
