@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import fetchWithAuth from '../../utils/fetchWithAuth';
+import axios from 'axios';
 import { useTheme } from '../../contexts/ThemeContext';
 
 const ITEMS_PER_PAGE = process.env.REACT_APP_DEFAULT_PAGE_SIZE || 5;
@@ -40,16 +40,10 @@ const DailyAttendance = () => {
       setLoading(true);
       setError(null);
       
-      const response = await fetchWithAuth(
-        `${process.env.REACT_APP_API_BASE_URL}${process.env.REACT_APP_ACTIVE_EMPLOYEES_API}`,
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${localStorage.getItem(process.env.REACT_APP_AUTH_TOKEN_KEY)}`
-          }
-        }
+      const response = await axios.get(
+        `${process.env.REACT_APP_API_BASE_URL}${process.env.REACT_APP_ACTIVE_EMPLOYEES_API}`
       );
-      const data = await response.json();
+      const data = response.data;
       
       if (data.employees) {  
         const employeesList = data.employees.map(emp => ({
@@ -60,9 +54,9 @@ const DailyAttendance = () => {
       } else {
         setError('Failed to fetch employees list');
       }
-    } catch (error) {
+    } catch (err) {
       setError('Error fetching employees. Please try again.');
-      console.error('Error fetching employees:', error);
+      console.error('Error fetching employees:', err.response || err);
     } finally {
       setLoading(false);
     }
@@ -114,10 +108,10 @@ const DailyAttendance = () => {
       }));
 
       setAttendanceData(attendance);
-    } catch (error) {
+    } catch (err) {
       setError('Error preparing employee list. Please try again.');
       clearError();
-      console.error('Error preparing employee list:', error);
+      console.error('Error preparing employee list:', err.response || err);
     } finally {
       setLoading(false);
     }
@@ -143,19 +137,12 @@ const DailyAttendance = () => {
         date: new Date(date).toISOString()
       };
 
-      const response = await fetchWithAuth(
+      const response = await axios.post(
         `${process.env.REACT_APP_API_BASE_URL}${process.env.REACT_APP_ATTENDANCE_API}/mark`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${localStorage.getItem(process.env.REACT_APP_AUTH_TOKEN_KEY)}`
-          },
-          body: JSON.stringify(attendancePayload)
-        }
+        attendancePayload
       );
 
-      const data = await response.json();
+      const data = response.data;
       
       if (data.success) {
         showTemporarySuccess();
@@ -176,10 +163,10 @@ const DailyAttendance = () => {
           clearError();
         }
       }
-    } catch (error) {
+    } catch (err) {
       setError('Error submitting attendance. Please try again.');
       clearError();
-      console.error('Error submitting attendance:', error);
+      console.error('Error submitting attendance:', err.response || err);
     } finally {
       setLoading(false);
     }

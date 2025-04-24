@@ -9,7 +9,7 @@ import {
   ResponsiveContainer, 
   XAxis, YAxis, Tooltip, Legend 
 } from 'recharts';
-import fetchWithAuth from '../../utils/fetchWithAuth';
+import axios from 'axios';
 import { useTheme } from '../../contexts/ThemeContext';
 
 function Dashboard() {
@@ -34,9 +34,14 @@ function Dashboard() {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetchWithAuth('http://localhost:3000/dashboard');
-        if (!response.ok) throw new Error('Failed to fetch data');
-        const data = await response.json();
+        setLoading(true);
+        setError(null);
+        const response = await axios.get(
+          `${process.env.REACT_APP_API_BASE_URL}${process.env.REACT_APP_DASHBOARD_API}`
+        );
+        
+        // Use response.data directly since axios already parses JSON
+        const data = response.data;
         
         const transformedData = {
           ...data.data,
@@ -57,10 +62,11 @@ function Dashboard() {
         
         setDashboardData(transformedData);
       } catch (err) {
-        if (err.message === 'Unauthorized') {
+        console.error('Error fetching dashboard data:', err.response || err);
+        if (err.response?.status === 401) {
           setError('Session expired. Please login again.');
         } else {
-          setError(err.message);
+          setError(err.response?.data?.message || 'Failed to fetch dashboard data');
         }
       } finally {
         setLoading(false);

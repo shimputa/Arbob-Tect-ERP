@@ -352,13 +352,13 @@ function ProjectForm({ onSubmit, onClose, project, error, formErrors = {}, emplo
         </div>
 
         <div className="grid grid-cols-2 gap-6">
-          <div className="bg-gray-50 p-4 rounded-lg">
-            <div className="text-sm font-medium">Amount After Tax</div>
-            <div className="text-lg">PKR {formProject.amountAfterTax || '0'}</div>
+          <div className={`p-4 rounded-lg ${isDarkMode ? 'bg-dark-accent text-white' : 'bg-gray-50'}`}>
+            <div className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Amount After Tax</div>
+            <div className={`text-lg ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>PKR {formProject.amountAfterTax || '0'}</div>
           </div>
-          <div className="bg-gray-50 p-4 rounded-lg">
-            <div className="text-sm font-medium">Remaining Amount</div>
-            <div className="text-lg">PKR {formProject.remainingAmount || '0'}</div>
+          <div className={`p-4 rounded-lg ${isDarkMode ? 'bg-dark-accent text-white' : 'bg-gray-50'}`}>
+            <div className={`text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>Remaining Amount</div>
+            <div className={`text-lg ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>PKR {formProject.remainingAmount || '0'}</div>
           </div>
         </div>
 
@@ -410,24 +410,27 @@ function ProjectForm({ onSubmit, onClose, project, error, formErrors = {}, emplo
                 boxShadow: state.isFocused ? '0 0 0 1px #3b82f6' : 'none',
                 '&:hover': {
                   borderColor: state.isFocused ? '#3b82f6' : '#e5e7eb'
-                }
+                },
+                backgroundColor: isDarkMode ? '#374151' : 'white',
+                color: isDarkMode ? 'white' : '#1f2937'
               }),
               menu: (base) => ({
                 ...base,
                 maxHeight: '200px',
                 overflowY: 'auto',
+                backgroundColor: isDarkMode ? '#1F2937' : 'white',
                 '::-webkit-scrollbar': {
                   width: '8px'
                 },
                 '::-webkit-scrollbar-track': {
-                  background: '#f1f1f1',
+                  background: isDarkMode ? '#374151' : '#f1f1f1',
                   borderRadius: '4px'
                 },
                 '::-webkit-scrollbar-thumb': {
-                  background: '#888',
+                  background: isDarkMode ? '#4B5563' : '#888',
                   borderRadius: '4px',
                   '&:hover': {
-                    background: '#555'
+                    background: isDarkMode ? '#6B7280' : '#555'
                   }
                 }
               }),
@@ -438,32 +441,50 @@ function ProjectForm({ onSubmit, onClose, project, error, formErrors = {}, emplo
               }),
               option: (base, state) => ({
                 ...base,
-                backgroundColor: state.isSelected ? '#3b82f6' : state.isFocused ? '#dbeafe' : 'transparent',
-                color: state.isSelected ? 'white' : '#1f2937',
+                backgroundColor: state.isSelected 
+                  ? '#3b82f6' 
+                  : (state.isFocused 
+                    ? (isDarkMode ? '#4B5563' : '#dbeafe') 
+                    : (isDarkMode ? '#1F2937' : 'transparent')),
+                color: state.isSelected 
+                  ? 'white' 
+                  : (isDarkMode ? '#E5E7EB' : '#1f2937'),
                 padding: '8px 12px',
                 borderRadius: '4px',
                 cursor: 'pointer',
                 '&:active': {
-                  backgroundColor: state.isSelected ? '#3b82f6' : '#bfdbfe'
+                  backgroundColor: state.isSelected ? '#3b82f6' : (isDarkMode ? '#6B7280' : '#bfdbfe')
                 }
               }),
               multiValue: (base) => ({
                 ...base,
-                backgroundColor: '#dbeafe',
+                backgroundColor: isDarkMode ? '#374151' : '#dbeafe',
                 borderRadius: '4px',
               }),
               multiValueLabel: (base) => ({
                 ...base,
-                color: '#1e40af',
+                color: isDarkMode ? '#E5E7EB' : '#1e40af',
                 padding: '2px 6px'
               }),
               multiValueRemove: (base) => ({
                 ...base,
-                color: '#1e40af',
+                color: isDarkMode ? '#E5E7EB' : '#1e40af',
                 ':hover': {
-                  backgroundColor: '#bfdbfe',
-                  color: '#1e40af',
+                  backgroundColor: isDarkMode ? '#4B5563' : '#bfdbfe',
+                  color: isDarkMode ? '#F3F4F6' : '#1e40af',
                 }
+              }),
+              input: (base) => ({
+                ...base,
+                color: isDarkMode ? 'white' : 'inherit'
+              }),
+              placeholder: (base) => ({
+                ...base,
+                color: isDarkMode ? '#9CA3AF' : '#6B7280'
+              }),
+              singleValue: (base) => ({
+                ...base,
+                color: isDarkMode ? 'white' : 'inherit'
               })
             }}
           />

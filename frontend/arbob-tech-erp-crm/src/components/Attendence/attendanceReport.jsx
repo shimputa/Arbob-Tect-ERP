@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import fetchWithAuth from '../../utils/fetchWithAuth';
+import axios from 'axios';
 import { useTheme } from '../../contexts/ThemeContext';
 
 function AttendanceReport() {
@@ -49,16 +49,11 @@ function AttendanceReport() {
       setLoading(true);
       setError(null);
       
-      const response = await fetchWithAuth(
-        `${process.env.REACT_APP_API_BASE_URL}${process.env.REACT_APP_ACTIVE_EMPLOYEES_API}`,
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${localStorage.getItem(process.env.REACT_APP_AUTH_TOKEN_KEY)}`
-          }
-        }
+      const response = await axios.get(
+        `${process.env.REACT_APP_API_BASE_URL}${process.env.REACT_APP_ACTIVE_EMPLOYEES_API}`
       );
-      const data = await response.json();
+      
+      const data = response.data;
       
       if (data.employees) {
         const employeesList = data.employees.map(emp => ({
@@ -69,9 +64,9 @@ function AttendanceReport() {
       } else {
         setError('Failed to fetch employees list');
       }
-    } catch (error) {
+    } catch (err) {
       setError('Error fetching employees. Please try again.');
-      console.error('Error fetching employees:', error);
+      console.error('Error fetching employees:', err.response || err);
     } finally {
       setLoading(false);
     }
@@ -91,17 +86,11 @@ function AttendanceReport() {
     try {
       const monthNum = parseInt(month);
       
-      const response = await fetchWithAuth(
-        `${process.env.REACT_APP_API_BASE_URL}${process.env.REACT_APP_ATTENDANCE_API}/report?year=${year}&month=${monthNum}&employeeId=${selectedEmployee}`,
-        {
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${localStorage.getItem(process.env.REACT_APP_AUTH_TOKEN_KEY)}`
-          }
-        }
+      const response = await axios.get(
+        `${process.env.REACT_APP_API_BASE_URL}${process.env.REACT_APP_ATTENDANCE_API}/report?year=${year}&month=${monthNum}&employeeId=${selectedEmployee}`
       );
       
-      const data = await response.json();
+      const data = response.data;
       
       if (data.success) {
         const { attendance, statistics } = data.data;
@@ -150,10 +139,10 @@ function AttendanceReport() {
           setTimeout(() => setError(''), MESSAGE_TIMEOUTS.DEFAULT);
         }
       }
-    } catch (error) {
+    } catch (err) {
       setError('Error generating report. Please try again.');
       setTimeout(() => setError(''), MESSAGE_TIMEOUTS.DEFAULT);
-      console.error('Error generating report:', error);
+      console.error('Error generating report:', err.response || err);
     } finally {
       setLoading(false);
     }
