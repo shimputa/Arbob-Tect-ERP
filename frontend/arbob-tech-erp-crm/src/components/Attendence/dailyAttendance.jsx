@@ -186,16 +186,35 @@ const DailyAttendance = () => {
 
   return (
     <div className={`container mx-auto p-4 sm:p-6 ${isDarkMode ? 'bg-dark-primary' : 'bg-gray-100'} min-h-screen transition-colors duration-200`}>
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6">
+        <button onClick={() => navigate(-1)} className={`flex items-center ${isDarkMode ? 'text-brand-primary hover:text-brand-light' : 'text-blue-600 hover:text-blue-800'} transition-colors`}>
+          <svg className="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+          </svg>
+          <span className="text-lg font-medium">Daily Attendance</span>
+        </button>
+      </div>
+
+      {/* Status Messages */}
       {error && (
-        <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-md dark:bg-red-900/20 dark:border-red-700">
-          <p className="text-red-600 text-sm dark:text-red-400">{error}</p>
+        <div className="mb-6 p-4 bg-red-50 border-l-4 border-red-500 rounded-md dark:bg-red-900/20 dark:border-red-600 shadow-sm">
+          <div className="flex">
+            <div className="flex-shrink-0">
+              <svg className="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+              </svg>
+            </div>
+            <div className="ml-3">
+              <p className="text-sm font-medium text-red-600 dark:text-red-400">{error}</p>
+            </div>
+          </div>
         </div>
       )}
 
       {Object.keys(formErrors).length > 0 && (
-        <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-md dark:bg-red-900/20 dark:border-red-700">
+        <div className="mb-6 p-4 bg-red-50 border-l-4 border-red-500 rounded-md dark:bg-red-900/20 dark:border-red-600 shadow-sm">
           {Object.entries(formErrors).map(([field, message]) => (
-            <p key={field} className="text-red-600 text-sm dark:text-red-400">
+            <p key={field} className="text-sm font-medium text-red-600 dark:text-red-400 mb-1 last:mb-0">
               {message}
             </p>
           ))}
@@ -203,176 +222,235 @@ const DailyAttendance = () => {
       )}
 
       {showSuccessMessage && (
-        <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-md dark:bg-green-900/20 dark:border-green-700">
-          <p className="text-green-600 text-sm dark:text-green-400">Attendance marked successfully!</p>
+        <div className="mb-6 p-4 bg-green-50 border-l-4 border-green-500 rounded-md dark:bg-green-900/20 dark:border-green-600 shadow-sm">
+          <div className="flex">
+            <div className="flex-shrink-0">
+              <svg className="h-5 w-5 text-green-400" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" />
+              </svg>
+            </div>
+            <div className="ml-3">
+              <p className="text-sm font-medium text-green-600 dark:text-green-400">Attendance marked successfully!</p>
+            </div>
+          </div>
         </div>
       )}
 
-      {loading && (
-        <div className="flex justify-center items-center p-4">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-brand-primary"></div>
-        </div>
-      )}
-
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 space-y-4 sm:space-y-0">
-        <button onClick={() => navigate(-1)} className={`flex items-center ${isDarkMode ? 'text-brand-primary hover:text-brand-light' : 'text-blue-600 hover:text-blue-800'} transition-colors`}>
-          <svg className="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-          </svg>
-          <span className="font-medium">Daily Attendance</span>
-        </button>
-      </div>
-
-      <div className={`${isDarkMode ? 'bg-dark-secondary' : 'bg-white'} rounded-lg shadow p-6 mb-6 transition-colors duration-200`}>
-        <div className="flex flex-col sm:flex-row gap-4 mb-6">
-          <div className="flex-1">
-            <label className={`block text-sm font-medium ${isDarkMode ? 'text-gray-200' : 'text-gray-700'} mb-2`}>Select Date</label>
-            <input
-              type="date"
-              value={date}
-              readOnly
-              className={`mt-1 block w-full rounded-md shadow-sm ${
-                isDarkMode 
-                ? 'bg-dark-accent border-gray-700 text-white focus:border-brand-primary focus:ring-brand-primary' 
-                : 'border-gray-300 bg-gray-50 focus:border-blue-500 focus:ring-blue-500'}`}
-            />
+      {/* Attendance Form */}
+      <div className={`${isDarkMode ? 'bg-dark-secondary' : 'bg-white'} rounded-xl shadow-md p-6 mb-6 transition-colors duration-200`}>
+        <h2 className={`text-xl font-semibold mb-6 ${isDarkMode ? 'text-gray-200' : 'text-gray-800'}`}>Mark Attendance</h2>
+        
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+          <div className="space-y-2">
+            <label className={`block text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+              Select Date
+            </label>
+            <div className={`relative rounded-md shadow-sm`}>
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <svg className={`h-5 w-5 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`} fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd" />
+                </svg>
+              </div>
+              <input
+                type="date"
+                value={date}
+                readOnly
+                className={`pl-10 block w-full rounded-lg border ${
+                  isDarkMode 
+                  ? 'bg-dark-accent border-gray-600 text-white focus:border-brand-primary focus:ring-brand-primary' 
+                  : 'border-gray-300 bg-gray-50 focus:border-blue-500 focus:ring-blue-500'} 
+                  py-2.5 text-sm transition-colors`}
+              />
+            </div>
           </div>
-          <div className="flex-1">
-            <label className={`block text-sm font-medium ${isDarkMode ? 'text-gray-200' : 'text-gray-700'} mb-2`}>Select Employee</label>
-            <select
-              value={selectedEmployees}
-              onChange={(e) => setSelectedEmployees(e.target.value)}
-              className={`mt-1 block w-full rounded-md shadow-sm ${
-                isDarkMode 
-                ? 'bg-dark-accent border-gray-700 text-white focus:border-brand-primary focus:ring-brand-primary' 
-                : 'border-gray-300 focus:border-blue-500 focus:ring-blue-500'}`}
-            >
-              <option value="All Employees">All Employees</option>
-              {employees.map((emp) => (
-                <option key={emp.id} value={emp.id}>
-                  {emp.name}
-                </option>
-              ))}
-            </select>
+          
+          <div className="space-y-2">
+            <label className={`block text-sm font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-700'}`}>
+              Select Employee
+            </label>
+            <div className={`relative rounded-md shadow-sm`}>
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <svg className={`h-5 w-5 ${isDarkMode ? 'text-gray-400' : 'text-gray-500'}`} fill="currentColor" viewBox="0 0 20 20">
+                  <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
+                </svg>
+              </div>
+              <select
+                value={selectedEmployees}
+                onChange={(e) => setSelectedEmployees(e.target.value)}
+                className={`pl-10 block w-full rounded-lg border ${
+                  isDarkMode 
+                  ? 'bg-dark-accent border-gray-600 text-white focus:border-brand-primary focus:ring-brand-primary' 
+                  : 'border-gray-300 focus:border-blue-500 focus:ring-blue-500'} 
+                  py-2.5 text-sm transition-colors`}
+              >
+                <option value="All Employees">All Employees</option>
+                {employees.map((emp) => (
+                  <option key={emp.id} value={emp.id}>
+                    {emp.name}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
-          <div className="flex-1 flex items-end">
+          
+          <div className="flex items-end">
             <button
               onClick={getEmployeesList}
-              disabled={!date}
-              className={`w-full px-4 py-2 rounded-md text-white font-medium ${
-                !date ? 'bg-gray-400 cursor-not-allowed' : 'bg-brand-primary hover:bg-brand-dark'
-              } transition-colors duration-200`}
+              disabled={!date || loading}
+              className={`w-full flex justify-center items-center px-4 py-2.5 rounded-lg text-white font-medium ${
+                !date || loading ? 'bg-gray-400 cursor-not-allowed' : 'bg-brand-primary hover:bg-brand-dark'
+              } transition-colors duration-200 shadow-sm`}
             >
+              {loading ? (
+                <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+              ) : (
+                <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                </svg>
+              )}
               Get Employee List
             </button>
           </div>
         </div>
       </div>
 
+      {/* Attendance Table */}
       {attendanceData.length > 0 && (
-        <div className={`${isDarkMode ? 'bg-dark-secondary' : 'bg-white'} rounded-lg shadow overflow-x-auto transition-colors duration-200`}>
-          <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
-            <thead className={`${isDarkMode ? 'bg-dark-accent' : 'bg-gray-50'}`}>
-              <tr>
-                <th scope="col" className={`px-6 py-3 text-left text-xs font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-500'} uppercase tracking-wider`}>Employee Name</th>
-                <th scope="col" className={`px-6 py-3 text-left text-xs font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-500'} uppercase tracking-wider`}>Date</th>
-                <th scope="col" className={`px-6 py-3 text-left text-xs font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-500'} uppercase tracking-wider`}>Status</th>
-              </tr>
-            </thead>
-            <tbody className={`${isDarkMode ? 'bg-dark-secondary divide-y divide-gray-700' : 'bg-white divide-y divide-gray-200'}`}>
-              {displayedAttendance.map((employee, index) => (
-                <tr key={index} className={`${isDarkMode ? 'hover:bg-dark-accent/50' : 'hover:bg-gray-50'} transition-colors`}>
-                  <td className={`px-6 py-4 whitespace-nowrap text-sm font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{employee.name}</td>
-                  <td className={`px-6 py-4 whitespace-nowrap text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-500'}`}>{date}</td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                    <div className="flex space-x-2">
-                      <button
-                        onClick={() => handleStatusChange(index, STATUS.PRESENT)}
-                        className={`px-2 py-1 rounded ${
-                          employee.status === STATUS.PRESENT ? 'bg-green-500 text-white' : isDarkMode ? 'bg-gray-600 text-gray-300' : 'bg-gray-200'
-                        }`}
-                      >
-                        Present
-                      </button>
-                      <button
-                        onClick={() => handleStatusChange(index, STATUS.ABSENT)}
-                        className={`px-2 py-1 rounded ${
-                          employee.status === STATUS.ABSENT ? 'bg-red-500 text-white' : isDarkMode ? 'bg-gray-600 text-gray-300' : 'bg-gray-200'
-                        }`}
-                      >
-                        Absent
-                      </button>
-                      <button
-                        onClick={() => handleStatusChange(index, STATUS.ONLEAVE)}
-                        className={`px-2 py-1 rounded ${
-                          employee.status === STATUS.ONLEAVE ? 'bg-yellow-500 text-white' : isDarkMode ? 'bg-gray-600 text-gray-300' : 'bg-gray-200'
-                        }`}
-                      >
-                        On Leave
-                      </button>
-                    </div>
-                  </td>
+        <div className={`${isDarkMode ? 'bg-dark-secondary' : 'bg-white'} rounded-xl shadow-md overflow-hidden transition-colors duration-200 mb-6`}>
+          <div className="overflow-x-auto">
+            <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+              <thead className={`${isDarkMode ? 'bg-dark-accent' : 'bg-gray-50'}`}>
+                <tr>
+                  <th scope="col" className={`px-6 py-4 text-left text-xs font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-500'} uppercase tracking-wider`}>Employee Name</th>
+                  <th scope="col" className={`px-6 py-4 text-left text-xs font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-500'} uppercase tracking-wider`}>Date</th>
+                  <th scope="col" className={`px-6 py-4 text-left text-xs font-medium ${isDarkMode ? 'text-gray-300' : 'text-gray-500'} uppercase tracking-wider`}>Status</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
-
-      {attendanceData.length > 0 && (
-        <div className="mt-6">
-          <div className="flex flex-wrap justify-center space-x-0 space-y-2 sm:space-x-2 sm:space-y-0">
-            <button
-              onClick={() => setCurrentPage(page => Math.max(page - 1, 1))}
-              className={`w-full sm:w-auto px-4 py-2 border rounded-md text-sm font-medium ${
-                isDarkMode 
-                ? 'border-gray-600 text-gray-300 bg-dark-secondary hover:bg-dark-accent' 
-                : 'border-gray-300 text-gray-700 bg-white hover:bg-gray-50'
-              } transition-colors`}
-              disabled={currentPage === 1}
-            >
-              Previous
-            </button>
-            {Array.from({ length: totalPages }, (_, index) => (
-              <button
-                key={index + 1}
-                onClick={() => setCurrentPage(index + 1)}
-                className={`w-full sm:w-auto px-4 py-2 border text-sm font-medium rounded-md transition-colors ${
-                  currentPage === index + 1
-                    ? 'bg-brand-primary text-white border-brand-primary'
-                    : isDarkMode 
-                      ? 'bg-dark-secondary text-gray-300 border-gray-600 hover:bg-dark-accent' 
-                      : 'border-gray-300 text-gray-700 bg-white hover:bg-gray-50'
-                }`}
-              >
-                {index + 1}
-              </button>
-            ))}
-            <button
-              onClick={() => setCurrentPage(page => Math.min(page + 1, totalPages))}
-              className={`w-full sm:w-auto px-4 py-2 border rounded-md text-sm font-medium ${
-                isDarkMode 
-                ? 'border-gray-600 text-gray-300 bg-dark-secondary hover:bg-dark-accent' 
-                : 'border-gray-300 text-gray-700 bg-white hover:bg-gray-50'
-              } transition-colors`}
-              disabled={currentPage === totalPages}
-            >
-              Next
-            </button>
+              </thead>
+              <tbody className={`${isDarkMode ? 'bg-dark-secondary divide-y divide-gray-700' : 'bg-white divide-y divide-gray-200'}`}>
+                {displayedAttendance.map((employee, index) => (
+                  <tr key={index} className={`${isDarkMode ? 'hover:bg-dark-accent/50' : 'hover:bg-gray-50'} transition-colors`}>
+                    <td className={`px-6 py-4 whitespace-nowrap text-sm font-medium ${isDarkMode ? 'text-white' : 'text-gray-900'}`}>{employee.name}</td>
+                    <td className={`px-6 py-4 whitespace-nowrap text-sm ${isDarkMode ? 'text-gray-300' : 'text-gray-500'}`}>{date}</td>
+                    <td className="px-6 py-4 whitespace-nowrap">
+                      <div className="flex space-x-2">
+                        <button
+                          onClick={() => handleStatusChange(index, STATUS.PRESENT)}
+                          className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+                            employee.status === STATUS.PRESENT 
+                              ? 'bg-green-500 text-white ring-2 ring-green-500 ring-opacity-50' 
+                              : isDarkMode 
+                                ? 'bg-gray-700 text-gray-300 hover:bg-gray-600' 
+                                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                          }`}
+                        >
+                          Present
+                        </button>
+                        <button
+                          onClick={() => handleStatusChange(index, STATUS.ABSENT)}
+                          className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+                            employee.status === STATUS.ABSENT 
+                              ? 'bg-red-500 text-white ring-2 ring-red-500 ring-opacity-50' 
+                              : isDarkMode 
+                                ? 'bg-gray-700 text-gray-300 hover:bg-gray-600' 
+                                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                          }`}
+                        >
+                          Absent
+                        </button>
+                        <button
+                          onClick={() => handleStatusChange(index, STATUS.ONLEAVE)}
+                          className={`px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+                            employee.status === STATUS.ONLEAVE 
+                              ? 'bg-yellow-500 text-white ring-2 ring-yellow-500 ring-opacity-50' 
+                              : isDarkMode 
+                                ? 'bg-gray-700 text-gray-300 hover:bg-gray-600' 
+                                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                          }`}
+                        >
+                          On Leave
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
+          
+          {/* Pagination Controls */}
+          {totalPages > 1 && (
+            <div className="px-6 py-4 bg-gray-50 dark:bg-dark-accent border-t border-gray-200 dark:border-gray-700">
+              <div className="flex flex-wrap justify-center gap-2">
+                <button
+                  onClick={() => setCurrentPage(page => Math.max(page - 1, 1))}
+                  className={`px-4 py-2 border rounded-lg text-sm font-medium ${
+                    isDarkMode 
+                    ? 'border-gray-600 text-gray-300 bg-dark-secondary hover:bg-dark-accent disabled:bg-gray-800 disabled:text-gray-500' 
+                    : 'border-gray-300 text-gray-700 bg-white hover:bg-gray-50 disabled:bg-gray-100 disabled:text-gray-400'
+                  } transition-colors disabled:cursor-not-allowed`}
+                  disabled={currentPage === 1}
+                >
+                  Previous
+                </button>
+                {Array.from({ length: totalPages }, (_, index) => (
+                  <button
+                    key={index + 1}
+                    onClick={() => setCurrentPage(index + 1)}
+                    className={`w-10 h-10 flex items-center justify-center rounded-lg text-sm font-medium transition-colors ${
+                      currentPage === index + 1
+                        ? 'bg-brand-primary text-white'
+                        : isDarkMode 
+                          ? 'bg-dark-secondary text-gray-300 border border-gray-600 hover:bg-dark-accent' 
+                          : 'border border-gray-300 text-gray-700 bg-white hover:bg-gray-50'
+                    }`}
+                  >
+                    {index + 1}
+                  </button>
+                ))}
+                <button
+                  onClick={() => setCurrentPage(page => Math.min(page + 1, totalPages))}
+                  className={`px-4 py-2 border rounded-lg text-sm font-medium ${
+                    isDarkMode 
+                    ? 'border-gray-600 text-gray-300 bg-dark-secondary hover:bg-dark-accent disabled:bg-gray-800 disabled:text-gray-500' 
+                    : 'border-gray-300 text-gray-700 bg-white hover:bg-gray-50 disabled:bg-gray-100 disabled:text-gray-400'
+                  } transition-colors disabled:cursor-not-allowed`}
+                  disabled={currentPage === totalPages}
+                >
+                  Next
+                </button>
+              </div>
+            </div>
+          )}
         </div>
       )}
 
+      {/* Submit Button */}
       {attendanceData.length > 0 && (
-        <div className="mt-6 flex justify-end">
+        <div className="flex justify-end">
           <button
             onClick={handleSubmit}
-            className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors flex items-center justify-center"
+            disabled={loading}
+            className={`px-6 py-2.5 rounded-lg text-white font-medium bg-green-600 hover:bg-green-700 transition-colors shadow-sm flex items-center justify-center ${loading ? 'opacity-70 cursor-not-allowed' : ''}`}
           >
-            <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-            </svg>
-            Submit Attendance
+            {loading ? (
+              <>
+                <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Processing...
+              </>
+            ) : (
+              <>
+                <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                </svg>
+                Submit Attendance
+              </>
+            )}
           </button>
         </div>
       )}
