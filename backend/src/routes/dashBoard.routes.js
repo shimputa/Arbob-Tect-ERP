@@ -11,7 +11,7 @@ router.get(
   '/',
   authenticate,
   hasPermission('dashboard:view'),
-  // filterDashboardAccess,
+  filterDashboardAccess,
   validateDashboardRequest,
   handleValidationErrors,
   getDashboardStats

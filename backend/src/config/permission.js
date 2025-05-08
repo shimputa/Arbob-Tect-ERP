@@ -53,8 +53,8 @@ export const PERMISSIONS = {
 
 // Dashboard component access by role
 export const DASHBOARD_ACCESS = {
-  'SUPER_ADMIN': ['employees', 'attendance', 'expenses', 'salary', 'yearlyTrends'],
-  'ADMIN': ['employees', 'attendance', 'expenses', 'salary', 'yearlyTrends'],
+  'SUPER_ADMIN': ['employees', 'attendance', 'expenses', 'projects', 'salary', 'yearlyTrends'],
+  'ADMIN': ['employees', 'attendance', 'expenses', 'projects', 'salary', 'yearlyTrends'],
   'FINANCE_MANAGER': ['employees', 'expenses', 'salary'],
   'HR': ['employees', 'attendance']
 };

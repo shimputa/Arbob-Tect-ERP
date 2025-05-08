@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken';
 import { PrismaClient } from '@prisma/client';
-import { PERMISSIONS } from '../config/permission.js';
+import { PERMISSIONS, DASHBOARD_ACCESS } from '../config/permission.js';
 
 const prisma = new PrismaClient();
 const JWT_SECRET = process.env.JWT_SECRET;
@@ -103,9 +103,20 @@ export const isAdmin = (req, res, next) => {
   next();
 };
 
-// Add middleware for dashboard component filtering
+// Middleware to filter dashboard data based on user role
 export const filterDashboardAccess = (req, res, next) => {
-  const { DASHBOARD_ACCESS } = require('../config/permission.js');
-  req.allowedDashboardComponents = DASHBOARD_ACCESS[req.userRole] || [];
+  // Get the user's role from the request (set by authenticate middleware)
+  const userRole = req.userRole;
+  
+  if (!userRole) {
+    return res.status(401).json({
+      success: false,
+      message: 'Authentication required'
+    });
+  }
+  
+  // Get the allowed components for this role
+  req.allowedComponents = DASHBOARD_ACCESS[userRole] || [];
+  
   next();
 }; 
