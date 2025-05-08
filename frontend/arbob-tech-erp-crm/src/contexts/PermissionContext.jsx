@@ -51,7 +51,12 @@ export const PERMISSIONS = {
   'project:delete': ['SUPER_ADMIN', 'ADMIN', 'FINANCE_MANAGER'],
   
   // Dashboard
-  'dashboard:view': ['SUPER_ADMIN', 'ADMIN', 'FINANCE_MANAGER', 'HR']
+  'dashboard:view': ['SUPER_ADMIN', 'ADMIN', 'FINANCE_MANAGER', 'HR'],
+  'dashboard:view:users': ['SUPER_ADMIN'],
+  'dashboard:view:projects': ['SUPER_ADMIN', 'ADMIN'],
+  'dashboard:view:expenses:categories': ['SUPER_ADMIN', 'ADMIN'],
+  'dashboard:view:yearly_trends': ['SUPER_ADMIN', 'ADMIN'],
+  'dashboard:view:attendance': ['SUPER_ADMIN', 'ADMIN', 'HR']
 };
 
 const PermissionContext = createContext(null);
