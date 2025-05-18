@@ -1,0 +1,90 @@
+version: '3.8'
+
+services:
+  frontend:
+    build: 
+      context: ./frontend/arbob-tech-erp-crm
+      dockerfile: Dockerfile
+      target: development
+    container_name: arbob-frontend-dev
+    ports:
+      - "3001:3000"
+    environment:
+      - NODE_ENV=development
+      - PORT=3000
+      - CHOKIDAR_USEPOLLING=true
+      - WATCHPACK_POLLING=true
+      - FAST_REFRESH=true
+      - REACT_APP_API_URL=${REACT_APP_API_URL}
+      - WDS_SOCKET_PORT=0
+    volumes:
+      - ./frontend/arbob-tech-erp-crm:/app
+      - /app/node_modules
+    command: npm start
+    depends_on:
+      - backend
+    networks:
+      - app-network
+
+  backend:
+    build: 
+      context: ./backend
+      dockerfile: Dockerfile
+      target: development
+    container_name: arbob-backend-dev
+    ports:
+      - "3000:3000"
+    env_file:
+      - ./backend/.env
+    environment:
+      - NODE_ENV=development
+      - PORT=3000
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+    command: >
+      sh -c "
+        echo 'Waiting for database...' &&
+        while ! nc -z db 5432; do
+          sleep 1
+        done &&
+        echo 'Database is ready!' &&
+        npx prisma migrate deploy &&
+        npx prisma db seed &&
+        npm run dev
+      "
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - app-network
+
+  db:
+    image: postgres:14
+    platform: linux/amd64
+    container_name: arbob-db-dev
+    ports:
+      - "5432:5432"
+    env_file:
+      - ./backend/.env
+    environment:
+      - POSTGRES_HOST_AUTH_METHOD=trust
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
+    name: arbob-network-dev
+
+volumes:
+  postgres_data:
+    name: arbob-postgres-data-dev
