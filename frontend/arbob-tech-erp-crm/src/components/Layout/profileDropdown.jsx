@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { LogOut, ChevronDown, User } from 'lucide-react';
 import { useTheme } from '../../contexts/ThemeContext';
 
@@ -6,9 +6,23 @@ const ProfileDropdown = ({ user, onLogout }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [avatarError, setAvatarError] = useState(false);
   const { isDarkMode } = useTheme();
+  const dropdownRef = useRef(null);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    function handleClickOutside(event) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isOpen]);
 
   return (
-    <div className="relative">
+    <div className="relative" ref={dropdownRef}>
       <button 
         onClick={() => setIsOpen(!isOpen)} 
         className={`flex items-center space-x-3 ${isDarkMode ? 'bg-gray-800/50 border-gray-700/40' : 'bg-white/10 border-white/20'} backdrop-blur-sm border rounded-full py-2 px-4 shadow-sm hover:bg-opacity-20 transition duration-300 ease-in-out focus:outline-none`}

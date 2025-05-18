@@ -20,7 +20,7 @@ function Header({ onLogout, user, toggleSidebar, isSidebarOpen, isMobile }) {
             >
               <PanelLeft className="h-6 w-6" />
             </button>
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white ml-8">ATT QUOHR</h1>
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-white ml-8">8HR</h1>
           </div>
           
           {/* Right side with theme switcher and profile dropdown */}

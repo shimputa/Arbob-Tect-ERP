@@ -83,8 +83,15 @@ const Login = ({ onLogin }) => {
       </div>
       
       <div className={`hidden lg:flex flex-1 flex-col justify-center items-center p-12 ${isDarkMode ? 'bg-dark-secondary bg-opacity-95' : 'bg-white bg-opacity-90'}`}>
-        <div className="mb-8">
-          <img src="/images/logo.png.jpg" alt="ARBOB TECH" className="w-64 h-auto" />
+        <div className="mb-8 flex justify-center">
+          <div className="bg-white/90 rounded-3xl shadow-2xl flex items-center justify-center border-4 border-brand-primary px-4 py-2" style={{ minWidth: 180 }}>
+            <img
+              src="/images/8hr.jpg"
+              alt="8HR Logo"
+              className="w-60 h-auto object-contain"
+              style={{ maxHeight: 110 }}
+            />
+          </div>
         </div>
         <h1 className={`text-4xl font-bold ${isDarkMode ? 'text-brand-primary' : 'text-blue-600'} mb-6`}>Arbob Tech Team</h1>
         <h2 className={`text-2xl font-semibold ${isDarkMode ? 'text-dark-primary' : 'text-gray-800'} mb-4`}>Empowering Startups with Smart Solutions</h2>
