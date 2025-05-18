@@ -1,0 +1,76 @@
+version: '3.8'
+
+services:
+  frontend:
+    build: 
+      context: ./frontend/arbob-tech-erp-crm
+      dockerfile: Dockerfile
+      target: production
+    container_name: arbob-frontend-prod
+    ports:
+      - "3001:3000"
+    env_file:
+      - ./frontend/arbob-tech-erp-crm/.env.prod
+    networks:
+      - app-network
+    depends_on:
+      - backend
+
+  backend:
+    build: 
+      context: ./backend
+      dockerfile: Dockerfile
+      target: production
+    container_name: arbob-backend-prod
+    ports:
+      - "3000:3000"
+    env_file:
+      - ./backend/.env.prod
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+    command: >
+      sh -c "
+        echo 'Waiting for database...' &&
+        while ! nc -z db 5432; do
+          sleep 1
+        done &&
+        echo 'Database is ready!' &&
+        npx prisma migrate deploy &&
+        npm start
+      "
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - app-network
+
+  db:
+    image: postgres:14
+    platform: linux/amd64
+    container_name: arbob-db-prod
+    ports:
+      - "5432:5432"
+    env_file:
+      - ./backend/.env.prod
+    environment:
+      - POSTGRES_HOST_AUTH_METHOD=trust
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
+    name: arbob-network-prod
+
+volumes:
+  postgres_data:
+    name: arbob-postgres-data-prod 
