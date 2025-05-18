@@ -92,7 +92,7 @@ export const getDashboardStats = async (req, res) => {
       const projectFinancials = await prisma.project.aggregate({
         where: projectFilter,
         _sum: {
-          amount: true,
+          amountAfterTax: true,
           paidAmount: true,
           remainingAmount: true
         }
@@ -121,9 +121,9 @@ export const getDashboardStats = async (req, res) => {
         ongoing: ongoingProjects,
         completed: completedProjects,
         financials: {
-          totalValue: Number(projectFinancials._sum.amount || 0),
+          totalValue: Number(projectFinancials._sum.amountAfterTax || 0),
           received: Number(projectFinancials._sum.paidAmount || 0),
-          pending: Number(projectFinancials._sum.amount || 0) - Number(projectFinancials._sum.paidAmount || 0)
+          pending: Number(projectFinancials._sum.amountAfterTax || 0) - Number(projectFinancials._sum.paidAmount || 0)
         },
         platformDistribution: platformDistribution
       };
