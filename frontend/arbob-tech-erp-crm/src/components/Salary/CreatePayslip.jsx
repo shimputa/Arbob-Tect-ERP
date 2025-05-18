@@ -540,7 +540,7 @@ function CreatePayslip({ onSubmit }) {
                 name="projectBonusShare"
                 value={formData.projectBonusShare}
                 readOnly
-                className={`${inputClass} bg-gray-100`}
+                className={`${inputClass} ${isDarkMode ? 'bg-dark-accent border-gray-600 text-white placeholder-gray-400' : 'bg-gray-100'}`}
               />
             </div>
             <div>
@@ -557,7 +557,7 @@ function CreatePayslip({ onSubmit }) {
                 name="advanceSalary"
                 value={formData.advanceSalary}
                 readOnly
-                className={`${inputClass} bg-gray-100`}
+                className={`${inputClass} ${isDarkMode ? 'bg-dark-accent border-gray-600 text-white placeholder-gray-400' : 'bg-gray-100'}`}
                 min="0"
               />             
               <label htmlFor="advancePayment" className={`${labelClass} mt-4`}>
@@ -584,7 +584,7 @@ function CreatePayslip({ onSubmit }) {
                 name="basicSalary"
                 value={formData.basicSalary}
                 readOnly
-                className={`${inputClass} bg-gray-100`}
+                className={`${inputClass} ${isDarkMode ? 'bg-dark-accent border-gray-600 text-white placeholder-gray-400' : 'bg-gray-100'}`}
               />
               <label htmlFor="totalBonus" className={`${labelClass} mt-4`}>Total Bonus</label>
               <input
@@ -593,7 +593,7 @@ function CreatePayslip({ onSubmit }) {
                 name="totalBonus"
                 value={formData.totalBonus}
                 readOnly
-                className={`${inputClass} bg-gray-100`}
+                className={`${inputClass} ${isDarkMode ? 'bg-dark-accent border-gray-600 text-white placeholder-gray-400' : 'bg-gray-100'}`}
               />
               <label htmlFor="totalDeduction" className={`${labelClass} mt-4`}>Total Deduction</label>
               <input
@@ -602,7 +602,7 @@ function CreatePayslip({ onSubmit }) {
                 name="totalDeduction"
                 value={formData.totalDeduction}
                 readOnly
-                className={`${inputClass} bg-gray-100`}
+                className={`${inputClass} ${isDarkMode ? 'bg-dark-accent border-gray-600 text-white placeholder-gray-400' : 'bg-gray-100'}`}
               />
               <label htmlFor="netSalary" className={`${labelClass} mt-4`}>Net Salary</label>
               <input
@@ -611,7 +611,7 @@ function CreatePayslip({ onSubmit }) {
                 name="netSalary"
                 value={formData.netSalary}
                 readOnly
-                className={`${inputClass} bg-gray-100`}
+                className={`${inputClass} ${isDarkMode ? 'bg-dark-accent border-gray-600 text-white placeholder-gray-400' : 'bg-gray-100'}`}
               />
             </div>
           </div>
