@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useTheme } from '../../contexts/ThemeContext';
 import { SunIcon, MoonIcon, Palette } from 'lucide-react';
 
@@ -13,6 +13,20 @@ const ColorPreset = ({ color, active, onClick }) => (
 const ThemeSwitcher = () => {
   const { isDarkMode, toggleDarkMode, selectedBrandColor, setBrandColor } = useTheme();
   const [isColorMenuOpen, setIsColorMenuOpen] = useState(false);
+  const dropdownRef = useRef(null);
+
+  useEffect(() => {
+    if (!isColorMenuOpen) return;
+    function handleClickOutside(event) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsColorMenuOpen(false);
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isColorMenuOpen]);
 
   // Color presets - updated with modern professional colors
   const colorPresets = [
@@ -23,7 +37,7 @@ const ThemeSwitcher = () => {
   ];
 
   return (
-    <div className="flex items-center">
+    <div className="flex items-center" ref={dropdownRef}>
       {/* Dark mode toggle */}
       <button
         onClick={toggleDarkMode}

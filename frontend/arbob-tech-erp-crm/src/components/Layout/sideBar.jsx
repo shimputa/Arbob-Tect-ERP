@@ -158,11 +158,11 @@ function Sidebar({ isMobile, isOpen, toggleSidebar }) {
       >
         {/* Header area */}
         <div className="flex items-center justify-between mb-10">
-          <div className="h-16 w-16 rounded-full overflow-hidden border-2 border-white shadow-lg flex items-center justify-center bg-white p-1 ml-4 -mb-6 -mt-2">
+          <div className="h-16 w-16 rounded-full overflow-hidden border-2 border-white shadow-lg flex items-center justify-center bg-white p-2 ml-2 -mb-4 -mt-2">
             <img
-              src="/images/logo.png.jpg"
+              src="/images/8hr1.jpg"
               alt="ATT Logo"
-              className="max-h-full max-w-full object-contain"
+              className="h-full w-full object-contain"
             />
           </div>
           {isMobile && (
