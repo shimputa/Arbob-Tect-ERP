@@ -93,7 +93,6 @@ const Login = ({ onLogin }) => {
             />
           </div>
         </div>
-        <h1 className={`text-4xl font-bold ${isDarkMode ? 'text-brand-primary' : 'text-blue-600'} mb-6`}>Arbob Tech Team</h1>
         <h2 className={`text-2xl font-semibold ${isDarkMode ? 'text-dark-primary' : 'text-gray-800'} mb-4`}>Empowering Startups with Smart Solutions</h2>
         <p className={`text-xl ${isDarkMode ? 'text-dark-secondary' : 'text-gray-600'} mb-8 text-center text-justify max-w-md`}>All-in-one Enterprise resource planning (ERP) and customer relationship management (CRM) platform for modern businesses</p>
         <ul className="space-y-6 w-full max-w-md">
