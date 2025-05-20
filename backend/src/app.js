@@ -1,6 +1,8 @@
 import express from 'express';
 import cors from 'cors';
+import helmet from 'helmet';
 import { authenticate } from './middlewares/auth.middleware.js';
+import { authLimiter, apiLimiter} from './middlewares/rateLimiter.middleware.js';
 import employeeRoutes from './routes/employee.routes.js';
 import expenseRoutes from './routes/expense.routes.js';
 import expenseCategoryRoutes from './routes/expenseCategory.routes.js';
@@ -14,6 +16,8 @@ import userRoutes from './routes/user.routes.js';
 
 const app = express();
 
+// Security middleware
+app.use(helmet());
 // Enable CORS
 app.use(cors({
   origin: '*',
@@ -24,21 +28,23 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+// Apply rate limiters
 // Public routes (no authentication needed)
-app.use('/auth', authRoutes);
+app.use('/auth',authLimiter,authRoutes);
+
 
 // Apply authentication to all other routes
 app.use(authenticate);
 
-// Protected routes
-app.use('/api', employeeRoutes);
-app.use('/expense', expenseRoutes);
-app.use('/expense-categories', expenseCategoryRoutes);
-app.use('/salary', salaryRoutes);
-app.use('/attendance', attendanceRoutes);
-app.use('/dashboard', dashBoardRoutes);
-app.use('/project', projectRoutes);
-app.use('/advance-salary', advanceSalaryRoutes);
-app.use('/users', userRoutes);
+// Protected routes with rate limiting
+app.use('/api', apiLimiter, employeeRoutes);
+app.use('/expense', apiLimiter, expenseRoutes);
+app.use('/expense-categories', apiLimiter, expenseCategoryRoutes);
+app.use('/salary', apiLimiter, salaryRoutes);
+app.use('/attendance', apiLimiter, attendanceRoutes);
+app.use('/dashboard', apiLimiter, dashBoardRoutes);
+app.use('/project', apiLimiter, projectRoutes);
+app.use('/advance-salary', apiLimiter, advanceSalaryRoutes);
+app.use('/users', apiLimiter, userRoutes);
 
 export default app;

@@ -200,7 +200,8 @@ model User {
   password  String
   name      String
   role      Role     @default(ADMIN)
-  status    Int      @default(1) // 1=active, 0=inactive
+  status    Int      @default(1) // 1 for active, 0 for inactive
+  refreshToken String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
